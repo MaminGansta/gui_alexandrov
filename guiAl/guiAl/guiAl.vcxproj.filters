@@ -20,7 +20,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="guiAlexandrov\inlcude.h">
+    <ClInclude Include="guiAlexandrov\include.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
