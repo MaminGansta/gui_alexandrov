@@ -2,6 +2,8 @@
 #define DEF_STYLE (WS_OVERLAPPEDWINDOW | WS_VISIBLE)
 
 
+// =========================================== CALLBACK ARGUMENTS =================================================================
+
 struct args 
 {
 	void* vals[2];
@@ -62,27 +64,15 @@ struct HWND_constainer
 		return res->second;
 	}
 
-	void proc_msg()
-	{
-		for (auto& handle : handles)
-		{
-			MSG msg;
-			while (PeekMessage(&msg, handle.second, 0, 0, PM_REMOVE))
-			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
-		}
-	}
-
 	int size() { return handles.size(); };
 };
 
+HWND_constainer handles;
+
+// ========================================= WINDOW ============================================================
 
 struct Window
-{
-	static HWND_constainer handles;
-	
+{	
 	static int class_id;
 	HDC hdc;
 	Canvas canvas;
@@ -159,8 +149,223 @@ struct Window
 
 	HWND getHWND() { return handles[class_id]; }
 
-	static void default_msg_proc() { handles.proc_msg(); }
+	static void default_msg_proc() {
+		MSG msg;
+		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	}
 };
 
 int Window::class_id = 0;
-HWND_constainer Window::handles = HWND_constainer();
+
+
+
+// ================================== WINDOW COMPONENTS ========================================================
+
+struct Component
+{
+	int x, y, winth, height;
+	int old_parent_w, old_parent_h;
+	HWND handle;
+};
+
+struct Button
+{
+	HWND handle;
+
+	Button() = default;
+	Button(
+		const WCHAR* button_name,
+		HWND parent,
+		int id,
+		int x = 10,
+		int y = 10,
+		int width = 100,
+		int height = 20,
+		UINT style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON
+	)
+	{
+		init(button_name, parent, id, x, y, width, height, style);
+	}
+
+	void init(
+		const WCHAR* button_name,
+		HWND parent,
+		int id,
+		int x = 10,
+		int y = 10,
+		int width = 100,
+		int height = 20,
+		UINT style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON
+		)
+	{
+		handle = CreateWindow(
+			L"BUTTON",  // Predefined class; Unicode assumed 
+			button_name, // Button text 
+			style,     // Styles 
+			x,         // x position 
+			y,         // y position 
+			width,     // Button width
+			height,    // Button height
+			parent,    // Parent window
+			(HMENU)id, // menu.
+			hInst,
+			NULL);      // Pointer not needed.
+	}
+
+	~Button() { DestroyWindow(handle); };
+};
+
+
+
+struct ComboBox
+{
+	HWND handle;
+
+	ComboBox() = default;
+	ComboBox(HWND parent, int id, int x = 100, int y = 100, int width = 200, int height = 200)
+	{
+		init(parent, id, x, y, width, height);
+	}
+
+	void init(HWND parent, int id, int x = 100, int y = 100, int width = 200, int height = 200)
+	{
+		handle = CreateWindow(L"ComboBox", TEXT("combo"),
+			CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
+			x, y, width, height, parent, (HMENU)id, hInst, NULL);
+	}
+
+	void add(std::wstring element)
+	{
+		// Add string to combobox.
+		SendMessage(handle, (UINT)CB_ADDSTRING, (WPARAM)0, (LPARAM)element.c_str());
+
+		// Send the CB_SETCURSEL message to display an initial item 
+		//  in the selection field  
+		SendMessage(handle, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
+
+	}
+
+	void add(std::vector<std::wstring> elements)
+	{
+		// Add strings to combobox.
+		for (auto& element : elements)
+			SendMessage(handle, (UINT)CB_ADDSTRING, (WPARAM)0, (LPARAM)element.c_str());
+
+		SendMessage(handle, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
+
+	}
+
+	void remove(int idx)
+	{
+		SendMessage(handle, CB_DELETESTRING, (WPARAM)0, (LPARAM)0);
+	}
+
+	void remove(std::wstring name)
+	{
+		int idx = SendMessage(handle, CB_FINDSTRING, (WPARAM)0, (LPARAM)0);
+		SendMessage(handle, CB_DELETESTRING, (WPARAM)idx, (LPARAM)0);
+	}
+
+	void clear()
+	{
+		int count = SendMessage(handle, CB_GETCOUNT, (WPARAM)0, (LPARAM)0);
+		for (int i = 0; i < count; i++)
+			SendMessage(handle, CB_DELETESTRING, (WPARAM)0, (LPARAM)0);
+	}
+
+
+	// -----------------  STATIC ELEMENTS  --------------------
+
+	static std::wstring choosed(LPARAM lParam)
+	{
+		int ItemIndex = SendMessage((HWND)lParam, (UINT)CB_GETCURSEL, (WPARAM)0, (LPARAM)0);
+		TCHAR  ListItem[256];
+		(TCHAR)SendMessage((HWND)lParam, (UINT)CB_GETLBTEXT, (WPARAM)ItemIndex, (LPARAM)ListItem);
+		return std::wstring(ListItem);
+	}
+
+	static void add(HWND handle, std::wstring element)
+	{
+		// Add string to combobox.
+		SendMessage(handle, (UINT)CB_ADDSTRING, (WPARAM)0, (LPARAM)element.c_str());
+
+		// Send the CB_SETCURSEL message to display an initial item 
+		//  in the selection field  
+		SendMessage(handle, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
+	}
+
+	static void add(LPARAM  handle, std::vector<std::wstring> elements)
+	{
+		// Add strings to combobox.
+		for (auto& element : elements)
+			SendMessage((HWND)handle, (UINT)CB_ADDSTRING, (WPARAM)0, (LPARAM)element.c_str());
+
+		SendMessage((HWND)handle, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
+
+	}
+
+	static void remove(LPARAM  handle, int idx)
+	{
+		SendMessage((HWND)handle, CB_DELETESTRING, (WPARAM)0, (LPARAM)0);
+	}
+
+	static void remove(LPARAM  handle, std::wstring name)
+	{
+		int idx = SendMessage((HWND)handle, CB_FINDSTRING, (WPARAM)0, (LPARAM)name.c_str());
+		SendMessage((HWND)handle, CB_DELETESTRING, (WPARAM)idx, (LPARAM)0);
+	}
+
+	static void clear(LPARAM  handle)
+	{
+		int count = SendMessage((HWND)handle, CB_GETCOUNT, (WPARAM)0, (LPARAM)0);
+		for (int i = 0; i < count; i++)
+			SendMessage((HWND)handle, CB_DELETESTRING, (WPARAM)0, (LPARAM)0);
+	}
+};
+
+
+struct Label
+{
+	HWND handle;
+
+	Label() = default;
+	Label(HWND parent, int id, std::wstring text, int x = 100, int y = 100, int width = 200, int height = 20)
+	{
+		init(parent, id, text, x, y, width, height);
+	}
+
+	void init(HWND parent, int id, std::wstring text, int x = 100, int y = 100, int width = 200, int height = 20)
+	{
+		handle = CreateWindow(L"static", L"label", WS_CHILD | WS_VISIBLE | SS_SUNKEN | SS_WORDELLIPSIS | SS_CENTER, x, y, width, height, parent, (HMENU)id, hInst, NULL);
+		SetWindowText(handle, text.c_str());
+	}
+
+	void set_text(std::wstring text)
+	{
+		SetWindowText(handle, text.c_str());
+	}
+};
+
+
+struct Text
+{
+	HWND handle;
+	
+	Text() = default;
+	Text(HWND parent, int id, int x, int y, int width, int height)
+	{
+		init(parent, id, x, y, width, height);
+	}
+
+	void init(HWND parent, int id, int x, int y, int width, int height)
+	{
+		handle = CreateWindow(L"edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | ES_MULTILINE | ES_AUTOHSCROLL | ES_AUTOVSCROLL, x, y, width, height, parent, (HMENU)id , hInst, NULL);
+	}
+		
+	~Text() { DestroyWindow(handle); }
+};
+

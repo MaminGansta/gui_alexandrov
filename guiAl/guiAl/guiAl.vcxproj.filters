@@ -18,7 +18,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="guiAl\window_components.cpp">
+    <ClCompile Include="guiAl\clock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
