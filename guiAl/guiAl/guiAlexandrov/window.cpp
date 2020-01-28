@@ -73,7 +73,8 @@ HWND_constainer handles;
 
 struct Window
 {	
-	static int class_id;
+	static int name_id;
+	int class_id;
 	HDC hdc;
 	Canvas canvas;
 
@@ -105,7 +106,7 @@ struct Window
 	)
 	{
 		wchar_t class_name[16];
-		swprintf_s(class_name, L"image_%d", class_id++);
+		swprintf_s(class_name, L"image_%d", name_id++);
 		std::wstring name(class_name);
 
 		WNDCLASSEX wc;
@@ -159,7 +160,7 @@ struct Window
 	}
 };
 
-int Window::class_id = 0;
+int Window::name_id = 0;
 
 
 
