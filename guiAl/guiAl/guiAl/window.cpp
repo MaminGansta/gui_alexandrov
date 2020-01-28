@@ -220,6 +220,42 @@ struct Button
 };
 
 
+struct RadioButton
+{
+	HWND handle;
+
+	RadioButton() = default;
+	RadioButton(HWND parent, std::wstring text, int id, int x = 100, int y = 100, int width = 100, int height = 20)
+	{
+		init(parent, text, id, x, y, width, height);
+	}
+
+	void init(HWND parent, std::wstring text, int id, int x = 100, int y = 100, int width = 100, int height = 20)
+	{
+		handle = CreateWindow(L"Button", text.c_str(),
+			BS_AUTORADIOBUTTON | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE ,
+			x, y, width, height, parent, (HMENU)id, hInst, NULL);
+	}
+};
+
+struct CheckBox
+{
+	HWND handle;
+
+	CheckBox() = default;
+	CheckBox(HWND parent, std::wstring text, int id, int x = 100, int y = 100, int width = 100, int height = 20)
+	{
+		init(parent, text, id, x, y, width, height);
+	}
+
+	void init(HWND parent, std::wstring text, int id, int x = 100, int y = 100, int width = 100, int height = 10)
+	{
+		handle = CreateWindow(L"Button", text.c_str(),
+			BS_AUTOCHECKBOX | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE ,
+			x, y, width, height, parent, (HMENU)id, hInst, NULL);
+	}
+
+};
 
 struct ComboBox
 {
@@ -340,7 +376,7 @@ struct Label
 
 	void init(HWND parent, int id, std::wstring text, int x = 100, int y = 100, int width = 200, int height = 20)
 	{
-		handle = CreateWindow(L"static", L"label", WS_CHILD | WS_VISIBLE | SS_SUNKEN | SS_WORDELLIPSIS | SS_CENTER, x, y, width, height, parent, (HMENU)id, hInst, NULL);
+		handle = CreateWindow(L"static", L"label", WS_CHILD | WS_VISIBLE | SS_SUNKEN | SS_WORDELLIPSIS | SS_CENTER , x, y, width, height, parent, (HMENU)id, hInst, NULL);
 		SetWindowText(handle, text.c_str());
 	}
 

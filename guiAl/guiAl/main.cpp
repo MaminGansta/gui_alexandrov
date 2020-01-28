@@ -61,12 +61,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	});
 
 	Button btn(L"button", win.getHWND(), BUTTON_ID);
-	Label label(win.getHWND(), 0, L"text", 200, 200, 30);
+	Label label(win.getHWND(), 0, L"some text", 200, 200, 100);
 	Text text(win.getHWND(), 5, 400, 200, 200, 200);
 
 	ComboBox b(win.getHWND(), COMBO_1);
-	std::vector<std::wstring> combo_elements{ L"Mercury", L"Venus", L"Earth", L"Mars" };
+	std::vector<std::wstring> combo_elements{ L"Mercury", L"Venus", L"Earth", L"Mars", L"Jupiter", L"Saturn", L"Uranus", L"NOT_Neptune" };
 	b.add(combo_elements);
+
+	CheckBox(win.getHWND(), L"Check", 3, 400, 30);
+	CheckBox(win.getHWND(), L"Check2", 3, 400, 50);
+
+	RadioButton(win.getHWND(), L"Radio", 3, 400, 80);
+	RadioButton(win.getHWND(), L"Radio2", 3, 400, 100);
 
 	
 	while (running)
