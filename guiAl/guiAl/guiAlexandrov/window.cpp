@@ -73,8 +73,8 @@ HWND_constainer handles;
 
 struct Window
 {	
-	static int name_id;
 	int class_id;
+	static int name_id;
 	HDC hdc;
 	Canvas canvas;
 
@@ -91,10 +91,10 @@ struct Window
 		int id = 0
 	)
 	{
-		create_window(window_name, width, height, style, parent, arg_ptr, callback , id);
+		init(window_name, width, height, style, parent, arg_ptr, callback , id);
 	}
 
-	void create_window(
+	void init(
 		std::wstring window_name,
 		int width,
 		int height,
@@ -106,7 +106,7 @@ struct Window
 	)
 	{
 		wchar_t class_name[16];
-		swprintf_s(class_name, L"image_%d", name_id++);
+		swprintf_s(class_name, L"class_%d", name_id++);
 		std::wstring name(class_name);
 
 		WNDCLASSEX wc;
@@ -141,7 +141,7 @@ struct Window
 		hdc = GetDC(handle);
 	}
 
-	~Window() { handles.remove(class_id); }
+	virtual ~Window() { handles.remove(class_id); }
 
 	void render_canvas()
 	{

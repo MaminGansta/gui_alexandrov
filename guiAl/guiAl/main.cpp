@@ -11,7 +11,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Timer timer(true);
 
 
-	Image bg("back.png");
+	Image bg(L"back.png");
 
 	Window win(L"window", 800, 600, DEF_STYLE, NULL, &bg, [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
 	{
@@ -51,7 +51,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			PAINTSTRUCT plug;
 			BeginPaint(hwnd, &plug);
-			draw_image(window->canvas, *bg, 0, 0, window->canvas.width, window->canvas.height);
+			draw_image(window->canvas, *bg, 0.0f, 0.0f, 1.0f, 1.0f);
 			window->render_canvas();
 			EndPaint(hwnd, &plug);
 		}break;

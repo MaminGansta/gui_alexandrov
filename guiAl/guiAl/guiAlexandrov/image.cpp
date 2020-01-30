@@ -6,9 +6,12 @@ struct Image
 	Color* data = NULL;
 	bool invalid = false;
 
-	Image(const char* filename)
+	Image(const wchar_t* filename_utf8)
 	{
 		int chanels;
+		char filename[256];
+		stbi_convert_wchar_to_utf8(filename, sizeof(filename), filename_utf8);
+
 		uint8_t* raw = stbi_load(filename, &width, &height, &chanels, 0);
 
 		if (raw == NULL)
@@ -103,28 +106,36 @@ struct Image
 
 
 void draw_image(Canvas& surface, Image& image,
-				int pos_x, int pos_y, int width, int height)
+				float fpos_x, float fpos_y, float fwidth, float fheight)
 {
-	width = min(width, surface.width - pos_x);
-	height= min(height, surface.height- pos_y);
+	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f) return;
 
-	std::future<void> res[8];
+	int pos_x = surface.width * fpos_x;
+	int pos_y = surface.height *fpos_y;
+
+	fwidth = min(fwidth, 1.0f - fpos_x);
+	fheight= min(fheight, 1.0f - fpos_y);
+
+	int width  = surface.width * fwidth;
+	int height = surface.height * fheight;
+
+	std::future<void> res[MAX_THREADS];
 
 	for (int i = 0; i < workers.size; i++)
 	{
-		int from_x = pos_x + i * width / workers.size;
-		int to_x = pos_x + (i + 1) * width / workers.size;
+		int from_x = i * width / workers.size;
+		int to_x   = (i + 1) * width / workers.size;
 
-		res[i] = workers.add_task([from_x, to_x, pos_y, &height, &width, &surface, &image]()
+		res[i] = workers.add_task([from_x, to_x, pos_y, pos_x, &height, &width, &surface, &image]()
 		{
-			for (int y = pos_y; y < height; y++)
+			for (int y = 0; y < height; y++)
 				for (int x = from_x; x < to_x; x++)
 				{
-					surface.memory[y * surface.width + x] = image.get_pixel_scaled(x, y, width, height);
+					surface.memory[(y + pos_y)* surface.width + (x + pos_x)] = image.get_pixel_scaled(x, y, width , height);
 				}
 		});
 	}
-
+	
 	for (int i = 0; i < workers.size; i++)
 		res[i].get();
 }

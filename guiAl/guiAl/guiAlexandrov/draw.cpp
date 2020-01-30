@@ -58,7 +58,21 @@ inline void drawLine(Canvas& surface, int x, int y, int x2, int y2, Color color)
 
 inline void draw_filled_rect(Canvas& surface, int x0, int y0, int x1, int y1, Color color)
 {
-	for (int y = y0; y < y1; y++)
-		for (int x = x0; x < x1; x++)
-			drawPixel(surface, x, y, color);
+	int width = x1 - x0;
+	std::future<void> res[MAX_THREADS];
+
+	for (int i = 0; i < workers.size; i++)
+	{
+		int from_x = x0 + (i) * width / workers.size;
+		int to_x = x0 + (i + 1)*width / workers.size;
+
+		res[i] = workers.add_task([y0, y1, from_x, to_x, &surface, &color]() {
+			for (int y = y0; y < y1; y++)
+				for (int x = from_x; x < to_x; x++)
+					drawPixel(surface, x, y, color);
+		});
+	}
+	for (int i = 0; i < MAX_THREADS; i++)
+		res[i].get();
+
 }
