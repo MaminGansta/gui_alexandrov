@@ -55,10 +55,24 @@ inline void drawLine(Canvas& surface, int x, int y, int x2, int y2, Color color)
 	}
 }
 
-
-inline void draw_filled_rect(Canvas& surface, int x0, int y0, int x1, int y1, Color color)
+void fdraw_line(Canvas& surface, float fx0, float fy0, float fx1, float fy1, Color color)
 {
-	int width = x1 - x0;
+	int x0 = fx0 * surface.width;
+	int y0 = fy0 * surface.height;
+	int x1 = fx1 * surface.width;
+	int y1 = fy1 * surface.height;
+	drawLine(surface, x0, y0, x1, y1, color);
+}
+
+
+inline void draw_filled_rect(Canvas& surface, float fx, float fy, float fwidth, float fheight, Color color)
+{
+	int x0 = surface.width* fx;
+	int y0 = surface.height * fy;
+
+	int width = surface.width * fwidth;
+	int height = surface.height * fheight;
+
 	std::future<void> res[MAX_THREADS];
 
 	for (int i = 0; i < workers.size; i++)
@@ -66,13 +80,13 @@ inline void draw_filled_rect(Canvas& surface, int x0, int y0, int x1, int y1, Co
 		int from_x = x0 + (i) * width / workers.size;
 		int to_x = x0 + (i + 1)*width / workers.size;
 
-		res[i] = workers.add_task([y0, y1, from_x, to_x, &surface, &color]() {
-			for (int y = y0; y < y1; y++)
+		res[i] = workers.add_task([y0, height, from_x, to_x, &surface, &color]() {
+			for (int y = y0; y < y0 + height; y++)
 				for (int x = from_x; x < to_x; x++)
 					drawPixel(surface, x, y, color);
 		});
 	}
-	for (int i = 0; i < MAX_THREADS; i++)
-		res[i].get();
 
+	for (int i = 0; i < workers.size; i++)
+		res[i].get();
 }
