@@ -48,9 +48,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		}
 
+		//if (msg == WM_CTLCOLORSTATIC)
+		//{
+		//	HDC hdcStatic = (HDC)wParam;
+		//	SetTextColor(hdcStatic, RGB(255, 0, 0));
+		//	SetBkMode(hdcStatic, TRANSPARENT);
+		//
+		//
+		//	return (LRESULT)GetStockObject(NULL_BRUSH);
+		//}
 
 
-		return 1;
+
+		return -1;
 	});
 
 	Button btn(win.getHWND(), L"button", BUTTON_ID, 0.1f, 0.1f, .1f, 0.1f, RESIZABLE);
@@ -59,19 +69,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//SetBkMode(GetDC(label.handle), TRANSPARENT);
 	//SetTextColor(GetDC(label.handle), RGB(255, 0, 0));
 
-	/*
-	
-	if (msg == WM_CTLCOLORSTATIC)
-	{
-		HDC hdcStatic = (HDC)wParam;
-		SetTextColor(hdcStatic, RGB(0, 0, 0));
-		SetBkMode(hdcStatic, TRANSPARENT);
 
-		return (LRESULT)GetStockObject(NULL_BRUSH);
-	}
-
-	
-	*/
 	
 
 

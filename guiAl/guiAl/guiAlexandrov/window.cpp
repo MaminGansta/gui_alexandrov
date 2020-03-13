@@ -204,7 +204,7 @@ struct Window
 			
 			int res = args.callback(hwnd, msg, wParam, lParam, args);
 
-			return res ? DefWindowProc(hwnd, msg, wParam, lParam) : res;
+			return res == -1 ? DefWindowProc(hwnd, msg, wParam, lParam) : res;
 		};
 
 
@@ -538,7 +538,7 @@ struct Label : Component
 		int nWidth = rect.right - rect.left;
 		int nHeight = rect.bottom - rect.top;
 
-		handle = CreateWindow(L"static", L"label", WS_CHILD | WS_VISIBLE | SS_SUNKEN | SS_WORDELLIPSIS | SS_CENTER ,
+		handle = CreateWindow(L"static", L"label", WS_CHILD | WS_VISIBLE  | SS_LEFT,
 		x* nWidth, y* nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
 
 		components.add(parent, this);
