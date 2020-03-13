@@ -605,3 +605,21 @@ struct Text : Component
 	~Text() { DestroyWindow(handle); delete[] text; }
 };
 
+
+
+// ============== Some functions ======================
+
+
+void set_font_size(HWND handle, int size)
+{
+
+	HFONT hFont = CreateFont(size, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Arial");
+	SendMessage(handle, WM_SETFONT, WPARAM(hFont), TRUE);
+}
+
+
+void set_font(HWND handle, HFONT font)
+{
+
+	SendMessage(handle, WM_SETFONT, WPARAM(font), TRUE);
+}

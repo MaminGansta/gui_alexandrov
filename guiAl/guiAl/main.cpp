@@ -59,7 +59,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		//}
 
 
-
 		return -1;
 	});
 
@@ -68,11 +67,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	//SetBkMode(GetDC(label.handle), TRANSPARENT);
 	//SetTextColor(GetDC(label.handle), RGB(255, 0, 0));
-
-
 	
-
-
+	
 	Text text(win.getHWND(), 5, 0.1f, 0.6f, 0.2f, 0.2f);
 
 	ComboBox b(win.getHWND(), COMBO_1, 0.4f, 0.2f);
