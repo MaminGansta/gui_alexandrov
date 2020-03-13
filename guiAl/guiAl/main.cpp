@@ -15,11 +15,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	Window win(L"window", 800, 600, DEF_STYLE, NULL, &bg, [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
 	{
-		args arg = arguments.get(hwnd);
-		if (arg[0] == NULL) return DefWindowProc(hwnd, msg, wParam, lParam);
+		Args args = arguments.get(hwnd);
+		if (args[0] == NULL) return DefWindowProc(hwnd, msg, wParam, lParam);
 
-		Window* window = (Window*)arg[0];
-		Image* bg = (Image*)arg[1];
+		Window* window = (Window*)args[0];
+		Image* bg = (Image*)args[1];
 
 		switch (msg)
 		{
@@ -44,6 +44,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}break;
 		case WM_SIZE:
 		{
+			components.update(hwnd);
 			window->canvas.resize(hwnd);
 			//window->resize_chileds();
 		}break;
@@ -60,20 +61,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return DefWindowProc(hwnd, msg, wParam, lParam);
 	});
 
-	Button btn(L"button", win.getHWND(), BUTTON_ID);
-	Label label(win.getHWND(), 0, L"some text", 200, 200, 100);
-	Text text(win.getHWND(), 5, 400, 200, 200, 200);
+	Button btn(L"button", BUTTON_ID, 0.1f, 0.1f, .1f, 0.1f, win.getHWND());
+	Label label(win.getHWND(), L"some text", 0, 0.2f, 0.2f, 0.1f, 0.1f, RESIZABLE);
+	Text text(win.getHWND(), 5, 0.4f, 0.2f, 0.2f, 0.2f);
 
-	ComboBox b(win.getHWND(), COMBO_1);
+	ComboBox b(win.getHWND(), COMBO_1, 0.3f, 0.2f);
 	std::vector<std::wstring> combo_elements{ L"Mercury", L"Venus", L"Earth", L"Mars", L"Jupiter", L"Saturn", L"Uranus", L"NOT_Neptune" };
 	b.add(combo_elements);
 
-	CheckBox(win.getHWND(), L"Check", 11, 400, 30);
-	CheckBox(win.getHWND(), L"Check2", 12, 400, 50);
-
-	RadioButton(win.getHWND(), L"Radio", 13, 400, 80);
-	RadioButton(win.getHWND(), L"Radio2", 14, 400, 100);
-
+	//CheckBox(win.getHWND(), L"Check", 11, 400, 30);
+	//CheckBox(win.getHWND(), L"Check2", 12, 400, 50);
+	//
+	//RadioButton(win.getHWND(), L"Radio", 13, 400, 80);
+	//RadioButton(win.getHWND(), L"Radio2", 14, 400, 100);
 	
 	while (running)
 	{

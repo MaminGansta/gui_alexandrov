@@ -95,11 +95,21 @@ struct Image
 		return data[y * width + x];
 	}
 
+
+	const Color& get_pixel_scaled(int x, int y, int screen_w, int screen_h) const
+	{
+		y = y * height / screen_h;
+		x = x * width / screen_w;
+
+		assert(((uint32_t)y < height) | ((uint32_t)x < width));
+		return data[y * width + x];
+	}
+
 	~Image() { delete[] data; }
 };
 
 
-void draw_image(Canvas& surface, Image& image,
+void draw_image(Canvas& surface, const Image& image,
 				float fpos_x, float fpos_y, float fwidth, float fheight)
 {
 	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f) return;
@@ -177,7 +187,7 @@ struct fColor
 		b *= f;
 	}
 
-	Color get_uint()
+	Color get_uint() const
 	{
 		return Color(255.0f * r, 255.0f * g, 255.0f * b, 255.0f * a);
 	}
@@ -293,10 +303,19 @@ struct fImage
 		return data[y * width + x];
 	}
 
+	const fColor& get_pixel_scaled(int x, int y, int screen_w, int screen_h) const
+	{
+		y = y * height / screen_h;
+		x = x * width / screen_w;
+
+		assert(((uint32_t)y < height) | ((uint32_t)x < width));
+		return data[y * width + x];
+	}
+
 };
 
 
-void draw_image(Canvas& surface, fImage& image,
+void draw_image(Canvas& surface, const fImage& image,
 	float fpos_x, float fpos_y, float fwidth, float fheight)
 {
 	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f) return;

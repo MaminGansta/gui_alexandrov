@@ -8,6 +8,7 @@
 #include <cstdio>
 
 #include <vector>
+#include <unordered_map>
 #include <algorithm>
 
 void doutput(const char* format, ...)

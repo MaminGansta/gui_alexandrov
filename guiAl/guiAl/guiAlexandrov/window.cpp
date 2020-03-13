@@ -4,7 +4,7 @@
 
 // =========================================== CALLBACK ARGUMENTS =============================================================
 
-struct args 
+struct Args
 {
 	void* vals[2];
 	void* operator [] (int i) { return vals[i]; }
@@ -12,22 +12,22 @@ struct args
 
 struct Arguments
 {
-	std::vector<std::pair<HWND, args>> buffer;
+	std::vector<std::pair<HWND, Args>> buffer;
 
 	void add(HWND hwnd, void* pwindow, void* parg)
 	{
-		buffer.push_back(std::make_pair(hwnd, args{ pwindow, parg }));
+		buffer.push_back(std::make_pair(hwnd, Args{ pwindow, parg }));
 	}
 
-	args get(HWND hwnd)
+	Args get(HWND hwnd)
 	{
-		auto it = std::find_if(buffer.begin(), buffer.end(), [hwnd](std::pair<HWND, args> in) { return hwnd == in.first; });
-		return it == buffer.end() ? args{NULL,NULL} : it->second;
+		auto it = std::find_if(buffer.begin(), buffer.end(), [hwnd](std::pair<HWND, Args> in) { return hwnd == in.first; });
+		return it == buffer.end() ? Args{NULL,NULL} : it->second;
 	}
 
 	void remove(HWND hwnd)
 	{
-		auto it = std::find_if(buffer.begin(), buffer.end(), [hwnd](std::pair<HWND, args> in) { return hwnd == in.first; });
+		auto it = std::find_if(buffer.begin(), buffer.end(), [hwnd](std::pair<HWND, Args> in) { return hwnd == in.first; });
 		if (it != buffer.end())
 			buffer.erase(it);
 	}
@@ -81,7 +81,7 @@ struct Window
 	Window() {}
 	
 	Window(
-		std::wstring window_name,
+		const std::wstring& window_name,
 		int width,
 		int height,
 		UINT style,
@@ -95,7 +95,7 @@ struct Window
 	}
 
 	void init(
-		std::wstring window_name,
+		const std::wstring& window_name,
 		int width,
 		int height,
 		UINT style,
@@ -158,6 +158,15 @@ struct Window
 			DispatchMessage(&msg);
 		}
 	}
+
+	static void wait_msg_proc() {
+		MSG msg;
+		while (GetMessage(&msg, NULL, 0, 0))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	}
 };
 
 int Window::name_id = 0;
@@ -166,116 +175,227 @@ int Window::name_id = 0;
 
 // ================================== WINDOW COMPONENTS ====================================================
 
+
+#define STATIC 0
+#define DYNAMIC 1
+#define RESIZABLE 2
+
 struct Component
 {
-	int x, y, winth, height;
-	int old_parent_w, old_parent_h;
+	int id;
+	float x, y, width, height;
+	int type;
 	HWND handle;
+	HWND parent;
+
+	void resize()
+	{
+		RECT rect;
+		GetClientRect(parent, &rect);
+		int nWidth = rect.right - rect.left;
+		int nHeight = rect.bottom - rect.top;
+
+		UINT flags = SWP_NOZORDER;
+
+		if (type == STATIC)
+			flags = SWP_NOMOVE | SWP_NOSIZE;
+		else if (type == DYNAMIC)
+			flags = SWP_NOSIZE;
+
+		SetWindowPos(handle, 0, x * nWidth, y * nHeight, width * nWidth, height * nHeight, flags);
+	}
 };
 
-struct Button
-{
-	HWND handle;
 
+struct Component_crt
+{
+	std::unordered_map<HWND, std::vector<Component>> components;
+
+	void add(HWND parent, Component* comp)
+	{
+		components[parent].push_back(*comp);
+	}
+
+	void remove(HWND parent)
+	{
+		components.erase(parent);
+	}
+
+	void update(HWND parent)
+	{
+		for (auto component : components[parent])
+		{
+			component.resize();
+		}
+	}
+};
+
+Component_crt components;
+
+
+
+
+struct Button : Component
+{
 	Button() = default;
 	Button(
-		const WCHAR* button_name,
-		HWND parent,
+		const std::wstring& button_name,
 		int id,
-		int x = 10,
-		int y = 10,
-		int width = 100,
-		int height = 20,
+		float x,
+		float y,
+		float width,
+		float height,
+		HWND parent,
+		UINT type = DYNAMIC,
 		UINT style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON
 	)
 	{
-		init(button_name, parent, id, x, y, width, height, style);
+		init(button_name, parent, id, x, y, width, height, type, style);
 	}
 
 	void init(
-		const WCHAR* button_name,
+		const std::wstring& button_name,
 		HWND parent,
 		int id,
-		int x = 10,
-		int y = 10,
-		int width = 100,
-		int height = 20,
+		float x,
+		float y,
+		float width = 0.1f,
+		float height = 0.1f,
+		UINT type = DYNAMIC,
 		UINT style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON
 		)
 	{
+		this->id = id;
+		this->x = x;
+		this->y = y;
+		this->width = width;
+		this->height = height;
+		this->parent = parent;
+		this->type = type;
+
+		RECT rect;
+		GetClientRect(parent, &rect);
+		int nWidth = rect.right - rect.left;
+		int nHeight = rect.bottom - rect.top;
+
 		handle = CreateWindow(
 			L"BUTTON",  // Predefined class; Unicode assumed 
-			button_name, // Button text 
+			button_name.c_str(), // Button text 
 			style,     // Styles 
-			x,         // x position 
-			y,         // y position 
-			width,     // Button width
-			height,    // Button height
+			x * nWidth,         // x position 
+			y * nHeight,         // y position 
+			width * nWidth,     // Button width
+			height * nHeight,    // Button height
 			parent,    // Parent window
 			(HMENU)id, // menu.
 			hInst,
 			NULL);      // Pointer not needed.
+
+		components.add(parent, this);
 	}
 
 	~Button() { DestroyWindow(handle); };
 };
 
 
-struct RadioButton
+struct RadioButton : Component
 {
-	HWND handle;
-
 	RadioButton() = default;
-	RadioButton(HWND parent, std::wstring text, int id, int x = 100, int y = 100, int width = 100, int height = 20)
+	RadioButton(HWND parent, const std::wstring& text, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC)
 	{
-		init(parent, text, id, x, y, width, height);
+		init(parent, text, id, x, y, width, height, type);
 	}
 
-	void init(HWND parent, std::wstring text, int id, int x = 100, int y = 100, int width = 100, int height = 20)
+	void init(HWND parent, const std::wstring& text, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC)
 	{
+		this->id = id;
+		this->x = x;
+		this->y = y;
+		this->width = width;
+		this->height = height;
+		this->parent = parent;
+		this->type = type;
+
+		RECT rect;
+		GetClientRect(parent, &rect);
+		int nWidth = rect.right - rect.left;
+		int nHeight = rect.bottom - rect.top;
+
 		handle = CreateWindow(L"Button", text.c_str(),
 			BS_AUTORADIOBUTTON | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE ,
-			x, y, width, height, parent, (HMENU)id, hInst, NULL);
+			x * nWidth, y * nHeight, width * nWidth, height * nHeight, parent, (HMENU)id, hInst, NULL);
+	
+		components.add(parent, this);
 	}
+
+	~RadioButton() { DestroyWindow(handle); }
 };
 
-struct CheckBox
+struct CheckBox : Component
 {
-	HWND handle;
-
 	CheckBox() = default;
-	CheckBox(HWND parent, std::wstring text, int id, int x = 100, int y = 100, int width = 100, int height = 20)
+	CheckBox(HWND parent, const std::wstring& text, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC)
 	{
-		init(parent, text, id, x, y, width, height);
+		init(parent, text, id, x, y, width, height, type);
 	}
 
-	void init(HWND parent, std::wstring text, int id, int x = 100, int y = 100, int width = 100, int height = 10)
+	void init(HWND parent, const std::wstring& text, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC)
 	{
+		this->id = id;
+		this->x = x;
+		this->y = y;
+		this->width = width;
+		this->height = height;
+		this->parent = parent;
+		this->type = type;
+
+		RECT rect;
+		GetClientRect(parent, &rect);
+		int nWidth = rect.right - rect.left;
+		int nHeight = rect.bottom - rect.top;
+
 		handle = CreateWindow(L"Button", text.c_str(),
 			BS_AUTOCHECKBOX | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE ,
-			x, y, width, height, parent, (HMENU)id, hInst, NULL);
+			x* nWidth, y* nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
+	
+		components.add(parent, this);
 	}
 
+	~CheckBox() { DestroyWindow(handle); }
 };
 
-struct ComboBox
+struct ComboBox : Component
 {
-	HWND handle;
-
 	ComboBox() = default;
-	ComboBox(HWND parent, int id, int x = 100, int y = 100, int width = 200, int height = 200)
+	ComboBox(HWND parent, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC)
 	{
-		init(parent, id, x, y, width, height);
+		init(parent, id, x, y, width, height, type);
 	}
 
-	void init(HWND parent, int id, int x = 100, int y = 100, int width = 200, int height = 200)
+	void init(HWND parent, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC)
 	{
+		this->id = id;
+		this->x = x;
+		this->y = y;
+		this->width = width;
+		this->height = height;
+		this->parent = parent;
+		this->type = type;
+
+		RECT rect;
+		GetClientRect(parent, &rect);
+		int nWidth = rect.right - rect.left;
+		int nHeight = rect.bottom - rect.top;
+
 		handle = CreateWindow(L"ComboBox", TEXT("combo"),
 			CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
-			x, y, width, height, parent, (HMENU)id, hInst, NULL);
+			x* nWidth, y* nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
+
+		components.add(parent, this);
+
 	}
 
-	void add(std::wstring element)
+	void add(const std::wstring& element)
 	{
 		// Add string to combobox.
 		SendMessage(handle, (UINT)CB_ADDSTRING, (WPARAM)0, (LPARAM)element.c_str());
@@ -301,7 +421,7 @@ struct ComboBox
 		SendMessage(handle, CB_DELETESTRING, (WPARAM)0, (LPARAM)0);
 	}
 
-	void remove(std::wstring name)
+	void remove(const std::wstring& name)
 	{
 		int idx = SendMessage(handle, CB_FINDSTRING, (WPARAM)0, (LPARAM)0);
 		SendMessage(handle, CB_DELETESTRING, (WPARAM)idx, (LPARAM)0);
@@ -314,6 +434,7 @@ struct ComboBox
 			SendMessage(handle, CB_DELETESTRING, (WPARAM)0, (LPARAM)0);
 	}
 
+	~ComboBox() { DestroyWindow(handle); }
 
 	// -----------------  STATIC ELEMENTS  --------------------
 
@@ -325,7 +446,7 @@ struct ComboBox
 		return std::wstring(ListItem);
 	}
 
-	static void add(HWND handle, std::wstring element)
+	static void add(HWND handle, const std::wstring& element)
 	{
 		// Add string to combobox.
 		SendMessage(handle, (UINT)CB_ADDSTRING, (WPARAM)0, (LPARAM)element.c_str());
@@ -350,7 +471,7 @@ struct ComboBox
 		SendMessage((HWND)handle, CB_DELETESTRING, (WPARAM)0, (LPARAM)0);
 	}
 
-	static void remove(LPARAM  handle, std::wstring name)
+	static void remove(LPARAM  handle, const std::wstring& name)
 	{
 		int idx = SendMessage((HWND)handle, CB_FINDSTRING, (WPARAM)0, (LPARAM)name.c_str());
 		SendMessage((HWND)handle, CB_DELETESTRING, (WPARAM)idx, (LPARAM)0);
@@ -365,44 +486,93 @@ struct ComboBox
 };
 
 
-struct Label
+struct Label : Component
 {
-	HWND handle;
-
 	Label() = default;
-	Label(HWND parent, int id, std::wstring text, int x = 100, int y = 100, int width = 200, int height = 20)
+	Label(HWND parent, const std::wstring& text, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC)
 	{
-		init(parent, id, text, x, y, width, height);
+		init(parent, text, id, x, y, width, height, type);
 	}
 
-	void init(HWND parent, int id, std::wstring text, int x = 100, int y = 100, int width = 200, int height = 20)
+	void init(HWND parent, const std::wstring& text, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC)
 	{
-		handle = CreateWindow(L"static", L"label", WS_CHILD | WS_VISIBLE | SS_SUNKEN | SS_WORDELLIPSIS | SS_CENTER , x, y, width, height, parent, (HMENU)id, hInst, NULL);
+		this->id = id;
+		this->x = x;
+		this->y = y;
+		this->width = width;
+		this->height = height;
+		this->parent = parent;
+		this->type = type;
+
+		RECT rect;
+		GetClientRect(parent, &rect);
+		int nWidth = rect.right - rect.left;
+		int nHeight = rect.bottom - rect.top;
+
+		handle = CreateWindow(L"static", L"label", WS_CHILD | WS_VISIBLE | SS_SUNKEN | SS_WORDELLIPSIS | SS_CENTER ,
+		x* nWidth, y* nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
+
+		components.add(parent, this);
 		SetWindowText(handle, text.c_str());
 	}
 
-	void set_text(std::wstring text)
+	void set_text(const std::wstring& text)
 	{
 		SetWindowText(handle, text.c_str());
 	}
+
+	~Label() { DestroyWindow(handle); }
 };
 
 
-struct Text
+struct Text : Component
 {
-	HWND handle;
+	TCHAR* text = NULL;
 	
 	Text() = default;
-	Text(HWND parent, int id, int x, int y, int width, int height)
+	Text(HWND parent, int id, int x, int y, int width, int height, UINT type = DYNAMIC)
 	{
-		init(parent, id, x, y, width, height);
+		init(parent, id, x, y, width, height, type);
 	}
 
-	void init(HWND parent, int id, int x, int y, int width, int height)
+	void init(HWND parent, int id, int x, int y, int width, int height, UINT type = DYNAMIC)
 	{
-		handle = CreateWindow(L"edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | ES_MULTILINE | ES_AUTOHSCROLL | ES_AUTOVSCROLL, x, y, width, height, parent, (HMENU)id , hInst, NULL);
+		this->id = id;
+		this->x = x;
+		this->y = y;
+		this->width = width;
+		this->height = height;
+		this->parent = parent;
+		this->type = type;
+
+		RECT rect;
+		GetClientRect(parent, &rect);
+		int nWidth = rect.right - rect.left;
+		int nHeight = rect.bottom - rect.top;
+
+		handle = CreateWindow(L"edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | ES_MULTILINE | ES_AUTOHSCROLL | ES_AUTOVSCROLL, 
+		x* nWidth, y* nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
+
+		components.add(parent, this);
+	}
+
+	TCHAR* getText()
+	{
+		delete[] text;
+		int nLength = GetWindowTextLength(handle);
+		if (nLength > 0)
+		{
+			text = new TCHAR[nLength + 1];
+			GetWindowText(handle, text, nLength + 1);
+		}
+		return text;
+	}
+
+	void SetText(TCHAR* text)
+	{
+		SetWindowText(handle, text);
 	}
 		
-	~Text() { DestroyWindow(handle); }
+	~Text() { DestroyWindow(handle); delete[] text; }
 };
 
