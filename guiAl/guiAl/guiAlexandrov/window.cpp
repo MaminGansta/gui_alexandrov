@@ -1,5 +1,5 @@
 
-#define DEF_STYLE (WS_OVERLAPPEDWINDOW | WS_VISIBLE)
+#define DEF_WINDOW (WS_OVERLAPPEDWINDOW | WS_VISIBLE)
 
 
 // =========================================== CALLBACK ARGUMENTS =============================================================
@@ -7,6 +7,8 @@
 struct Args
 {
 	void* vals[2];
+	std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback;
+
 	void* operator [] (int i) { return vals[i]; }
 };
 
@@ -14,9 +16,9 @@ struct Arguments
 {
 	std::vector<std::pair<HWND, Args>> buffer;
 
-	void add(HWND hwnd, void* pwindow, void* parg)
+	void add(HWND hwnd, void* pwindow, void* parg, std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback)
 	{
-		buffer.push_back(std::make_pair(hwnd, Args{ pwindow, parg }));
+		buffer.push_back(std::make_pair(hwnd, Args{ pwindow, parg, callback}));
 	}
 
 	Args get(HWND hwnd)
@@ -33,143 +35,6 @@ struct Arguments
 	}
 };
 Arguments arguments;
-
-
-struct HWND_constainer
-{
-	int gen_id = 0;
-	std::vector<std::pair<int, HWND>> handles;
-
-	int add(HWND handle)
-	{
-		handles.push_back(std::make_pair(gen_id, handle));
-		return gen_id++;
-	}
-
-	void remove(int id)
-	{
-		auto handle = std::find_if(handles.begin(), handles.end(), [id](std::pair<int, HWND> in) {return in.first == id; });
-		arguments.remove(handle->second);
-		DestroyWindow(handle->second);
-		handles.erase(handle);
-	}
-
-	HWND operator [](int id)
-	{
-		auto res = std::find_if(handles.begin(), handles.end(), [id](std::pair<int, HWND> in) {return in.first == id; });
-
-		if (res == handles.end())
-			return NULL;
-
-		return res->second;
-	}
-
-	int size() { return handles.size(); };
-};
-
-HWND_constainer handles;
-
-// ========================================= WINDOW ========================================================
-
-struct Window
-{	
-	int class_id;
-	static int name_id;
-	HDC hdc;
-	Canvas canvas;
-
-	Window() {}
-	
-	Window(
-		const std::wstring& window_name,
-		int width,
-		int height,
-		UINT style,
-		HWND parent,
-		void* arg_ptr,
-		LRESULT(CALLBACK* callback)(HWND, UINT, WPARAM, LPARAM),
-		int id = 0
-	)
-	{
-		init(window_name, width, height, style, parent, arg_ptr, callback , id);
-	}
-
-	void init(
-		const std::wstring& window_name,
-		int width,
-		int height,
-		UINT style,
-		HWND parent,
-		void* arg_ptr,
-		LRESULT(CALLBACK* callback)(HWND, UINT, WPARAM, LPARAM),
-		int id = 0
-	)
-	{
-		wchar_t class_name[16];
-		swprintf_s(class_name, L"class_%d", name_id++);
-		std::wstring name(class_name);
-
-		WNDCLASSEX wc;
-		wc.cbSize = sizeof(wc);
-		wc.style = CS_HREDRAW | CS_VREDRAW;
-		wc.lpfnWndProc = callback;
-		wc.cbClsExtra = 0;
-		wc.cbWndExtra = 0;
-		wc.hInstance = hInst;
-		wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-		wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-		wc.lpszMenuName = NULL;
-		wc.lpszClassName = name.c_str();
-		//  wc.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
-		wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-
-		if (!RegisterClassEx(&wc))
-		{
-			MessageBox(NULL, L"Cannot register class", L"Error", MB_OK);
-			assert(false);
-		}
-
-		HWND handle = CreateWindow(wc.lpszClassName, window_name.c_str(), style, CW_USEDEFAULT, CW_USEDEFAULT, width, height, parent, (HMENU)id, (HINSTANCE)hInst, NULL);
-
-		arguments.add(handle, this, arg_ptr);
-
-		SendMessage(handle, WM_CREATE, 0, 0);
-		SendMessage(handle, WM_SIZE, 0, 0);
-
-		class_id = handles.add(handle);
-		hdc = GetDC(handle);
-	}
-
-	virtual ~Window() { handles.remove(class_id); }
-
-	void render_canvas()
-	{
-		StretchDIBits(hdc, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height, canvas.memory, &canvas.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
-	}
-
-	HWND getHWND() { return handles[class_id]; }
-
-	static void default_msg_proc() {
-		MSG msg;
-		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-	}
-
-	static void wait_msg_proc() {
-		MSG msg;
-		while (GetMessage(&msg, NULL, 0, 0))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-	}
-};
-
-int Window::name_id = 0;
 
 
 
@@ -229,33 +94,193 @@ struct Component_crt
 		}
 	}
 };
-
 Component_crt components;
 
 
 
+// ==============================	 HWND HANDLER ======================================
+struct HWND_constainer
+{
+	int gen_id = 0;
+	std::vector<std::pair<int, HWND>> handles;
 
+	int add(HWND handle)
+	{
+		handles.push_back(std::make_pair(gen_id, handle));
+		return gen_id++;
+	}
+
+	void remove(int id)
+	{
+		auto handle = std::find_if(handles.begin(), handles.end(), [id](std::pair<int, HWND> in) {return in.first == id; });
+		arguments.remove(handle->second);
+		DestroyWindow(handle->second);
+		handles.erase(handle);
+	}
+
+	HWND operator [](int id)
+	{
+		auto res = std::find_if(handles.begin(), handles.end(), [id](std::pair<int, HWND> in) {return in.first == id; });
+
+		if (res == handles.end())
+			return NULL;
+
+		return res->second;
+	}
+
+	int size() { return handles.size(); };
+};
+
+HWND_constainer handles;
+
+
+
+// ========================================= WINDOW ========================================================
+struct Window
+{	
+	int class_id;
+	static int name_id;
+	HDC hdc;
+	Canvas canvas;
+
+	Window() {}
+	
+	Window(
+		const std::wstring& window_name,
+		int width,
+		int height,
+		std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback,
+		UINT style = DEF_WINDOW,
+		HWND parent = NULL,
+		void* arg_ptr = NULL,
+		int id = 0
+	)
+	{
+		init(window_name, width, height, style, parent, arg_ptr, callback , id);
+	}
+
+	void init(
+		const std::wstring& window_name,
+		int width,
+		int height,
+		UINT style,
+		HWND parent,
+		void* arg_ptr,
+		std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback,
+		int id = 0
+	)
+	{
+		wchar_t class_name[16];
+		swprintf_s(class_name, L"class_%d", name_id++);
+		std::wstring name(class_name);
+
+		WNDCLASSEX wc;
+		wc.cbSize = sizeof(wc);
+		wc.style = CS_HREDRAW | CS_VREDRAW;
+		wc.cbClsExtra = 0;
+		wc.cbWndExtra = 0;
+		wc.hInstance = hInst;
+		wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+		wc.lpszMenuName = NULL;
+		wc.lpszClassName = name.c_str();
+		//  wc.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
+		wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+
+
+		// global callback function
+		wc.lpfnWndProc = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT 
+		{
+			Args args = arguments.get(hwnd);
+			Window* window = (Window*)args[0];
+			if (window == NULL) return DefWindowProc(hwnd, msg, wParam, lParam);
+
+			if (msg == WM_SIZE)
+			{
+				components.update(hwnd);
+				window->canvas.resize(hwnd);
+			}
+			
+			int res = args.callback(hwnd, msg, wParam, lParam, args);
+
+			return res ? DefWindowProc(hwnd, msg, wParam, lParam) : res;
+		};
+
+
+		if (!RegisterClassEx(&wc))
+		{
+			MessageBox(NULL, L"Cannot register class", L"Error", MB_OK);
+			assert(false);
+		}
+
+		HWND handle = CreateWindow(wc.lpszClassName, window_name.c_str(), style, CW_USEDEFAULT, CW_USEDEFAULT, width, height, parent, (HMENU)id, (HINSTANCE)hInst, NULL);
+
+		arguments.add(handle, this, arg_ptr, callback);
+
+		SendMessage(handle, WM_CREATE, 0, 0);
+		SendMessage(handle, WM_SIZE, 0, 0);
+
+		class_id = handles.add(handle);
+		hdc = GetDC(handle);
+	}
+
+	virtual ~Window() { handles.remove(class_id); }
+
+	void render_canvas()
+	{
+		StretchDIBits(hdc, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height, canvas.memory, &canvas.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
+	}
+
+	HWND getHWND() { return handles[class_id]; }
+
+	static void default_msg_proc() {
+		MSG msg;
+		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	}
+
+	static void wait_msg_proc() {
+		MSG msg;
+		while (GetMessage(&msg, NULL, 0, 0))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	}
+};
+
+int Window::name_id = 0;
+
+
+
+// ==============================  Window Components =================================================
+
+// ================== Button =====================
 struct Button : Component
 {
 	Button() = default;
 	Button(
+		HWND parent,
 		const std::wstring& button_name,
 		int id,
 		float x,
 		float y,
 		float width,
 		float height,
-		HWND parent,
 		UINT type = DYNAMIC,
 		UINT style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON
 	)
 	{
-		init(button_name, parent, id, x, y, width, height, type, style);
+		init(parent, button_name, id, x, y, width, height, type, style);
 	}
 
 	void init(
-		const std::wstring& button_name,
 		HWND parent,
+		const std::wstring& button_name,
 		int id,
 		float x,
 		float y,
@@ -297,7 +322,7 @@ struct Button : Component
 	~Button() { DestroyWindow(handle); };
 };
 
-
+// =============== Radio Button ======================
 struct RadioButton : Component
 {
 	RadioButton() = default;
@@ -331,6 +356,8 @@ struct RadioButton : Component
 	~RadioButton() { DestroyWindow(handle); }
 };
 
+
+// ================ Check Button =================
 struct CheckBox : Component
 {
 	CheckBox() = default;
@@ -364,6 +391,7 @@ struct CheckBox : Component
 	~CheckBox() { DestroyWindow(handle); }
 };
 
+// =================== ComboBox ========================
 struct ComboBox : Component
 {
 	ComboBox() = default;
@@ -486,6 +514,7 @@ struct ComboBox : Component
 };
 
 
+// ================ Label =================
 struct Label : Component
 {
 	Label() = default;
@@ -524,18 +553,18 @@ struct Label : Component
 	~Label() { DestroyWindow(handle); }
 };
 
-
+// ========================= Text ================================
 struct Text : Component
 {
 	TCHAR* text = NULL;
 	
 	Text() = default;
-	Text(HWND parent, int id, int x, int y, int width, int height, UINT type = DYNAMIC)
+	Text(HWND parent, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC)
 	{
 		init(parent, id, x, y, width, height, type);
 	}
 
-	void init(HWND parent, int id, int x, int y, int width, int height, UINT type = DYNAMIC)
+	void init(HWND parent, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC)
 	{
 		this->id = id;
 		this->x = x;

@@ -13,13 +13,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	Image bg(L"back.png");
 
-	Window win(L"window", 800, 600, DEF_STYLE, NULL, &bg, [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
+	Window win(L"window", 800, 600, [&bg](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)->LRESULT
 	{
-		Args args = arguments.get(hwnd);
-		if (args[0] == NULL) return DefWindowProc(hwnd, msg, wParam, lParam);
-
 		Window* window = (Window*)args[0];
-		Image* bg = (Image*)args[1];
 
 		switch (msg)
 		{
@@ -38,48 +34,61 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				}
 			}
 		}break;
-		case WM_CLOSE:
-		{
-			running = false;
-		}break;
-		case WM_SIZE:
-		{
-			components.update(hwnd);
-			window->canvas.resize(hwnd);
-			//window->resize_chileds();
-		}break;
 		case WM_PAINT:
 		{
 			PAINTSTRUCT plug;
 			BeginPaint(hwnd, &plug);
-			draw_image(window->canvas, *bg, 0.0f, 0.0f, 1.0f, 1.0f);
+			draw_image(window->canvas, bg, 0.0f, 0.0f, 1.0f, 1.0f);
 			window->render_canvas();
 			EndPaint(hwnd, &plug);
-		}break;
+		}return 0;
+
+		case WM_CLOSE:
+			quick_exit(0);
+
 		}
 
-		return DefWindowProc(hwnd, msg, wParam, lParam);
+
+
+		return 1;
 	});
 
-	Button btn(L"button", BUTTON_ID, 0.1f, 0.1f, .1f, 0.1f, win.getHWND());
-	Label label(win.getHWND(), L"some text", 0, 0.2f, 0.2f, 0.1f, 0.1f, RESIZABLE);
-	Text text(win.getHWND(), 5, 0.4f, 0.2f, 0.2f, 0.2f);
+	Button btn(win.getHWND(), L"button", BUTTON_ID, 0.1f, 0.1f, .1f, 0.1f, RESIZABLE);
+	Label label(win.getHWND(), L"some text dsaf\nadsfadsfdasfdasf", 0, 0.2f, 0.2f, 0.1f, 0.1f, RESIZABLE);
 
-	ComboBox b(win.getHWND(), COMBO_1, 0.3f, 0.2f);
+	//SetBkMode(GetDC(label.handle), TRANSPARENT);
+	//SetTextColor(GetDC(label.handle), RGB(255, 0, 0));
+
+	/*
+	
+	if (msg == WM_CTLCOLORSTATIC)
+	{
+		HDC hdcStatic = (HDC)wParam;
+		SetTextColor(hdcStatic, RGB(0, 0, 0));
+		SetBkMode(hdcStatic, TRANSPARENT);
+
+		return (LRESULT)GetStockObject(NULL_BRUSH);
+	}
+
+	
+	*/
+	
+
+
+	Text text(win.getHWND(), 5, 0.1f, 0.6f, 0.2f, 0.2f);
+
+	ComboBox b(win.getHWND(), COMBO_1, 0.4f, 0.2f);
 	std::vector<std::wstring> combo_elements{ L"Mercury", L"Venus", L"Earth", L"Mars", L"Jupiter", L"Saturn", L"Uranus", L"NOT_Neptune" };
 	b.add(combo_elements);
 
-	//CheckBox(win.getHWND(), L"Check", 11, 400, 30);
-	//CheckBox(win.getHWND(), L"Check2", 12, 400, 50);
-	//
-	//RadioButton(win.getHWND(), L"Radio", 13, 400, 80);
-	//RadioButton(win.getHWND(), L"Radio2", 14, 400, 100);
+	CheckBox aa(win.getHWND(), L"Check", 11, 0.5f, 0.3f);
+	CheckBox aac(win.getHWND(), L"Check2", 12, 0.5f, 0.4f);
 	
-	while (running)
-	{
-		Window::default_msg_proc();
-		timer.update();
-	}
+	RadioButton aaa(win.getHWND(), L"Radio", 13, 0.4f, 0.6f, 0.1f, 0.1f,  RESIZABLE);
+	RadioButton aaav(win.getHWND(), L"Radio2", 14, 0.4f, 0.7f, 0.1f, 0.1f, RESIZABLE);
+	
+
+	Window::wait_msg_proc();
 
 	return 0;
 }
