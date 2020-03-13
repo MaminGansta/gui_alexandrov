@@ -156,17 +156,17 @@ struct Window
 		int id = 0
 	)
 	{
-		init(window_name, width, height, style, parent, arg_ptr, callback , id);
+		init(window_name, width, height, callback, style, parent, arg_ptr, id);
 	}
 
 	void init(
 		const std::wstring& window_name,
 		int width,
 		int height,
-		UINT style,
-		HWND parent,
-		void* arg_ptr,
 		std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback,
+		UINT style = DEF_WINDOW,
+		HWND parent = NULL,
+		void* arg_ptr = NULL,
 		int id = 0
 	)
 	{
