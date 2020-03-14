@@ -24,6 +24,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			if (wParam == BUTTON_ID)
 			{
 				OutputDebugStringA("Pushed button\n");
+				SendMessage(hwnd, WM_PAINT, 0, 0);
 			}
 			else if (HIWORD(wParam) == CBN_SELCHANGE)
 			{
@@ -40,6 +41,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			BeginPaint(hwnd, &plug);
 			draw_image(window->canvas, bg, 0.0f, 0.0f, 1.0f, 1.0f);
 			window->render_canvas();
+
 			EndPaint(hwnd, &plug);
 		}return 0;
 
@@ -64,6 +66,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	Button btn(win.getHWND(), L"button", BUTTON_ID, 0.1f, 0.1f, .1f, 0.1f, RESIZABLE);
 	Label label(win.getHWND(), L"some text dsaf\nadsfadsfdasfdasf", 0, 0.2f, 0.2f, 0.1f, 0.1f, RESIZABLE);
+	set_font_size(btn.handle, 20);
 
 	//SetBkMode(GetDC(label.handle), TRANSPARENT);
 	//SetTextColor(GetDC(label.handle), RGB(255, 0, 0));

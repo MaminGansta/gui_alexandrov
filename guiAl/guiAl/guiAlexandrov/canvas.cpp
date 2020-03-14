@@ -31,6 +31,7 @@ struct Canvas
 {
 	int height, width;
 	int whole_size;
+	int capacity = 0;
 	Color* memory = nullptr;
 
 	BITMAPINFO bitmap_info;
@@ -44,12 +45,7 @@ struct Canvas
 
 		width = rect.right - rect.left;
 		height = rect.bottom - rect.top;
-
 		whole_size = width * height;
-		int size = whole_size * sizeof(unsigned int);
-
-		delete[] memory;
-		memory = new Color[size];
 
 		bitmap_info.bmiHeader.biSize = sizeof(bitmap_info.bmiHeader);
 		bitmap_info.bmiHeader.biWidth = width;
@@ -57,6 +53,13 @@ struct Canvas
 		bitmap_info.bmiHeader.biPlanes = 1;
 		bitmap_info.bmiHeader.biBitCount = 32;
 		bitmap_info.bmiHeader.biCompression = BI_RGB;
+
+		
+		if (whole_size < capacity) return;
+
+		capacity = width * height;
+		delete[] memory;
+		memory = new Color[capacity];
 	}
 
 	Color& operator [] (int inx)
@@ -65,4 +68,10 @@ struct Canvas
 		return memory[inx];
 	}
 
+	void reserve(int capacity)
+	{
+		this->capacity = capacity;
+		delete[] memory;
+		memory = new Color[capacity];
+	}
 };

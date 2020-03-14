@@ -1,14 +1,18 @@
 
+#ifndef MAX
 #define MAX(a, b) (a > b? a: b)
+#endif
 
-inline void drawPixel(Canvas& surface, int x, int y, Color color)
+// ====================  Canvas draw ===========================
+
+inline void drawPixel(Canvas& surface, int x, int y, fColor color)
 {
 	if ((uint32_t)y >= surface.height || (uint32_t)x >= surface.width) return;
-	surface[y * surface.width + x] = color;
+	surface[y * surface.width + x] = color.get_uint();
 }
 
 
-inline void drawLine(Canvas& surface, int x, int y, int x2, int y2, Color color)
+inline void drawLine(Canvas& surface, int x, int y, int x2, int y2, fColor color)
 {
 	bool yLonger = false;
 	int shortLen = y2 - y;
@@ -55,7 +59,7 @@ inline void drawLine(Canvas& surface, int x, int y, int x2, int y2, Color color)
 	}
 }
 
-void fdraw_line(Canvas& surface, float fx0, float fy0, float fx1, float fy1, Color color)
+void fdraw_line(Canvas& surface, float fx0, float fy0, float fx1, float fy1, fColor color)
 {
 	int x0 = fx0 * surface.width;
 	int y0 = fy0 * surface.height;
@@ -64,8 +68,21 @@ void fdraw_line(Canvas& surface, float fx0, float fy0, float fx1, float fy1, Col
 	drawLine(surface, x0, y0, x1, y1, color);
 }
 
+inline void draw_filled_rect(Canvas& surface, float fx, float fy, float fwidth, float fheight, fColor color)
+{
+	int x0 = surface.width * fx;
+	int y0 = surface.height * fy;
 
-inline void draw_filled_rect(Canvas& surface, float fx, float fy, float fwidth, float fheight, Color color)
+	int width = surface.width * fwidth;
+	int height = surface.height * fheight;
+
+	for (int y = y0; y < y0 + height; y++)
+		for (int x = x0; x < width; x++)
+			drawPixel(surface, x, y, color);
+
+}
+
+inline void draw_filled_rect_async(Canvas& surface, float fx, float fy, float fwidth, float fheight, fColor color)
 {
 	int x0 = surface.width* fx;
 	int y0 = surface.height * fy;
@@ -94,6 +111,7 @@ inline void draw_filled_rect(Canvas& surface, float fx, float fy, float fwidth, 
 
 
 
+// ===================== fImage draw ==========================
 
 inline void drawPixel(fImage& surface, int x, int y, fColor color)
 {
@@ -158,8 +176,21 @@ void fdraw_line(fImage& surface, float fx0, float fy0, float fx1, float fy1, fCo
 	drawLine(surface, x0, y0, x1, y1, color);
 }
 
-
 inline void draw_filled_rect(fImage& surface, float fx, float fy, float fwidth, float fheight, fColor color)
+{
+	int x0 = surface.width * fx;
+	int y0 = surface.height * fy;
+
+	int width = surface.width * fwidth;
+	int height = surface.height * fheight;
+
+	for (int y = y0; y < y0 + height; y++)
+		for (int x = x0; x < width; x++)
+			drawPixel(surface, x, y, color);
+
+}
+
+inline void draw_filled_rect_aync(fImage& surface, float fx, float fy, float fwidth, float fheight, fColor color)
 {
 	int x0 = surface.width * fx;
 	int y0 = surface.height * fy;

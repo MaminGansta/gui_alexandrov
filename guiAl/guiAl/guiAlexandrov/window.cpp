@@ -1,7 +1,4 @@
 
-#define DEF_WINDOW (WS_OVERLAPPEDWINDOW | WS_VISIBLE)
-
-
 // =========================================== CALLBACK ARGUMENTS =============================================================
 
 struct Args
@@ -55,6 +52,9 @@ struct Component
 
 	void resize()
 	{
+		if (type == STATIC)
+			return;
+
 		RECT rect;
 		GetClientRect(parent, &rect);
 		int nWidth = rect.right - rect.left;
@@ -62,9 +62,7 @@ struct Component
 
 		UINT flags = SWP_NOZORDER;
 
-		if (type == STATIC)
-			flags = SWP_NOMOVE | SWP_NOSIZE;
-		else if (type == DYNAMIC)
+		if (type == DYNAMIC)
 			flags = SWP_NOSIZE;
 
 		SetWindowPos(handle, 0, x * nWidth, y * nHeight, width * nWidth, height * nHeight, flags);
@@ -93,12 +91,26 @@ struct Component_crt
 			component.resize();
 		}
 	}
+
+	void redraw(HWND parent)
+	{
+		for (auto component : components[parent])
+		{
+			RedrawWindow(component.handle, 0, 0, RDW_INVALIDATE | RDW_NOCHILDREN);
+		}
+	}
+
+	auto& operator[] (HWND hwnd)
+	{
+		return components[hwnd];
+	}
+
 };
 Component_crt components;
 
 
 
-// ==============================	 HWND HANDLER ======================================
+// =============================== HWND HANDLER ======================================
 struct HWND_constainer
 {
 	int gen_id = 0;
@@ -136,12 +148,16 @@ HWND_constainer handles;
 
 
 // ========================================= WINDOW ========================================================
+#define DEF_WINDOW (WS_OVERLAPPEDWINDOW | WS_VISIBLE)
+
 struct Window
 {	
 	int class_id;
 	static int name_id;
 	HDC hdc;
 	Canvas canvas;
+	int min_w = 0, min_h = 0;
+	int max_w = 600, max_h = 800;
 
 	Window() {}
 	
@@ -196,15 +212,30 @@ struct Window
 			Window* window = (Window*)args[0];
 			if (window == NULL) return DefWindowProc(hwnd, msg, wParam, lParam);
 
-			if (msg == WM_SIZE)
+			switch (msg)
 			{
-				components.update(hwnd);
-				window->canvas.resize(hwnd);
+				case WM_SIZE:
+				{
+					window->canvas.resize(hwnd);
+					components.update(hwnd);
+				}break;
+				//case WM_PAINT:
+				//{
+				//	components.redraw(hwnd);
+				//}break;
+				case  WM_GETMINMAXINFO:
+				{
+					LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
+					lpMMI->ptMinTrackSize.x = window->min_w;
+					lpMMI->ptMinTrackSize.y = window->min_h;
+				
+					lpMMI->ptMaxTrackSize.x = window->max_w;
+					lpMMI->ptMaxTrackSize.y = window->max_h;
+				}break;
 			}
 			
-			int res = args.callback(hwnd, msg, wParam, lParam, args);
-
-			return res == -1 ? DefWindowProc(hwnd, msg, wParam, lParam) : res;
+			// user's callback
+			return args.callback(hwnd, msg, wParam, lParam, args);
 		};
 
 
@@ -216,12 +247,20 @@ struct Window
 
 		HWND handle = CreateWindow(wc.lpszClassName, window_name.c_str(), style, CW_USEDEFAULT, CW_USEDEFAULT, width, height, parent, (HMENU)id, (HINSTANCE)hInst, NULL);
 
+		// set window def ssize
+		set_min_max_size(0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
+
+		// put window ptr to global holder
 		arguments.add(handle, this, arg_ptr, callback);
 
+		// put handle to the global holder
+		class_id = handles.add(handle);
+
+		// repeat messages
 		SendMessage(handle, WM_CREATE, 0, 0);
 		SendMessage(handle, WM_SIZE, 0, 0);
+		SendMessage(handle, WM_PAINT, 0, 0);
 
-		class_id = handles.add(handle);
 		hdc = GetDC(handle);
 	}
 
@@ -230,6 +269,31 @@ struct Window
 	void render_canvas()
 	{
 		StretchDIBits(hdc, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height, canvas.memory, &canvas.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
+	}
+
+	void redraw()
+	{
+		RedrawWindow(getHWND(), 0, 0, RDW_INVALIDATE | RDW_ALLCHILDREN);
+	}
+
+#define MAX_WIN_SIZE -1
+#define OLD_WIN_SIZE -2
+
+	void set_min_max_size(int minw, int minh, int maxw = OLD_WIN_SIZE, int maxh = OLD_WIN_SIZE)
+	{
+		min_w = max(0, minw);
+		min_h = max(0, minh);
+		
+
+		if (maxw == MAX_WIN_SIZE)
+			max_w = GetSystemMetrics(SM_CXSCREEN);
+		else if (maxw != OLD_WIN_SIZE)
+			max_w = maxw;
+
+		if (maxh == MAX_WIN_SIZE)
+			max_h = GetSystemMetrics(SM_CYSCREEN);
+		else if (maxh != OLD_WIN_SIZE)
+			max_h = maxh;
 	}
 
 	HWND getHWND() { return handles[class_id]; }
@@ -515,15 +579,17 @@ struct ComboBox : Component
 
 
 // ================ Label =================
+#define DEF_LABEL (WS_CHILD | WS_VISIBLE  | SS_LEFT)
+
 struct Label : Component
 {
 	Label() = default;
-	Label(HWND parent, const std::wstring& text, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC)
+	Label(HWND parent, const std::wstring& text, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC, UINT style = DEF_LABEL)
 	{
-		init(parent, text, id, x, y, width, height, type);
+		init(parent, text, id, x, y, width, height, type, style);
 	}
 
-	void init(HWND parent, const std::wstring& text, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC)
+	void init(HWND parent, const std::wstring& text, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC, UINT style = DEF_LABEL)
 	{
 		this->id = id;
 		this->x = x;
@@ -538,7 +604,7 @@ struct Label : Component
 		int nWidth = rect.right - rect.left;
 		int nHeight = rect.bottom - rect.top;
 
-		handle = CreateWindow(L"static", L"label", WS_CHILD | WS_VISIBLE  | SS_LEFT,
+		handle = CreateWindow(L"static", L"label", style,
 		x* nWidth, y* nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
 
 		components.add(parent, this);
@@ -554,17 +620,19 @@ struct Label : Component
 };
 
 // ========================= Text ================================
+#define DEF_EDIT (WS_VISIBLE | WS_CHILD | WS_BORDER | ES_MULTILINE | ES_AUTOHSCROLL | ES_AUTOVSCROLL)
+
 struct Text : Component
 {
 	TCHAR* text = NULL;
 	
 	Text() = default;
-	Text(HWND parent, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC)
+	Text(HWND parent, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC, UINT style = DEF_EDIT)
 	{
-		init(parent, id, x, y, width, height, type);
+		init(parent, id, x, y, width, height, type, style);
 	}
 
-	void init(HWND parent, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC)
+	void init(HWND parent, int id, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC, UINT style = DEF_EDIT)
 	{
 		this->id = id;
 		this->x = x;
@@ -579,7 +647,7 @@ struct Text : Component
 		int nWidth = rect.right - rect.left;
 		int nHeight = rect.bottom - rect.top;
 
-		handle = CreateWindow(L"edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | ES_MULTILINE | ES_AUTOHSCROLL | ES_AUTOVSCROLL, 
+		handle = CreateWindow(L"edit", L"", style,
 		x* nWidth, y* nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
 
 		components.add(parent, this);
@@ -614,12 +682,12 @@ void set_font_size(HWND handle, int size)
 {
 
 	HFONT hFont = CreateFont(size, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Arial");
-	SendMessage(handle, WM_SETFONT, WPARAM(hFont), TRUE);
+	SendMessage(handle, WM_SETFONT, WPARAM(hFont), FALSE);
 }
 
 
 void set_font(HWND handle, HFONT font)
 {
 
-	SendMessage(handle, WM_SETFONT, WPARAM(font), TRUE);
+	SendMessage(handle, WM_SETFONT, WPARAM(font), FALSE);
 }

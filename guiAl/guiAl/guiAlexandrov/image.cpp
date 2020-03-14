@@ -1,6 +1,7 @@
 
+#ifndef color_clipf
 #define color_clipf(color) (MIN(MAX(color, 0.0f), 1.0f))
-
+#endif
 
 // ============= standart image ==================
 
@@ -198,7 +199,7 @@ struct fImage
 {
 	int height, width;
 	fColor* data = NULL;
-	bool invalid = false;
+	bool invalid = true;
 
 	fImage() = default;
 	fImage(const wchar_t* filename_utf8)
@@ -210,10 +211,7 @@ struct fImage
 		uint8_t* raw = stbi_load(filename, &width, &height, &chanels, 0);
 
 		if (raw == NULL)
-		{
-			invalid = true;
 			return;
-		}
 
 		data = new fColor[width * height];
 
@@ -227,6 +225,7 @@ struct fImage
 		}
 
 		stbi_image_free(raw);
+		invalid = false;
 	}
 
 	fImage(int width, int height) : width(width), height(height)
@@ -241,6 +240,7 @@ struct fImage
 		width = copy.width;
 		data = new fColor[height * width];
 		memmove(data, copy.data, sizeof(fColor) * height * width);
+		invalid = false;
 	}
 
 	fImage(fImage && other)
@@ -250,8 +250,20 @@ struct fImage
 		height = other.height;
 		other.data = NULL;
 		other.invalid = true;
+		invalid = false;
 	}
-	
+
+	fImage& operator = (const fImage& copy)
+	{
+		delete[] data;
+		height = copy.height;
+		width = copy.width;
+		data = new fColor[height * width];
+		memmove(data, copy.data, sizeof(fColor) * height * width);
+		invalid = false;
+		return *this;
+	}
+
 	fImage& operator = (fImage&& other)
 	{
 		delete[] data;
@@ -260,6 +272,7 @@ struct fImage
 		height = other.height;
 		other.data = NULL;
 		other.invalid = true;
+		invalid = false;
 		return *this;
 	}
 
@@ -314,8 +327,32 @@ struct fImage
 
 };
 
-
 void draw_image(Canvas& surface, const fImage& image,
+	float fpos_x, float fpos_y, float fwidth, float fheight)
+{
+	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f || image.invalid) return;
+
+	int pos_x = surface.width * fpos_x;
+	int pos_y = surface.height * fpos_y;
+
+	fwidth = min(fwidth, 1.0f - fpos_x);
+	fheight = min(fheight, 1.0f - fpos_y);
+
+	int width = surface.width * fwidth;
+	int height = surface.height * fheight;
+
+	for (int y = 0; y < height; y++)
+	{
+		for (int x = pos_x; x < width; x++)
+		{
+			assert(x < surface.width);
+			Color color = image.get_pixel_scaled(x, y, width, height).get_uint();
+			surface.memory[(y + pos_y) * surface.width + (x + pos_x)] = color;
+		}
+	}
+}
+
+void draw_image_async(Canvas& surface, const fImage& image,
 	float fpos_x, float fpos_y, float fwidth, float fheight)
 {
 	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f) return;
