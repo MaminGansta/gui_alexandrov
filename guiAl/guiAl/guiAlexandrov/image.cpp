@@ -171,21 +171,30 @@ struct fColor
 		return fColor(r + f.r, g + f.g, b + f.b);
 	}
 
+	fColor& operator +=(const fColor& f)
+	{
+		r = min(1.0f, r + f.r);
+		g = min(1.0f, g + f.g);
+		b = min(1.0f, b + f.b);
+		return *this;
+	}
+
 	fColor operator /(float f)
 	{
 		return fColor(r / f, g / f, b / f);
 	}
 
-	fColor operator *(float f)
+	fColor operator * (float f)
 	{
-		return fColor(r * f, g * f, b * f);
+		return fColor(min(1.0f, r * f), min(1.0f, g * f), min(1.0f, b * f));
 	}
 
-	fColor operator *= (float f)
+	fColor& operator *= (float f)
 	{
-		r *= f;
-		g *= f;
-		b *= f;
+		r = min(1.0f, r * f);
+		g = min(1.0f, g * f);
+		b = min(1.0f, b * f);
+		return *this;
 	}
 
 	Color get_uint() const
