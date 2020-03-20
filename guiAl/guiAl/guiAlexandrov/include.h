@@ -4,6 +4,8 @@
 #define safe_releaseArr(ptr) (delete[] ptr, ptr = nullptr)
 
 #include <Windows.h>
+#include <CommCtrl.h>
+
 #include <cstdint>
 #include <cstdio>
 
@@ -11,6 +13,10 @@
 #include <unordered_map>
 #include <algorithm>
 #include <functional>
+
+#ifdef small
+#undef small
+#endif
 
 void doutput(const char* format, ...)
 {
@@ -21,6 +27,9 @@ void doutput(const char* format, ...)
 	OutputDebugStringA(log);
 	va_end(args);
 }
+
+#include "smallLib.cpp"
+
 
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \

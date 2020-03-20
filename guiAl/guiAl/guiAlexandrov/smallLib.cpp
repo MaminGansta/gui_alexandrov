@@ -175,11 +175,12 @@ namespace small
 
 		vector(const vector<T>& other)
 		{
+			if (other.capacity == 0) return;
 			size = other.size;
 			capacity = size;
-			data = new T[size];
+			data = (T*)::operator new(sizeof(T) * capacity);
 			for (int i = 0; i < size; i++)
-				data[i] = other.data[i];
+				new(data + i) T(other.data[i]);
 		}
 
 		vector(vector<T>&& other)
@@ -194,17 +195,25 @@ namespace small
 
 		vector& operator= (const vector<T>& other)
 		{
-			delete[] data;
+			if (other.capacity == 0) return;
+			for (int i = 0; i < size; i++)
+				data[i].~T();
+			::operator delete(data);
+			
 			size = other.size;
 			capacity = size;
-			data = new T[size];
+
+			data = (T*)::operator new(sizeof(T) * capacity);
 			for (int i = 0; i < size; i++)
-				data[i] = other.data[i];
+				new(data + i) T(other.data[i]);
 		}
 
 		vector& operator= (vector<T>&& other)
 		{
-			delete[] data;
+			for (int i = 0; i < size; i++)
+				data[i].~T();
+
+			::operator delete(data);
 			data = other.data;
 			size = other.size;
 			capacity = other.capacity;
@@ -230,7 +239,7 @@ namespace small
 			size = new__size;
 		}
 
-		void move_back(T& value)
+		void push_back(T&& value)
 		{
 			size_t new__size = size + 1;
 			if (new__size > capacity)
@@ -267,7 +276,6 @@ namespace small
 			
 			T* new_buffer = (T*)::operator new(reserve_size * sizeof(T));
 			
-			//assert(data == nullptr && size == 0);
 			memmove(new_buffer, data, sizeof(T) * size);
 			::operator delete(data);
 
