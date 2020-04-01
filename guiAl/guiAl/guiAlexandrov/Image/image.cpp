@@ -1,7 +1,17 @@
 
-#ifndef color_clipf
-#define color_clipf(color) (MIN(MAX(color, 0.0f), 1.0f))
-#endif
+
+template <typename T>
+T chanel_clip(T color);
+
+template <>
+float chanel_clip<float>(float color) { return MIN(MAX(color, 0.0f), 1.0f); }
+
+template <>
+int chanel_clip<int>(int color) { return MIN(MAX(color, 0), 255); }
+
+template <>
+uint8_t chanel_clip<uint8_t>(uint8_t color) { return MIN(MAX(color, 0), 255); }
+
 
 // ============= standart image ==================
 
@@ -45,6 +55,16 @@ struct Image
 		}
 
 		stbi_image_free(raw);
+	}
+
+
+	void resize(int width, int height)
+	{
+		this->width = width;
+		this->height = height;
+		delete[] data;
+		data = new Color[width * height];
+		invalid = false;
 	}
 
 	Image(int width, int height) : width(width), height(height)
@@ -91,6 +111,12 @@ struct Image
 	Color& operator [] (int idx)
 	{
 		assert((uint32_t)idx < width * height);
+		return data[idx];
+	}
+
+	const Color& operator [] (int idx) const
+	{
+		assert((uint32_t)idx < width* height);
 		return data[idx];
 	}
 
@@ -169,7 +195,7 @@ struct fColor
 
 	operator Color() const
 	{
-		return Color(r * 255, g * 255, b * 255, a * 255);
+		return Color(r * 255.0f, g * 255.0f, b * 255.0f, a * 255.0f);
 	}
 };
 

@@ -27,10 +27,6 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include <algorithm>
 #include <functional>
 
-#ifdef small
-#undef small
-#endif
-
 
 void doutput(const char* format, ...)
 {
@@ -57,6 +53,30 @@ void doutput(const wchar_t* format, ...)
 }
 
 
+void output(const char* format, ...)
+{
+	char log[128];
+	va_list args;
+	va_start(args, format);
+	vsprintf_s(log, format, args);
+	OutputDebugStringA(log);
+	va_end(args);
+}
+
+void output(const wchar_t* format, ...)
+{
+	wchar_t log[128];
+	va_list args;
+	va_start(args, format);
+	vswprintf_s(log, format, args);
+	OutputDebugStringW(log);
+	va_end(args);
+}
+
+
+
+
+#undef small
 #include "libs/smallLib.cpp"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -85,9 +105,9 @@ thread_pool workers(MAX_THREADS);
 #include "input/io.cpp"
 
 // image tarnsformation
-#include "operators/image_transform.cpp"
-#include "operators/median_filter.cpp"
 #include "operators/color/histogram.cpp"
+#include "operators/image_conversion.cpp"
+#include "operators/median_filter.cpp"
 #include "operators/color/auto_contrast.cpp"
 #include "operators/color/gray_world.cpp"
 #include "operators/color/histogram_alignment.cpp"

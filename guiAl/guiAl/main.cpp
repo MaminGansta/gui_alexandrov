@@ -4,7 +4,7 @@
 
 struct My_window : Window
 {
-	Image bg;
+	Image* bg = NULL;
 
 	Button btn;
 	Label label;
@@ -18,7 +18,6 @@ struct My_window : Window
 
 	My_window()
 	{
-		bg.open(L"back.png");
 
 		init(L"window", 800, 600, [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)->LRESULT
 			{
@@ -44,7 +43,7 @@ struct My_window : Window
 				{
 					PAINTSTRUCT plug;
 					BeginPaint(hwnd, &plug);
-					draw_image(window->canvas, window->bg, 0.0f, 0.0f, 1.0f, 1.0f);
+					if (window->bg) draw_image(window->canvas, *window->bg, 0.0f, 0.0f, 1.0f, 1.0f);
 					window->render_canvas();
 
 					EndPaint(hwnd, &plug);
@@ -89,6 +88,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	al_init(hInstance);
 
 	My_window window;
+
+	Image bg(L"back.png");
+	window.bg = &bg;
+
+
+	
+	float start = get_time();
+	
+	//bg = gf.apply_YCbCr(bg);
+	//bg = RGB2YCbCr(bg);
+	//bg = gauss_filter(bg);
+	bg = sobel(bg);
+
+	//bg = auto_contrast(bg);
+	output(L"\n%f\n", get_time() - start);
+
 	Window::wait_msg_proc();
 
 	return 0;

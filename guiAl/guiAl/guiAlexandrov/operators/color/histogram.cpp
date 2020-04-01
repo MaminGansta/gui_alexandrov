@@ -1,7 +1,8 @@
 
+template <typename Image_type>
 struct Histogram
 {
-	fImage* image = NULL;
+	Image_type* image = NULL;
 	float brightness[256];
 	float red[256];
 	float green[256];
@@ -15,13 +16,13 @@ struct Histogram
 
 	Histogram() {}
 
-	Histogram(fImage& image)
+	Histogram(Image_type& image)
 	{
 		set_img(image);
 		update_info();
 	}
 
-	void set_img(fImage& img)
+	void set_img(Image_type& img)
 	{
 		image = &img;
 	}
