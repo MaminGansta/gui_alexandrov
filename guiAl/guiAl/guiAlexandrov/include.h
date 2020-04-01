@@ -53,11 +53,11 @@ void doutput(const wchar_t* format, ...)
 }
 
 
-#include "smallLib.cpp"
+#include "libs/smallLib.cpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_WINDOWS_UTF8
-#include "stb_image.h"
+#include "libs/stb_image.h"
 
 // globals
 HINSTANCE hInst;
@@ -67,18 +67,18 @@ HINSTANCE hInst;
 #endif
 
 // unity build
-#include "thread_pool.cpp"
+#include "libs/thread_pool.cpp"
 thread_pool workers(MAX_THREADS);
 
 // gui layout
-#include "canvas.cpp"
-#include "window.cpp"
-#include "image.cpp"
-#include "draw.cpp"
-#include "input.cpp"
-#include "timer.cpp"
-#include "time.cpp"
-#include "io.cpp"
+#include "image/canvas.cpp"
+#include "win_api/window.cpp"
+#include "image/image.cpp"
+#include "image/draw.cpp"
+#include "input/input.cpp"
+#include "libs/timer.cpp"
+#include "libs/time.cpp"
+#include "input/io.cpp"
 
 
 

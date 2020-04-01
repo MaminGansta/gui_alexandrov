@@ -14,6 +14,13 @@ struct Image
 	Image() = default;
 	Image(const wchar_t* filename_utf8)
 	{
+		open(filename_utf8);
+	}
+
+	void open(const wchar_t* filename_utf8)
+	{
+		delete[] data;
+
 		int chanels;
 		char filename[256];
 		stbi_convert_wchar_to_utf8(filename, sizeof(filename), filename_utf8);
@@ -25,15 +32,15 @@ struct Image
 			invalid = true;
 			return;
 		}
-		
+
 		data = new Color[width * height];
-		
+
 		for (int y = 0; y < height; y++)
 		{
 			for (int x = 0; x < width; x++)
 			{
 				int pos = (y * width + x) * chanels;
-				data[(height - y - 1) * width + x] = Color(raw[pos], raw[pos + 1], raw[pos +2]);
+				data[(height - y - 1) * width + x] = Color(raw[pos], raw[pos + 1], raw[pos + 2]);
 			}
 		}
 
@@ -213,6 +220,13 @@ struct fImage
 	fImage() = default;
 	fImage(const wchar_t* filename_utf8)
 	{
+		open(filename_utf8);
+	}
+
+	void open(const wchar_t* filename_utf8)
+	{
+		delete[] data;
+
 		int chanels;
 		char filename[256];
 		stbi_convert_wchar_to_utf8(filename, sizeof(filename), filename_utf8);

@@ -812,9 +812,9 @@ struct Table : Component
 		UINT lStyle = WS_CHILD | WS_VISIBLE | SS_CENTER;
 		UINT tStyle = WS_VISIBLE | WS_CHILD | WS_BORDER | ES_CENTER;
 
-		col_labels.resize(max_col, Label(parent, L"", 0, 0, 0, 0, DYNAMIC, lStyle));
-		row_labels.resize(max_row, Label(parent, L"", 0, 0, 0, 0, DYNAMIC, lStyle));
-		table.resize(max_row * max_col, Text(parent, 0, 0, 0, 0, DYNAMIC, tStyle));
+		col_labels.resize(max_col, Label(parent, L"", 0, 0, 0, 0, type, lStyle));
+		row_labels.resize(max_row, Label(parent, L"", 0, 0, 0, 0, type, lStyle));
+		table.resize(max_row * max_col, Text(parent, 0, 0, 0, 0, type, tStyle));
 
 		for (int i = 0; i < max_col; i++)
 			col_labels[i].hide();
