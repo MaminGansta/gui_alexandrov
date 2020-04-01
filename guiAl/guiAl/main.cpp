@@ -14,7 +14,6 @@ struct My_window : Window
 	CheckBox aac;
 	RadioButton aaa;
 	RadioButton aaav;
-	Table t;
 
 
 	My_window()
@@ -80,14 +79,6 @@ struct My_window : Window
 
 				aaa.init(getHWND(), L"Radio", 0.4f, 0.6f, 0.1f, 0.1f, RESIZABLE);
 				aaav.init(getHWND(), L"Radio2", 0.4f, 0.7f, 0.1f, 0.1f, RESIZABLE);
-
-				t.init(getHWND(), 5, 55, 0.5f, 0.5f, 0.5f, 0.5f, 0, 2);
-
-				std::vector<std::wstring> cols;
-				for (int i = 0; i < 5; i++)
-					cols.push_back(L"dsf");
-
-				t.create(cols, cols);
 	}
 
 };

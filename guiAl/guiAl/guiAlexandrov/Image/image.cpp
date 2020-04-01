@@ -117,46 +117,8 @@ struct Image
 };
 
 
-void draw_image(Canvas& surface, const Image& image,
-				float fpos_x, float fpos_y, float fwidth, float fheight)
-{
-	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f) return;
-
-	int pos_x = surface.width * fpos_x;
-	int pos_y = surface.height *fpos_y;
-
-	fwidth = min(fwidth, 1.0f - fpos_x);
-	fheight= min(fheight, 1.0f - fpos_y);
-
-	int width  = surface.width * fwidth;
-	int height = surface.height * fheight;
-
-	std::future<void> res[MAX_THREADS];
-
-	for (int i = 0; i < workers.size; i++)
-	{
-		int from_x = i * width / workers.size;
-		int to_x   = (i + 1) * width / workers.size;
-
-		res[i] = workers.add_task([from_x, to_x, pos_y, pos_x, height, width, &surface, &image]()
-		{
-			for (int y = 0; y < height; y++)
-				for (int x = from_x; x < to_x; x++)
-				{
-					assert(x < surface.width);
-					Color color = image.get_pixel_scaled(x, y, width, height);
-					surface.memory[(y + pos_y) * surface.width + (x + pos_x)] = color;
-				}
-		});
-	}
-	
-	for (int i = 0; i < workers.size; i++)
-		res[i].get();
-}
-
 
 // =============== float Image  ==================
-
 
 struct fColor
 {
@@ -167,10 +129,11 @@ struct fColor
 		float raw[4];
 	};
 
-	inline fColor() = default;
-	inline fColor(float r, float g, float b, float a = 1.0f) : r(r), g(g), b(b), a(a) {}
-	inline fColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) : r(float(r) / 255.0f), g(float(g) / 255.0f), b(float(b) / 255.0f), a(float(a) / 255.0f) {}
-	inline fColor(float color) : r(color), g(color), b(color), a(1.0f) {}
+	fColor() = default;
+	fColor(float r, float g, float b, float a = 1.0f) : r(r), g(g), b(b), a(a) {}
+	fColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) : r(float(r) / 255.0f), g(float(g) / 255.0f), b(float(b) / 255.0f), a(float(a) / 255.0f) {}
+	fColor(float color) : r(color), g(color), b(color), a(1.0f) {}
+	fColor(Color color) : r(float(color.r) / 255.0f), g(float(color.g) / 255.0f), b(float(color.b) / 255.0f), a(float(color.a) / 255.0f) {}
 
 
 	fColor operator +(const fColor& f)
@@ -204,9 +167,9 @@ struct fColor
 		return *this;
 	}
 
-	Color get_uint() const
+	operator Color() const
 	{
-		return Color(255.0f * r, 255.0f * g, 255.0f * b, 255.0f * a);
+		return Color(r * 255, g * 255, b * 255, a * 255);
 	}
 };
 
@@ -350,7 +313,12 @@ struct fImage
 
 };
 
-void draw_image(Canvas& surface, const fImage& image,
+
+
+// ============= Draw Image to the surface ===================
+
+template <typename Surface_type, typename Image_type>
+void draw_image(Surface_type& surface, const Image_type& image,
 	float fpos_x, float fpos_y, float fwidth, float fheight)
 {
 	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f || image.invalid) return;
@@ -369,13 +337,15 @@ void draw_image(Canvas& surface, const fImage& image,
 		for (int x = pos_x; x < width; x++)
 		{
 			assert(x < surface.width);
-			Color color = image.get_pixel_scaled(x, y, width, height).get_uint();
-			surface.memory[(y + pos_y) * surface.width + (x + pos_x)] = color;
+			Color color = image.get_pixel_scaled(x, y, width, height);
+			surface[(y + pos_y) * surface.width + (x + pos_x)] = color;
 		}
 	}
 }
 
-void draw_image_async(Canvas& surface, const fImage& image,
+
+template <typename Surface_type, typename Image_type>
+void draw_image_async(Surface_type& surface, const Image_type& image,
 	float fpos_x, float fpos_y, float fwidth, float fheight)
 {
 	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f) return;
@@ -402,8 +372,8 @@ void draw_image_async(Canvas& surface, const fImage& image,
 				for (int x = from_x; x < to_x; x++)
 				{
 					assert(x < surface.width);
-					Color color = image.get_pixel_scaled(x, y, width, height).get_uint();
-					surface.memory[(y + pos_y) * surface.width + (x + pos_x)] = color;
+					Color color = image.get_pixel_scaled(x, y, width, height);
+					surface[(y + pos_y) * surface.width + (x + pos_x)] = color;
 				}
 		});
 	}

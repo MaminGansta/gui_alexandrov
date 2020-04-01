@@ -10,6 +10,10 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #define safe_release(ptr) (delete ptr, ptr = nullptr)
 #define safe_releaseArr(ptr) (delete[] ptr, ptr = nullptr)
 
+#ifndef PI
+#define PI 3.14159265359f
+#endif
+
 #include <Windows.h>
 #include <CommCtrl.h>
 #include <windowsx.h>
@@ -80,6 +84,14 @@ thread_pool workers(MAX_THREADS);
 #include "libs/time.cpp"
 #include "input/io.cpp"
 
+// image tarnsformation
+#include "operators/image_transform.cpp"
+#include "operators/median_filter.cpp"
+#include "operators/color/histogram.cpp"
+#include "operators/color/auto_contrast.cpp"
+#include "operators/color/gray_world.cpp"
+#include "operators/color/histogram_alignment.cpp"
+#include "operators/convolutions/convolution.cpp"
 
 
 void al_init(HINSTANCE hInstance)

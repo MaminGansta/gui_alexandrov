@@ -24,6 +24,8 @@ struct Color
 		g *= f;
 		b *= f;
 	}
+
+	Color get_uint() const { return *this; }
 };
 
 
