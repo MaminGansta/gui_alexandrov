@@ -254,7 +254,7 @@ struct Kernal<Image, size>
 
 	Kernal() = default;
 
-	Image apply(Image& original)
+	Image apply(const Image& original)
 	{
 		// get RVO
 		Image res;
@@ -272,20 +272,20 @@ struct Kernal<Image, size>
 		{
 			for (int x = x0; x < width; x++)
 			{
-				Color con;
+				int r = 0, g = 0, b = 0;
 				for (int i = 0; i < size; i++)
 				{
 					for (int j = 0; j < size; j++)
 					{
-						Color& pixel = original[(y - pad + i) * original.width + x - pad + j];
-						con.r += pixel.r * kernal[i][j];
-						con.g += pixel.g * kernal[i][j];
-						con.b += pixel.b * kernal[i][j];
+						const Color& pixel = original[(y - pad + i) * original.width + x - pad + j];
+						r += pixel.r * kernal[i][j];
+						g += pixel.g * kernal[i][j];
+						b += pixel.b * kernal[i][j];
 					}
 				}
-				res[y * res.width + x].r = chanel_clip(con.r);
-				res[y * res.width + x].g = chanel_clip(con.g);
-				res[y * res.width + x].b = chanel_clip(con.b);
+				res[y * res.width + x].r = chanel_clip(r);
+				res[y * res.width + x].g = chanel_clip(g);
+				res[y * res.width + x].b = chanel_clip(b);
 			}
 		}
 
@@ -297,7 +297,7 @@ struct Kernal<Image, size>
 			{
 				for (int x = 0; x < original.width; x++)
 				{
-					Color con;
+					int r = 0, g = 0, b = 0;
 					for (int i = 0; i < size; i++)
 					{
 						for (int j = 0; j < size; j++)
@@ -308,16 +308,16 @@ struct Kernal<Image, size>
 							if (core_x >= original.width) core_x = original.width - (core_x - original.width) - 1;
 							if (core_y >= original.height) core_y = original.height - (core_y - original.height) - 1;
 
-							Color& pixel = original[core_y * original.width + core_x];
+							const Color& pixel = original[core_y * original.width + core_x];
 
-							con.r += pixel.r * kernal[i][j];
-							con.g += pixel.g * kernal[i][j];
-							con.b += pixel.b * kernal[i][j];
+							r += pixel.r * kernal[i][j];
+							g += pixel.g * kernal[i][j];
+							b += pixel.b * kernal[i][j];
 						}
 					}
-					res[y * res.width + x].r = chanel_clip(con.r);
-					res[y * res.width + x].g = chanel_clip(con.g);
-					res[y * res.width + x].b = chanel_clip(con.b);
+					res[y * res.width + x].r = chanel_clip(r);
+					res[y * res.width + x].g = chanel_clip(g);
+					res[y * res.width + x].b = chanel_clip(b);
 				}
 			}
 		}
@@ -328,7 +328,7 @@ struct Kernal<Image, size>
 			{
 				for (int x = i * (original.width - pad); x < (1 - i) * pad + i * original.width; x++)
 				{
-					Color con;
+					int r = 0, g = 0, b = 0;
 					for (int i = 0; i < size; i++)
 					{
 						for (int j = 0; j < size; j++)
@@ -339,15 +339,15 @@ struct Kernal<Image, size>
 							if (core_x >= original.width) core_x = original.width - (core_x - original.width) - 1;
 							if (core_y >= original.height) core_y = original.height - (core_y - original.height) - 1;
 
-							Color& pixel = original[core_y * original.width + core_x];
-							con.r += pixel.r * kernal[i][j];
-							con.g += pixel.g * kernal[i][j];
-							con.b += pixel.b * kernal[i][j];
+							const Color& pixel = original[core_y * original.width + core_x];
+							r += pixel.r * kernal[i][j];
+							g += pixel.g * kernal[i][j];
+							b += pixel.b * kernal[i][j];
 						}
 					}
-					res[y * res.width + x].r = chanel_clip(con.r);
-					res[y * res.width + x].g = chanel_clip(con.g);
-					res[y * res.width + x].b = chanel_clip(con.b);
+					res[y * res.width + x].r = chanel_clip(r);
+					res[y * res.width + x].g = chanel_clip(g);
+					res[y * res.width + x].b = chanel_clip(b);
 				}
 			}
 		}
@@ -453,8 +453,6 @@ struct Kernal<Image, size>
 
 
 
-
-
 // ====================== Gaussian filter ===========================
 
 constexpr int mat_size(size_t sigma)
@@ -509,12 +507,16 @@ struct Gaussian_filter :  Kernal<Image_type, mat_size(sigma)>
 	Gaussian_filter() = default;
 };
 
+
+
 template <typename Image_type>
 Image_type gauss_filter(const Image_type& image)
 {
 	Gaussian_filter<Image_type, 1> filter;
 	return filter.apply(image);
 }
+
+
 
 // =================== Sharp filter ====================
 
@@ -523,6 +525,8 @@ struct Sharp_filter : public Kernal<Image_type, 3>
 {
 	Sharp_filter() : Kernal<Image_type, 3>({ -0.1f, -0.2f, -0.1f ,-0.2f, 2.2f, -0.2f ,-0.1f, -0.2f, -0.1f }){}
 };
+
+
 
 
 // ================ Sobel's operator ====================

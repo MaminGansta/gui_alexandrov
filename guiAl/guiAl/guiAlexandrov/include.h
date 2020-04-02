@@ -113,6 +113,8 @@ thread_pool workers(MAX_THREADS);
 #include "operators/color/histogram_alignment.cpp"
 #include "operators/convolutions/convolution.cpp"
 
+// high_lavel_gui elements
+#include "high_lavel_gui/image_window.cpp"
 
 void al_init(HINSTANCE hInstance)
 {

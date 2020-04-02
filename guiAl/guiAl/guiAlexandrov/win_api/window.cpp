@@ -194,6 +194,8 @@ struct HWND_constainer
 		arguments.remove(handle->second);
 		DestroyWindow(handle->second);
 		handles.erase(handle);
+		// no one active window
+		if (size() == 0) PostQuitMessage(0);
 	}
 
 	HWND operator [](int id)
@@ -220,13 +222,13 @@ struct Window
 {	
 	int class_id;
 	static int name_id;
+	HWND handle;
 	HDC hdc;
 	Canvas canvas;
 	int min_w = 0, min_h = 0;
 	int max_w = 600, max_h = 800;
 
 	Window() {}
-	
 	Window(
 		const std::wstring& window_name,
 		int width,
@@ -271,7 +273,7 @@ struct Window
 		{
 			Args args = arguments.get(hwnd);
 			Window* window = (Window*)args[0];
-			if (window == NULL) return DefWindowProc(hwnd, msg, wParam, lParam);
+			if (window == NULL)	return DefWindowProc(hwnd, msg, wParam, lParam);
 
 			switch (msg)
 			{
@@ -306,26 +308,25 @@ struct Window
 			assert(false);
 		}
 
-		HWND handle = CreateWindow(wc.lpszClassName, window_name.c_str(), style, CW_USEDEFAULT, CW_USEDEFAULT, width, height, parent, (HMENU)0, (HINSTANCE)hInst, NULL);
+		handle = CreateWindow(wc.lpszClassName, window_name.c_str(), style, CW_USEDEFAULT, CW_USEDEFAULT, width, height, parent, (HMENU)0, (HINSTANCE)hInst, NULL);
+		hdc = GetDC(handle);
 
 		// set window def ssize
 		set_min_max_size(0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
 
-		// put window ptr to global holder
-		arguments.add(handle, this, NULL, callback);
-
 		// put handle to the global holder
 		class_id = handles.add(handle);
+
+		// put window ptr to global holder
+		arguments.add(handle, this, NULL, callback);
 
 		// repeat messages
 		SendMessage(handle, WM_CREATE, 0, 0);
 		SendMessage(handle, WM_SIZE, 0, 0);
 		SendMessage(handle, WM_PAINT, 0, 0);
-
-		hdc = GetDC(handle);
 	}
 
-	virtual ~Window() { components.remove(getHWND()); handles.remove(class_id); }
+	virtual ~Window() { components.remove(handle); handles.remove(class_id); }
 
 	void render_canvas()
 	{
@@ -335,7 +336,7 @@ struct Window
 	void redraw()
 	{
 		//RedrawWindow(getHWND(), 0, 0, RDW_INVALIDATE | RDW_ALLCHILDREN);
-		SendMessage(getHWND(), WM_PAINT, 0, 0);
+		SendMessage(handle, WM_PAINT, 0, 0);
 	}
 
 #define MAX_WIN_SIZE -1
@@ -358,7 +359,7 @@ struct Window
 			max_h = maxh;
 	}
 
-	HWND getHWND() { return handles[class_id]; }
+	HWND getHWND() { return handle; }
 
 	static void default_msg_proc() {
 		MSG msg;

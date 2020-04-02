@@ -27,6 +27,48 @@ struct Image
 		open(filename_utf8);
 	}
 
+	Image(const Image& copy)
+	{
+		height = copy.height;
+		width = copy.width;
+		data = new Color[height * width];
+		memmove(data, copy.data, sizeof(Color) * height * width);
+		invalid = false;
+	}
+
+	Image(Image&& other)
+	{
+		data = other.data;
+		width = other.width;
+		height = other.height;
+		other.data = NULL;
+		other.invalid = true;
+		invalid = false;
+	}
+
+	Image& operator= (const Image& copy)
+	{
+		delete[] data;
+		height = copy.height;
+		width = copy.width;
+		data = new Color[height * width];
+		memmove(data, copy.data, sizeof(Color) * height * width);
+		invalid = false;
+		return *this;
+	}
+
+	Image& operator = (Image&& other)
+	{
+		delete[] data;
+		data = other.data;
+		width = other.width;
+		height = other.height;
+		other.data = NULL;
+		other.invalid = true;
+		invalid = false;
+		return *this;
+	}
+
 	void open(const wchar_t* filename_utf8)
 	{
 		delete[] data;
@@ -72,35 +114,6 @@ struct Image
 		data = new Color[width * height];
 		invalid = false;
 	}
-
-	Image(Image& copy)
-	{
-		height = copy.height;
-		width = copy.width;
-		data = new Color[height * width];
-		memmove(data, copy.data, sizeof(Color) * height * width);
-	}
-
-	Image(Image&& other)
-	{
-		data = other.data;
-		width = other.width;
-		height = other.height;
-		other.data = NULL;
-		other.invalid = true;
-	}
-
-	Image& operator = (Image&& other)
-	{
-		delete[] data;
-		data = other.data;
-		width = other.width;
-		height = other.height;
-		other.data = NULL;
-		other.invalid = true;
-		return *this;
-	}
-
 
 	Color& get_pixel(int x, int y)
 	{
