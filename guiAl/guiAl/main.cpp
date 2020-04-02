@@ -1,3 +1,4 @@
+#define MAX_THREADS 4
 #include "guiAlexandrov/include.h"
 
 
@@ -80,32 +81,45 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	fImage fbg(L"back.png");
 	Image bg = fbg;
-	//new Image_window<Image>(bg);
+	
+	Gaussian_filter<Image, 1> gf;
+	Gaussian_filter<fImage, 1> fgf;
 
 	float start = get_time();
-
-	Sharp_filter<Image> sh;
-	Gaussian_filter<fImage, 1> gf;
-	
-	
-	//bg = gf.apply(bg);
 	//bg = RGB2YCbCr(bg);
 	//bg = gauss_filter(bg);
 	//bg = sharp_filter(bg);
 	//bg = sobel(bg);
-
+	//bg = sobel_avg(bg);
 
 	//bg = auto_contrast(bg);
 	//bg = hist_alignment(bg);
 	//bg = gray_world(bg);
 
+	bg = gf.apply_async(bg);
+
 	output(L"\n%f\n", get_time() - start);
 	Create_Image_window(bg);
 
+	
+	start = get_time();
+	//fbg = gf.apply(fbg);
+	//fbg = RGB2YCbCr(fbg);
+	//fbg = gauss_filter(fbg);
+	//fbg = sharp_filter(fbg);
+	//fbg = sobel(fbg);
+	//fbg = sobel_avg(fbg);
 
+	  
+	//fbg = auto_contrast(fbg);
+	//fbg = hist_alignment(fbg);
+	//fbg = gray_world(fbg);
 
+	fbg = fgf.apply_async(fbg);
 
+	output(L"\n%f\n", get_time() - start);
 	Create_Image_window(fbg);
+
 
 
 	Window::wait_msg_proc();

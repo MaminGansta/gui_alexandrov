@@ -15,7 +15,7 @@ struct Color
 
 	Color operator +(Color color)
 	{
-		return Color(r + color.r, g + color.g, b + color.b);
+		return Color(min(r + color.r, 255), min(g + color.g, 255), min(b + color.b, 255));
 	}
 
 	Color operator *(float f)
