@@ -30,3 +30,9 @@ struct Image_window : Window
 			});
 	}
 };
+
+template <typename Image_type>
+Image_window<Image_type>* Create_Image_window(Image_type& image)
+{
+	return new Image_window<Image_type>(image);
+}

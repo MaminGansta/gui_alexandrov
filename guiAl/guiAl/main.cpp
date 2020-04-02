@@ -78,9 +78,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	//My_window<Image> window;
 
-	fImage bg(L"back.png");
+	fImage fbg(L"back.png");
+	Image bg = fbg;
 	//new Image_window<Image>(bg);
-
 
 	float start = get_time();
 
@@ -91,17 +91,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//bg = gf.apply(bg);
 	//bg = RGB2YCbCr(bg);
 	//bg = gauss_filter(bg);
+	//bg = sharp_filter(bg);
 	//bg = sobel(bg);
 
-	//Img_window g;
 
-	bg = auto_contrast(bg);
+	//bg = auto_contrast(bg);
+	//bg = hist_alignment(bg);
+	//bg = gray_world(bg);
 
 	output(L"\n%f\n", get_time() - start);
+	Create_Image_window(bg);
 
 
-	new Image_window<fImage>(bg);
-	
+
+
+	Create_Image_window(fbg);
+
 
 	Window::wait_msg_proc();
 

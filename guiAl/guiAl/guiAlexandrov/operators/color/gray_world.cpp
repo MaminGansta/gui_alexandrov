@@ -66,9 +66,9 @@ Image_type gray_world(Image_type& image)
 
 	for (int i = 0; i < image.height * image.width; i++)
 	{
-		res[i].r = chanel_clip(image[i].r * rw);
-		res[i].g = chanel_clip(image[i].g * gw);
-		res[i].b = chanel_clip(image[i].b * bw);
+		res[i].r = chanel_clip(int(image[i].r * rw));
+		res[i].g = chanel_clip(int(image[i].g * gw));
+		res[i].b = chanel_clip(int(image[i].b * bw));
 	}
 
 	return res;

@@ -268,7 +268,7 @@ struct fImage
 		invalid = false;
 	}
 
-	fImage(fImage && other)
+	fImage(fImage&& other)
 	{
 		data = other.data;
 		width = other.width;
@@ -276,6 +276,14 @@ struct fImage
 		other.data = NULL;
 		other.invalid = true;
 		invalid = false;
+	}
+
+	fImage(const Image& image)
+	{
+		resize(image.width, image.height);
+		for (int i = 0; i < height; i++)
+			for (int j = 0; j < width; j++)
+				data[i * width + j] = image[i * width + j];
 	}
 
 	fImage& operator = (const fImage& copy)
@@ -348,6 +356,15 @@ struct fImage
 
 		assert(((uint32_t)y < height) | ((uint32_t)x < width));
 		return data[y * width + x];
+	}
+
+	operator Image()
+	{
+		Image res(width, height);
+		for (int i = 0; i < height; i++)
+			for (int j = 0; j < width; j++)
+				res[i * width + j] = data[i * width + j];
+		return res;
 	}
 
 };

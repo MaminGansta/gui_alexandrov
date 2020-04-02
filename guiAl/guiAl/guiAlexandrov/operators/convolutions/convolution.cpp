@@ -527,6 +527,14 @@ struct Sharp_filter : public Kernal<Image_type, 3>
 };
 
 
+template <typename Image_type>
+Image_type sharp_filter(const Image_type& image)
+{
+	Sharp_filter<Image_type> sf;
+	return sf.apply(image);
+}
+
+
 
 
 // ================ Sobel's operator ====================
