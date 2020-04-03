@@ -1,4 +1,4 @@
-#define MAX_THREADS 4
+#define MAX_THREADS 8
 #include "guiAlexandrov/include.h"
 
 
@@ -51,9 +51,6 @@ struct My_window : Window
 			label.init(getHWND(), L"some text dsaf\nadsfadsfdasfdasf", 0.2f, 0.2f, 0.1f, 0.1f, RESIZABLE);
 			set_font_size(btn.handle, 20);
 			
-			SetBkMode(GetDC(label.handle), TRANSPARENT);
-			SetTextColor(GetDC(label.handle), RGB(255, 0, 0));
-			
 			
 			text.init(getHWND(), 0.1f, 0.6f, 0.2f, 0.2f);
 			
@@ -79,11 +76,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	//My_window<Image> window;
 
-	fImage fbg(L"back.png");
+	//fImage fbg(L"back.png");
+	fImage fbg(L"hd_stock.jpeg");
 	Image bg = fbg;
+	
 	
 	Gaussian_filter<Image, 1> gf;
 	Gaussian_filter<fImage, 1> fgf;
+	
+	Sharp_filter<Image, 3> sf;
+	Sharp_filter<fImage, 4> fsf;
+
+	Box_filter<Image, 3> bf;
+	Box_filter<fImage> fbf;
+
 
 	float start = get_time();
 	//bg = RGB2YCbCr(bg);
@@ -91,15 +97,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//bg = sharp_filter(bg);
 	//bg = sobel(bg);
 	//bg = sobel_avg(bg);
+	//bg = box_filter(bg);
 
 	//bg = auto_contrast(bg);
 	//bg = hist_alignment(bg);
 	//bg = gray_world(bg);
 
-	bg = gf.apply_async(bg);
+	//bg = gf.apply_async(bg);
+	bg = bf.apply_async(bg);
+	//bg = sf.apply_async(bg);
 
 	output(L"\n%f\n", get_time() - start);
 	Create_Image_window(bg);
+
 
 	
 	start = get_time();
@@ -109,13 +119,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//fbg = sharp_filter(fbg);
 	//fbg = sobel(fbg);
 	//fbg = sobel_avg(fbg);
+	//fbg = box_filter(fbg);
 
 	  
 	//fbg = auto_contrast(fbg);
 	//fbg = hist_alignment(fbg);
 	//fbg = gray_world(fbg);
 
-	fbg = fgf.apply_async(fbg);
+	//fbg = fgf.apply_async(fbg);
+	fbg = fbf.apply_async(fbg);
+	fbg = fsf.apply_async(fbg);
 
 	output(L"\n%f\n", get_time() - start);
 	Create_Image_window(fbg);

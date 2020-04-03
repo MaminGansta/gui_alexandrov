@@ -769,12 +769,43 @@ Image_type gauss_filter(const Image_type& image)
 
 
 // =================== Sharp filter ====================
+template <typename Image_type, size_t type = 1>
+struct Sharp_filter;
 
 template <typename Image_type>
-struct Sharp_filter : public Kernal<Image_type, 3>
+struct Sharp_filter<Image_type, 1>: public Kernal<Image_type, 3>
 {
 	Sharp_filter() : Kernal<Image_type, 3>({ -0.1f, -0.2f, -0.1f ,-0.2f, 2.2f, -0.2f ,-0.1f, -0.2f, -0.1f }){}
 };
+
+template <typename Image_type>
+struct Sharp_filter<Image_type, 2> : public Kernal<Image_type, 3>
+{
+	Sharp_filter() : Kernal<Image_type, 3>({ -0.25f, -0.25f, -0.25f ,-0.25f, 3.0f, -0.25f ,-0.25f, -0.25f, -0.25f }) {}
+};
+
+template <typename Image_type>
+struct Sharp_filter<Image_type, 3> : public Kernal<Image_type, 3>
+{
+	Sharp_filter() : Kernal<Image_type, 3>({ -0.25f, -0.5f, -0.25f ,-0.5f, 4.0f, -0.5f ,-0.25f, -0.5f, -0.25f }) {}
+};
+
+
+template <typename Image_type>
+struct Sharp_filter<Image_type, 4> : public Kernal<Image_type, 3>
+{
+	Sharp_filter() : Kernal<Image_type, 3>({ -0.3f, -0.5f, -0.3f ,-0.5f, 4.2f, -0.5f ,-0.3f, -0.5f, -0.3f }) {}
+};
+
+
+
+template <typename Image_type>
+struct Sharp_filter<Image_type, 5> : public Kernal<Image_type, 3>
+{
+	Sharp_filter() : Kernal<Image_type, 3>({ -1.0f, -1.0f, -1.0f ,-1.0f, 9.0f, -1.0f ,-1.0f, -1.0f, -1.0f }) {}
+};
+
+
 
 
 template <typename Image_type>
@@ -832,3 +863,32 @@ Image_type sobel_avg(const Image_type& origin)
 
 	return YCbCr2RGB(res);
 }
+
+
+// =============== Box filter =======================
+template <typename Image_type, size_t size = 3>
+struct Box_filter: public Kernal<Image_type, size>
+{
+	using Kernal<Image_type, size>::Kernal_init;
+
+	Box_filter()
+	{
+		float kernal[size][size];
+		float coef = 1.0f / (size * size);
+
+		for (int i = 0; i < size; i++)
+			for (int j = 0; j < size; j++)
+				kernal[i][j] = coef;
+
+		Kernal_init(kernal);
+	}
+};
+
+
+template <typename Image_type>
+Image_type box_filter(const Image_type& image)
+{
+	Box_filter<Image_type> bf;
+	return bf.apply(image);
+}
+
