@@ -23,6 +23,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include <wchar.h>
 #include <tchar.h>
 
+#include <array>
 #include <vector>
 #include <algorithm>
 #include <functional>

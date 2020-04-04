@@ -105,7 +105,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//bg = sf.apply_async(bg);
 	//bg = bf.apply_async(bg);
 
-	bg = kernal_image.apply_async(bg);
+	// bg = kernal_image.apply_async(bg);
+
+	bg = median_filter(bg);
 
 	output(L"\n%f\n", get_time() - start);
 	Create_Image_window(bg);
@@ -129,9 +131,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//fbg = fbf.apply_async(fbg);
 	//fbg = fsf.apply_async(fbg);
 
-	fbg = kernal_fimage.apply_async(fbg);
+	//fbg = kernal_fimage.apply_async(fbg);
 
-
+	fbg = median_filter(fbg);
 
 	output(L"\n%f\n", get_time() - start);
 	Create_Image_window(fbg);
