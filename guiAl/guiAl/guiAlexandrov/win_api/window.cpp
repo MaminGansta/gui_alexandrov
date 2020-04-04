@@ -275,6 +275,7 @@ struct Window
 			Window* window = (Window*)args[0];
 			if (window == NULL)	return DefWindowProc(hwnd, msg, wParam, lParam);
 
+			PAINTSTRUCT plug;
 			switch (msg)
 			{
 				case WM_SIZE:
@@ -284,7 +285,7 @@ struct Window
 				}break;
 				case WM_PAINT:
 				{
-					components.redraw(hwnd);
+					BeginPaint(hwnd, &plug);
 				}break;
 				case  WM_GETMINMAXINFO:
 				{
@@ -298,7 +299,23 @@ struct Window
 			}
 			
 			// user's callback
-			return args.callback(hwnd, msg, wParam, lParam, args);
+			LRESULT res = args.callback(hwnd, msg, wParam, lParam, args);
+
+
+			switch (msg)
+			{
+				case WM_PAINT:
+				{
+					EndPaint(hwnd, &plug);
+					components.redraw(hwnd);
+				}break;
+				case WM_CLOSE:
+				{
+					safe_release(window);
+				}break;
+			}
+
+			return res;
 		};
 
 

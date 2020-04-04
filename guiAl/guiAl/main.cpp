@@ -1,4 +1,4 @@
-#define MAX_THREADS 8
+#define MAX_THREADS 4
 #include "guiAlexandrov/include.h"
 
 
@@ -29,17 +29,10 @@ struct My_window : Window
 				{
 				case WM_PAINT:
 				{
-					PAINTSTRUCT plug;
-					BeginPaint(hwnd, &plug);
-					
 					draw_image(window->canvas, window->bg, 0.0f, 0.0f, 1.0f, 1.0f);
 					window->render_canvas();
 
-					EndPaint(hwnd, &plug);
 				}return 0;
-
-				case WM_CLOSE:
-					PostQuitMessage(0);
 
 				}
 
@@ -81,13 +74,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Image bg = fbg;
 	
 	
-	Gaussian_filter<Image, 1> gf;
-	Gaussian_filter<fImage, 1> fgf;
+	Gaussian_filter<Image> gf;
+	Gaussian_filter<fImage> fgf;
 	
-	Sharp_filter<Image, 3> sf;
-	Sharp_filter<fImage, 4> fsf;
+	Sharp_filter<Image> sf;
+	Sharp_filter<fImage> fsf;
 
-	Box_filter<Image, 3> bf;
+	Box_filter<Image> bf;
 	Box_filter<fImage> fbf;
 
 
@@ -104,7 +97,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//bg = gray_world(bg);
 
 	//bg = gf.apply_async(bg);
-	bg = bf.apply_async(bg);
+	//bg = bf.apply_async(bg);
 	//bg = sf.apply_async(bg);
 
 	output(L"\n%f\n", get_time() - start);
@@ -128,7 +121,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	//fbg = fgf.apply_async(fbg);
 	fbg = fbf.apply_async(fbg);
-	fbg = fsf.apply_async(fbg);
+	//fbg = fsf.apply_async(fbg);
 
 	output(L"\n%f\n", get_time() - start);
 	Create_Image_window(fbg);

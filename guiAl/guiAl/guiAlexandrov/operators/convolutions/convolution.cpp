@@ -713,8 +713,7 @@ constexpr int mat_size(size_t sigma)
 	return sigma * 6 + 1;
 }
 
-
-template <typename Image_type, size_t sigma>
+template <typename Image_type, size_t sigma = 1>
 struct Gaussian_filter :  Kernal<Image_type, mat_size(sigma)>
 {
 	using Kernal<Image_type, mat_size(sigma)>::Kernal_init;
