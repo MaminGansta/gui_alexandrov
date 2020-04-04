@@ -47,7 +47,9 @@ struct Canvas
 
 	BITMAPINFO bitmap_info;
 
-	~Canvas() { delete[] memory; }
+	~Canvas() {
+		safe_releaseArr(memory);
+	}
 
 	void resize(HWND hwnd)
 	{

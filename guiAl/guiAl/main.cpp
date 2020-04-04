@@ -27,15 +27,12 @@ struct My_window : Window
 
 				switch (msg)
 				{
-				case WM_PAINT:
-				{
-					draw_image(window->canvas, window->bg, 0.0f, 0.0f, 1.0f, 1.0f);
-					window->render_canvas();
-
-				}return 0;
-
+					case WM_PAINT:
+					{
+						draw_image(window->canvas, window->bg, 0.0f, 0.0f, 1.0f, 1.0f);
+						window->render_canvas();
+					}return 0;
 				}
-
 				return DefWindowProc(hwnd, msg, wParam, lParam);
 			});
 
@@ -56,7 +53,7 @@ struct My_window : Window
 			
 			aaa.init(getHWND(), L"Radio", 0.4f, 0.6f, 0.1f, 0.1f, RESIZABLE);
 			aaav.init(getHWND(), L"Radio2", 0.4f, 0.7f, 0.1f, 0.1f, RESIZABLE);
-			
+
 	}
 
 };
@@ -67,7 +64,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
 	al_init(hInstance);
 
-	//My_window<Image> window;
+	new My_window<Image>();
 
 	//fImage fbg(L"back.png");
 	fImage fbg(L"hd_stock.jpeg");
@@ -101,7 +98,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//bg = sf.apply_async(bg);
 
 	output(L"\n%f\n", get_time() - start);
-	Create_Image_window(bg);
+	//Create_Image_window(bg);
 
 
 	
@@ -124,7 +121,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//fbg = fsf.apply_async(fbg);
 
 	output(L"\n%f\n", get_time() - start);
-	Create_Image_window(fbg);
+	//Create_Image_window(fbg);
 
 
 

@@ -54,13 +54,10 @@ struct Component
 	Component() : id(global_id++) {}
 	~Component() { components_remove(parent, handle); DestroyWindow(handle); }
 
-	void resize()
+	void resize(RECT rect)
 	{
-		if (type == STATIC)
-			return;
+		if (type == STATIC) return;
 
-		RECT rect;
-		GetClientRect(parent, &rect);
 		int nWidth = rect.right - rect.left;
 		int nHeight = rect.bottom - rect.top;
 
@@ -69,7 +66,7 @@ struct Component
 		if (type == DYNAMIC)
 			flags = SWP_NOSIZE;
 
-		SetWindowPos(handle, 0, x * nWidth, y * nHeight, width * nWidth, height * nHeight, flags);
+		SetWindowPos(handle, 0, x * nWidth, y * nHeight, width * nWidth + 1, height * nHeight + 1, flags);
 	}
 
 	void resize(float width, float height)
@@ -82,7 +79,7 @@ struct Component
 		int nWidth = rect.right - rect.left;
 		int nHeight = rect.bottom - rect.top;
 		
-		SetWindowPos(handle, 0, 0, 0, width * nWidth, height * nHeight, SWP_NOZORDER | SWP_NOMOVE);
+		SetWindowPos(handle, 0, 0, 0, width * nWidth + 1, height * nHeight + 1, SWP_NOZORDER | SWP_NOMOVE);
 	}
 
 	void move(float x, float y)
@@ -110,8 +107,9 @@ struct Component_crt
 
 	void add(HWND parent, Component* comp)
 	{
+		//if (comp->type == STATIC) return;
+
 		auto pointer = std::find_if(components.begin(), components.end(), [&parent](const std::pair<HWND, std::vector<Component*>>& elem) {return elem.first == parent;});
-		
 		// if no such handle in storage
 		if (pointer == components.end())
 		{
@@ -137,8 +135,11 @@ struct Component_crt
 		auto pointer = std::find_if(components.begin(), components.end(), [&parent](const std::pair<HWND, std::vector<Component*>>& elem) {return elem.first == parent;});
 		if (pointer == components.end()) return;
 		
+		RECT rect;
+		GetClientRect(parent, &rect);
+
 		for (auto& component : pointer->second)
-			component->resize();
+			component->resize(rect);
 	}
 
 	void redraw(HWND parent)
@@ -296,6 +297,8 @@ struct Window
 					lpMMI->ptMaxTrackSize.x = window->max_w;
 					lpMMI->ptMaxTrackSize.y = window->max_h;
 				}break;
+
+				
 			}
 			
 			// user's callback
@@ -304,14 +307,14 @@ struct Window
 
 			switch (msg)
 			{
+				case WM_CLOSE:
+				{
+					safe_release(window);
+				}return 0;
 				case WM_PAINT:
 				{
 					EndPaint(hwnd, &plug);
 					components.redraw(hwnd);
-				}break;
-				case WM_CLOSE:
-				{
-					safe_release(window);
 				}break;
 			}
 
