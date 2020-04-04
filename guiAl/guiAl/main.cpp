@@ -1,4 +1,4 @@
-#define MAX_THREADS 4
+#define MAX_THREADS 8
 #include "guiAlexandrov/include.h"
 
 
@@ -64,21 +64,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
 	al_init(hInstance);
 
-	new My_window<Image>();
+	//new My_window<Image>();
 
 	//fImage fbg(L"back.png");
 	fImage fbg(L"hd_stock.jpeg");
 	Image bg = fbg;
-	
+
+	Create_Image_window(fbg);
+
 	
 	Gaussian_filter<Image> gf;
 	Gaussian_filter<fImage> fgf;
 	
-	Sharp_filter<Image> sf;
-	Sharp_filter<fImage> fsf;
+	Sharp_filter<Image, 2> sf;
+	Sharp_filter<fImage, 2> fsf;
 
 	Box_filter<Image> bf;
-	Box_filter<fImage> fbf;
+	Box_filter<fImage, 3> fbf;
+
+	// apply second confolution for first and make new kernal
+	auto kernal_fimage = new_kernal(fgf, fsf);
+
+	auto kernal_image = new_kernal(gf, sf);
+
 
 
 	float start = get_time();
@@ -94,11 +102,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//bg = gray_world(bg);
 
 	//bg = gf.apply_async(bg);
-	//bg = bf.apply_async(bg);
 	//bg = sf.apply_async(bg);
+	//bg = bf.apply_async(bg);
+
+	bg = kernal_image.apply_async(bg);
 
 	output(L"\n%f\n", get_time() - start);
-	//Create_Image_window(bg);
+	Create_Image_window(bg);
 
 
 	
@@ -111,17 +121,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//fbg = sobel_avg(fbg);
 	//fbg = box_filter(fbg);
 
-	  
 	//fbg = auto_contrast(fbg);
 	//fbg = hist_alignment(fbg);
 	//fbg = gray_world(fbg);
 
 	//fbg = fgf.apply_async(fbg);
-	fbg = fbf.apply_async(fbg);
+	//fbg = fbf.apply_async(fbg);
 	//fbg = fsf.apply_async(fbg);
 
+	fbg = kernal_fimage.apply_async(fbg);
+
+
+
 	output(L"\n%f\n", get_time() - start);
-	//Create_Image_window(fbg);
+	Create_Image_window(fbg);
 
 
 

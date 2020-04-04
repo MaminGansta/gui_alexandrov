@@ -41,6 +41,51 @@ struct Kernal<fImage, size>
 				this->kernal[i][j] = kernal[i][j];
 	}
 
+	// new convolution from existed
+	template <size_t second_size>
+	Kernal(const Kernal<fImage, size>& kernalF, const Kernal<fImage, second_size>& kernalS)
+	{
+		int pad = second_size / 2;
+		float total = 0.0f;
+
+		for (int y = 0; y < size; y++)
+		{
+			for (int x = 0; x < size; x++)
+			{
+				float new_coef = 0;
+				for (int i = 0; i < second_size; i++)
+				{
+					for (int j = 0; j < second_size; j++)
+					{
+						int core_y = y + i - pad;
+						if (core_y < 0)
+							core_y = abs(core_y - 1);
+
+						int core_x = x + j - pad;
+						if (core_x < 0)
+							core_x = abs(core_x - 1);
+
+
+						if (core_x >= size) core_x = size - (core_x - size) - 1;
+						if (core_y >= size) core_y = size - (core_y - size) - 1;
+
+						new_coef += kernalF.kernal[core_y][core_x] * kernalS.kernal[i][j];
+					}
+				}
+				total += kernal[y][x] = new_coef;
+			}
+		}
+
+		// normalize coefs
+		total = 1.0f / total;
+		for (int i = 0; i < size; i++)
+			for (int j = 0; j < size; j++)
+				kernal[i][j] *= total;
+
+	}
+	
+
+	// ============ Apply convolution to the image ==============
 	fImage apply(const fImage& original)
 	{
 		// get RVO
@@ -385,6 +430,51 @@ struct Kernal<Image, size>
 	}
 
 
+	// new convolution from existed
+	template <size_t second_size>
+	Kernal(const Kernal<Image, size>& kernalF, const Kernal<Image, second_size>& kernalS)
+	{
+		int pad = second_size / 2;
+		float total = 0.0f;
+
+		for (int y = 0; y < size; y++)
+		{
+			for (int x = 0; x < size; x++)
+			{
+				int new_coef = 0;
+				for (int i = 0; i < second_size; i++)
+				{
+					for (int j = 0; j < second_size; j++)
+					{
+						int core_y = y + i - pad;
+						if (core_y < 0)
+							core_y = abs(core_y - 1);
+
+						int core_x = x + j - pad;
+						if (core_x < 0)
+							core_x = abs(core_x - 1);
+
+
+						if (core_x >= size) core_x = size - (core_x - size) - 1;
+						if (core_y >= size) core_y = size - (core_y - size) - 1;
+
+						new_coef += kernalF.kernal[core_y][core_x] * kernalS.kernal[i][j];
+					}
+				}
+				total += kernal[y][x] = new_coef / coef;
+			}
+		}
+
+		// normalize coefs
+		total = coef / total;
+		for (int i = 0; i < size; i++)
+			for (int j = 0; j < size; j++)
+				kernal[i][j] *= total;
+
+	}
+
+
+
 	Image apply(const Image& original)
 	{
 		// get RVO
@@ -702,7 +792,18 @@ struct Kernal<Image, size>
 	float* operator [] (int i) { return kernal[i]; }
 };
 
+// =============== make new kernal ====================
+template <typename Image_type, size_t sizeF, size_t sizeS>
+Kernal<Image_type, sizeF> new_kernal(Kernal<Image_type, sizeF>& f, Kernal<Image_type, sizeS>& s)
+{
+	return Kernal<Image_type, sizeF>(f, s);
+}
 
+
+
+
+
+//	=================================== FILTERS =====================================
 
 
 
