@@ -17,7 +17,7 @@ uint8_t chanel_clip<uint8_t>(uint8_t color) { return MIN(MAX(color, 0), 255); }
 
 struct Image
 {
-	int height, width;
+	int height = 0, width = 0;
 	Color* data = NULL;
 	bool invalid = false;
 
@@ -208,14 +208,14 @@ struct fColor
 
 	operator Color() const
 	{
-		return Color(r * 255.0f, g * 255.0f, b * 255.0f, a * 255.0f);
+		return Color(chanel_clip<int>(r * 255.0f), chanel_clip<int>(g * 255.0f), chanel_clip<int>(b * 255.0f), chanel_clip<int>(a * 255.0f));
 	}
 };
 
 
 struct fImage
 {
-	int height, width;
+	int height = 0, width = 0;
 	fColor* data = NULL;
 	bool invalid = true;
 
@@ -368,72 +368,3 @@ struct fImage
 	}
 
 };
-
-
-
-// ============= Draw Image to the surface ===================
-
-template <typename Surface_type, typename Image_type>
-void draw_image(Surface_type& surface, const Image_type& image,
-	float fpos_x, float fpos_y, float fwidth, float fheight)
-{
-	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f || image.invalid) return;
-
-	int pos_x = surface.width * fpos_x;
-	int pos_y = surface.height * fpos_y;
-
-	fwidth = min(fwidth, 1.0f - fpos_x);
-	fheight = min(fheight, 1.0f - fpos_y);
-
-	int width = surface.width * fwidth;
-	int height = surface.height * fheight;
-
-	for (int y = 0; y < height; y++)
-	{
-		for (int x = pos_x; x < width; x++)
-		{
-			assert(x < surface.width);
-			Color color = image.get_pixel_scaled(x, y, width, height);
-			surface[(y + pos_y) * surface.width + (x + pos_x)] = color;
-		}
-	}
-}
-
-
-template <typename Surface_type, typename Image_type>
-void draw_image_async(Surface_type& surface, const Image_type& image,
-	float fpos_x, float fpos_y, float fwidth, float fheight)
-{
-	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f) return;
-
-	int pos_x = surface.width * fpos_x;
-	int pos_y = surface.height * fpos_y;
-
-	fwidth = min(fwidth, 1.0f - fpos_x);
-	fheight = min(fheight, 1.0f - fpos_y);
-
-	int width = surface.width * fwidth;
-	int height = surface.height * fheight;
-
-	std::future<void> res[MAX_THREADS];
-
-	for (int i = 0; i < workers.size; i++)
-	{
-		int from_x = i * width / workers.size;
-		int to_x = (i + 1) * width / workers.size;
-
-		res[i] = workers.add_task([from_x, to_x, pos_y, pos_x, height, width, &surface, &image]()
-		{
-			for (int y = 0; y < height; y++)
-				for (int x = from_x; x < to_x; x++)
-				{
-					assert(x < surface.width);
-					Color color = image.get_pixel_scaled(x, y, width, height);
-					surface[(y + pos_y) * surface.width + (x + pos_x)] = color;
-				}
-		});
-	}
-
-	for (int i = 0; i < workers.size; i++)
-		res[i].get();
-}

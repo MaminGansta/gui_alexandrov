@@ -57,15 +57,15 @@ Image_type auto_contrast(Image_type& image, const Histogram<Image_type>& hist)
 
 
 template <typename Image_type>
-Image_type auto_contrast(Image_type& image)
+Image_type auto_contrast(Image_type& image, float skip_persent = 0.001f)
 {
 	Histogram<Image_type> hist(image);
 
 	Image_type res;
 	res.resize(image.width, image.height);
 
-	// cut 5% from bounds
-	int cut_amount = 0.01f * image.height * image.width;
+	// skip 5% from bounds
+	int cut_amount = skip_persent * image.height * image.width;
 	int x_min, x_max;
 
 	// find new bounds

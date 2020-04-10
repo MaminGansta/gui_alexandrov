@@ -1,6 +1,6 @@
 
 template <typename Image_type>
-Image_type hist_alignment(Image_type& image, const Histogram<Image_type>& hist)
+Image_type hist_alignment(const Image_type& image, const Histogram<Image_type>& hist)
 {
 	Image_type res;
 	res.resize(image.width, image.height);
@@ -49,7 +49,7 @@ Image_type hist_alignment(Image_type& image, const Histogram<Image_type>& hist)
 
 
 template <typename Image_type>
-Image_type hist_alignment(Image_type& image)
+Image_type hist_alignment(const Image_type& image)
 {
 	Histogram<Image_type> hist(image);
 

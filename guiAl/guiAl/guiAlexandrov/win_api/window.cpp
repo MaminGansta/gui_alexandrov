@@ -54,7 +54,7 @@ struct Component
 	Component() : id(global_id++) {}
 	~Component() { components_remove(parent, handle); DestroyWindow(handle); }
 
-	void resize(RECT rect)
+	void resize(RECT& rect)
 	{
 		if (type == STATIC) return;
 
@@ -307,15 +307,15 @@ struct Window
 
 			switch (msg)
 			{
-				case WM_CLOSE:
-				{
-					safe_release(window);
-				}return 0;
 				case WM_PAINT:
 				{
 					EndPaint(hwnd, &plug);
 					components.redraw(hwnd);
 				}break;
+				case WM_CLOSE:
+				{
+					safe_release(window);
+				}return 0;
 			}
 
 			return res;

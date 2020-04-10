@@ -34,7 +34,6 @@ Image_type YCbCr2RGB(const Image_type& origin)
 		temp.b = chanel_clip(pixel.Y + 2.1279f * pixel.U);
 		res[i] = temp;
 	}
-
 	return res;
 }
 

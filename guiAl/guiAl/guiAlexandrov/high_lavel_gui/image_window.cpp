@@ -4,7 +4,7 @@ struct Image_window : Window
 {
 	Image_type image;
 
-	Image_window(Image_type& image) : image(image)
+	Image_window(const Image_type& image) : image(image)
 	{
 		init(L"window", image.width, image.height, [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)->LRESULT
 			{
@@ -25,7 +25,12 @@ struct Image_window : Window
 };
 
 template <typename Image_type>
-Image_window<Image_type>* Create_Image_window(Image_type& image)
+Image_window<Image_type>* image_window(const Image_type& image)
 {
 	return new Image_window<Image_type>(image);
+}
+
+Image_window<Image>* image_window(const wchar_t* name)
+{
+	return new Image_window<Image>(name);
 }

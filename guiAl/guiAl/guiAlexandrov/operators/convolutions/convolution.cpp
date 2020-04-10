@@ -305,6 +305,7 @@ struct Kernal<fImage, size>
 		return res;
 	}
 
+
 	// only for brightnes chanel
 	fImage apply_YCbCr(const fImage& original)
 	{
@@ -327,10 +328,10 @@ struct Kernal<fImage, size>
 				for (int i = 0; i < size; i++)
 					for (int j = 0; j < size; j++)
 						brightnes += original[(y - pad + i) * original.width + x - pad + j].Y * kernal[i][j];
-				
+
 				res[y * res.width + x].Y = chanel_clip(brightnes);
-				res[y * res.width + x].U = 0.0f;
-				res[y * res.width + x].V = 0.0f;
+				res[y * res.width + x].U = original[y * res.width + x].U;
+				res[y * res.width + x].V = original[y * res.width + x].V;
 			}
 		}
 
@@ -358,8 +359,8 @@ struct Kernal<fImage, size>
 						}
 					}
 					res[y * res.width + x].Y = chanel_clip(brightnes);
-					res[y * res.width + x].U = 0.0f;
-					res[y * res.width + x].V = 0.0f;
+					res[y * res.width + x].U = original[y * res.width + x].U;
+					res[y * res.width + x].V = original[y * res.width + x].V;
 				}
 			}
 		}
@@ -380,13 +381,13 @@ struct Kernal<fImage, size>
 
 							if (core_x >= original.width) core_x = original.width - (core_x - original.width) - 1;
 							if (core_y >= original.height) core_y = original.height - (core_y - original.height) - 1;
-							
+
 							brightnes += original[core_y * original.width + core_x].Y * kernal[i][j];
 						}
 					}
 					res[y * res.width + x].Y = chanel_clip(brightnes);
-					res[y * res.width + x].U = 0.0f;
-					res[y * res.width + x].V = 0.0f;
+					res[y * res.width + x].U = original[y * res.width + x].U;
+					res[y * res.width + x].V = original[y * res.width + x].V;
 				}
 			}
 		}
@@ -704,15 +705,15 @@ struct Kernal<Image, size>
 	{
 		Image res;
 		res.resize(original.width, original.height);
-	
+
 		// main area
 		int pad = size / 2;
-	
+
 		int x0 = pad;
 		int y0 = pad;
 		int width = original.width - pad;
 		int height = original.height - pad;
-	
+
 		for (int y = y0; y < height; y++)
 		{
 			for (int x = x0; x < width; x++)
@@ -721,14 +722,14 @@ struct Kernal<Image, size>
 				for (int i = 0; i < size; i++)
 					for (int j = 0; j < size; j++)
 						brightnes += original[(y - pad + i) * original.width + x - pad + j].Y * kernal[i][j];
-	
+
 				res[y * res.width + x].Y = chanel_clip(brightnes / coef);
-				res[y * res.width + x].U = 0;
-				res[y * res.width + x].V = 0;
+				res[y * res.width + x].U = original[y * res.width + x].U;
+				res[y * res.width + x].V = original[y * res.width + x].V;
 			}
 		}
-	
-	
+
+
 		// edges
 		for (int i = 0; i < 2; i++)
 		{
@@ -743,21 +744,21 @@ struct Kernal<Image, size>
 						{
 							int core_y = abs(y - pad + i);
 							int core_x = abs(x - pad + j);
-	
+
 							if (core_x >= original.width) core_x = original.width - (core_x - original.width) - 1;
 							if (core_y >= original.height) core_y = original.height - (core_y - original.height) - 1;
-	
+
 							brightnes += original[core_y * original.width + core_x].Y * kernal[i][j];
-	
+
 						}
 					}
 					res[y * res.width + x].Y = chanel_clip(brightnes / coef);
-					res[y * res.width + x].U = 0;
-					res[y * res.width + x].V = 0;
+					res[y * res.width + x].U = original[y * res.width + x].U;
+					res[y * res.width + x].V = original[y * res.width + x].V;
 				}
 			}
 		}
-	
+
 		for (int i = 0; i < 2; i++)
 		{
 			for (int y = pad; y < original.height - pad; y++)
@@ -771,30 +772,29 @@ struct Kernal<Image, size>
 						{
 							int core_y = abs(y - pad + i);
 							int core_x = abs(x - pad + j);
-	
+
 							if (core_x >= original.width) core_x = original.width - (core_x - original.width) - 1;
 							if (core_y >= original.height) core_y = original.height - (core_y - original.height) - 1;
-	
+
 							brightnes += original[core_y * original.width + core_x].Y * kernal[i][j];
 						}
 					}
 					res[y * res.width + x].Y = chanel_clip(brightnes / coef);
-					res[y * res.width + x].U = 0;
-					res[y * res.width + x].V = 0;
+					res[y * res.width + x].U = original[y * res.width + x].U;
+					res[y * res.width + x].V = original[y * res.width + x].V;
 				}
 			}
 		}
-	
+
 		return res;
 	}
-	
-	
+
 	float* operator [] (int i) { return kernal[i]; }
 };
 
 // =============== make new kernal ====================
 template <typename Image_type, size_t sizeF, size_t sizeS>
-Kernal<Image_type, sizeF> new_kernal(Kernal<Image_type, sizeF>& f, Kernal<Image_type, sizeS>& s)
+Kernal<Image_type, sizeF> new_kernal(const Kernal<Image_type, sizeF>& f, const Kernal<Image_type, sizeS>& s)
 {
 	return Kernal<Image_type, sizeF>(f, s);
 }
@@ -804,7 +804,6 @@ Kernal<Image_type, sizeF> new_kernal(Kernal<Image_type, sizeF>& f, Kernal<Image_
 
 
 //	=================================== FILTERS =====================================
-
 
 
 // ====================== Gaussian filter ===========================
@@ -859,59 +858,95 @@ struct Gaussian_filter :  Kernal<Image_type, mat_size(sigma)>
 
 
 
-template <typename Image_type>
+template <typename Image_type, size_t sigma = 1>
 Image_type gauss_filter(const Image_type& image)
 {
-	Gaussian_filter<Image_type, 1> filter;
+	Gaussian_filter<Image_type, sigma> filter;
 	return filter.apply(image);
 }
 
 
 
 // =================== Sharp filter ====================
-template <typename Image_type, size_t type = 1>
-struct Sharp_filter;
 
-template <typename Image_type>
-struct Sharp_filter<Image_type, 1>: public Kernal<Image_type, 3>
+template <typename Image_type, size_t size = 3, size_t sharp = 2>
+struct Sharp_filter : Kernal<Image_type, size>
 {
-	Sharp_filter() : Kernal<Image_type, 3>({ -0.1f, -0.2f, -0.1f ,-0.2f, 2.2f, -0.2f ,-0.1f, -0.2f, -0.1f }){}
-};
+	using Kernal<Image_type, size>::Kernal_init;
 
-template <typename Image_type>
-struct Sharp_filter<Image_type, 2> : public Kernal<Image_type, 3>
-{
-	Sharp_filter() : Kernal<Image_type, 3>({ -0.25f, -0.25f, -0.25f ,-0.25f, 3.0f, -0.25f ,-0.25f, -0.25f, -0.25f }) {}
-};
+	Sharp_filter()
+	{
+		float kernal[size][size];
+		int center = size / 2;
+		float total = 0.0f;
+		float sharp_norm = float(sharp) / 100.0f;
 
-template <typename Image_type>
-struct Sharp_filter<Image_type, 3> : public Kernal<Image_type, 3>
-{
-	Sharp_filter() : Kernal<Image_type, 3>({ -0.25f, -0.5f, -0.25f ,-0.5f, 4.0f, -0.5f ,-0.25f, -0.5f, -0.25f }) {}
-};
+		for (int i = 0; i < size; i++)
+		{
+			for (int j = 0; j < size; j++)
+			{
+				if (i == center && j == center) continue;
+				total += kernal[i][j] = -sharp_norm / pow(abs(i - center) + abs(j - center), size/2);
+			}
+		}
+				
+		kernal[center][center] = -total + 1;
+		Kernal_init(kernal);
+	}
 
-
-template <typename Image_type>
-struct Sharp_filter<Image_type, 4> : public Kernal<Image_type, 3>
-{
-	Sharp_filter() : Kernal<Image_type, 3>({ -0.3f, -0.5f, -0.3f ,-0.5f, 4.2f, -0.5f ,-0.3f, -0.5f, -0.3f }) {}
-};
-
-
-
-template <typename Image_type>
-struct Sharp_filter<Image_type, 5> : public Kernal<Image_type, 3>
-{
-	Sharp_filter() : Kernal<Image_type, 3>({ -1.0f, -1.0f, -1.0f ,-1.0f, 9.0f, -1.0f ,-1.0f, -1.0f, -1.0f }) {}
 };
 
 
-
-
-template <typename Image_type>
+template <typename Image_type, size_t size = 3, size_t sharp = 2>
 Image_type sharp_filter(const Image_type& image)
 {
-	Sharp_filter<Image_type> sf;
+	Sharp_filter<Image_type, size, sharp> sf;
+	return sf.apply(image);
+}
+
+
+template <typename Image_type, size_t type = 1>
+struct Sharp_filter3x3;
+
+template <typename Image_type>
+struct Sharp_filter3x3<Image_type, 1>: public Kernal<Image_type, 3>
+{
+	Sharp_filter3x3() : Kernal<Image_type, 3>({ -0.1f, -0.2f, -0.1f ,-0.2f, 2.2f, -0.2f ,-0.1f, -0.2f, -0.1f }){}
+};
+
+template <typename Image_type>
+struct Sharp_filter3x3<Image_type, 2> : public Kernal<Image_type, 3>
+{
+	Sharp_filter3x3() : Kernal<Image_type, 3>({ -0.25f, -0.25f, -0.25f ,-0.25f, 3.0f, -0.25f ,-0.25f, -0.25f, -0.25f }) {}
+};
+
+template <typename Image_type>
+struct Sharp_filter3x3<Image_type, 3> : public Kernal<Image_type, 3>
+{
+	Sharp_filter3x3() : Kernal<Image_type, 3>({ -0.25f, -0.5f, -0.25f ,-0.5f, 4.0f, -0.5f ,-0.25f, -0.5f, -0.25f }) {}
+};
+
+
+template <typename Image_type>
+struct Sharp_filter3x3<Image_type, 4> : public Kernal<Image_type, 3>
+{
+	Sharp_filter3x3() : Kernal<Image_type, 3>({ -0.3f, -0.5f, -0.3f ,-0.5f, 4.2f, -0.5f ,-0.3f, -0.5f, -0.3f }) {}
+};
+
+
+template <typename Image_type>
+struct Sharp_filter3x3<Image_type, 5> : public Kernal<Image_type, 3>
+{
+	Sharp_filter3x3() : Kernal<Image_type, 3>({ -1.0f, -1.0f, -1.0f ,-1.0f, 9.0f, -1.0f ,-1.0f, -1.0f, -1.0f }) {}
+};
+
+
+
+
+template <typename Image_type, size_t type = 1>
+Image_type sharp_filter3x3(const Image_type& image)
+{
+	Sharp_filter3x3<Image_type, type> sf;
 	return sf.apply(image);
 }
 
@@ -939,13 +974,13 @@ Image_type sobel(const Image_type& origin)
 	Sobel_y<Image_type> sobel_y;
 	Sobel_x<Image_type> sobel_x;
 
-	Image_type sob_x = sobel_y.apply_YCbCr(RGB2YCbCr(origin));
-	Image_type sob_y = sobel_x.apply_YCbCr(RGB2YCbCr(origin));
+	Image_type sob_x = sobel_y.apply(RGB2BW(origin));
+	Image_type sob_y = sobel_x.apply(RGB2BW(origin));
 
 	for (int i = 0; i < origin.width * origin.height; i++)
-		res[i] = (sob_x[i] + sob_y[i]);
+		res[i] = sob_x[i] + sob_y[i];
 
-	return YCbCr2RGB(res);
+	return res;
 }
 
 template <typename Image_type>
@@ -955,13 +990,13 @@ Image_type sobel_avg(const Image_type& origin)
 	Sobel_y<Image_type> sobel_y;
 	Sobel_x<Image_type> sobel_x;
 
-	Image_type sob_x = sobel_y.apply_YCbCr(RGB2YCbCr(origin));
-	Image_type sob_y = sobel_x.apply_YCbCr(RGB2YCbCr(origin));
+	Image_type sob_x = sobel_y.apply(RGB2BW(origin));
+	Image_type sob_y = sobel_x.apply(RGB2BW(origin));
 
 	for (int i = 0; i < origin.width * origin.height; i++)
 		res[i] = (sob_x[i] / 2 + sob_y[i] / 2);
 
-	return YCbCr2RGB(res);
+	return res;
 }
 
 
@@ -985,10 +1020,10 @@ struct Box_filter: public Kernal<Image_type, size>
 };
 
 
-template <typename Image_type>
+template <typename Image_type, size_t size = 3>
 Image_type box_filter(const Image_type& image)
 {
-	Box_filter<Image_type> bf;
+	Box_filter<Image_type, size> bf;
 	return bf.apply(image);
 }
 

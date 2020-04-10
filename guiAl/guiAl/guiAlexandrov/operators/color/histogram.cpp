@@ -2,7 +2,7 @@
 template <typename Image_type>
 struct Histogram
 {
-	Image_type* image = NULL;
+	const Image_type* image = NULL;
 	float brightness[256];
 	float red[256];
 	float green[256];
@@ -16,13 +16,13 @@ struct Histogram
 
 	Histogram() {}
 
-	Histogram(Image_type& image)
+	Histogram(const Image_type& image)
 	{
 		set_img(image);
 		update_info();
 	}
 
-	void set_img(Image_type& img)
+	void set_img(const Image_type& img)
 	{
 		image = &img;
 	}
