@@ -870,11 +870,11 @@ Image_type gauss_filter(const Image_type& image)
 // =================== Sharp filter ====================
 
 template <typename Image_type, size_t size = 3, size_t sharp = 2>
-struct Sharp_filter : Kernal<Image_type, size>
+struct Sharp_filter_s : Kernal<Image_type, size>
 {
 	using Kernal<Image_type, size>::Kernal_init;
 
-	Sharp_filter()
+	Sharp_filter_s()
 	{
 		float kernal[size][size];
 		int center = size / 2;
@@ -896,13 +896,50 @@ struct Sharp_filter : Kernal<Image_type, size>
 
 };
 
-
 template <typename Image_type, size_t size = 3, size_t sharp = 2>
-Image_type sharp_filter(const Image_type& image)
+Image_type sharp_filter_s(const Image_type& image)
 {
-	Sharp_filter<Image_type, size, sharp> sf;
+	Sharp_filter_s<Image_type, size, sharp> sf;
 	return sf.apply(image);
 }
+
+
+
+// run time coefs determination
+template <typename Image_type, size_t size = 3>
+struct Sharp_filter : Kernal<Image_type, size>
+{
+	using Kernal<Image_type, size>::Kernal_init;
+
+	Sharp_filter(int sharp = 2)
+	{
+		float kernal[size][size];
+		int center = size / 2;
+		float total = 0.0f;
+		float sharp_norm = float(sharp) / 100.0f;
+
+		for (int i = 0; i < size; i++)
+		{
+			for (int j = 0; j < size; j++)
+			{
+				if (i == center && j == center) continue;
+				total += kernal[i][j] = -sharp_norm / pow(abs(i - center) + abs(j - center), size / 2);
+			}
+		}
+
+		kernal[center][center] = -total + 1;
+		Kernal_init(kernal);
+	}
+
+};
+
+template <typename Image_type, size_t size = 3>
+Image_type sharp_filter(const Image_type& image, int sharp = 2)
+{
+	Sharp_filter<Image_type, size> sf(sharp);
+	return sf.apply(image);
+}
+
 
 
 template <typename Image_type, size_t type = 1>
@@ -939,8 +976,6 @@ struct Sharp_filter3x3<Image_type, 5> : public Kernal<Image_type, 3>
 {
 	Sharp_filter3x3() : Kernal<Image_type, 3>({ -1.0f, -1.0f, -1.0f ,-1.0f, 9.0f, -1.0f ,-1.0f, -1.0f, -1.0f }) {}
 };
-
-
 
 
 template <typename Image_type, size_t type = 1>

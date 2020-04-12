@@ -1,6 +1,6 @@
 
 template <typename Image_type>
-Image_type auto_contrast(Image_type& image, const Histogram<Image_type>& hist)
+Image_type auto_contrast(const Image_type& image, const Histogram<Image_type>& hist)
 {
 	Image_type res;
 	res.resize(image.width, image.height);
@@ -57,7 +57,7 @@ Image_type auto_contrast(Image_type& image, const Histogram<Image_type>& hist)
 
 
 template <typename Image_type>
-Image_type auto_contrast(Image_type& image, float skip_persent = 0.001f)
+Image_type auto_contrast(const Image_type& image, float skip_persent = 0.001f)
 {
 	Histogram<Image_type> hist(image);
 

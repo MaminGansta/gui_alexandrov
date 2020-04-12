@@ -19,7 +19,7 @@ struct Image
 {
 	int height = 0, width = 0;
 	Color* data = NULL;
-	bool invalid = false;
+	bool invalid = true;
 
 	Image() = default;
 	Image(const wchar_t* filename_utf8)
@@ -79,11 +79,7 @@ struct Image
 
 		uint8_t* raw = stbi_load(filename, &width, &height, &chanels, 0);
 
-		if (raw == NULL)
-		{
-			invalid = true;
-			return;
-		}
+		if (raw == NULL) return;
 
 		data = new Color[width * height];
 
@@ -96,6 +92,7 @@ struct Image
 			}
 		}
 
+		invalid = false;
 		stbi_image_free(raw);
 	}
 

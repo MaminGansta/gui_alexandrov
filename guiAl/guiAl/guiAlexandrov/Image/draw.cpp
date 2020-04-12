@@ -243,7 +243,7 @@ void draw_image(Surface_type& surface, const Image_type& image,
 
 	for (int y = 0; y < height; y++)
 	{
-		for (int x = pos_x; x < width; x++)
+		for (int x = 0; x < width; x++)
 		{
 			assert(x < surface.width);
 			Color color = image.get_pixel_scaled(x, y, width, height);

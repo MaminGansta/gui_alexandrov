@@ -1,5 +1,4 @@
 
-
 high_resolution_clock::time_point init_time;
 
 float get_time()

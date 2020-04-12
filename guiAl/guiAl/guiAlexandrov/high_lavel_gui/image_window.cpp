@@ -4,7 +4,7 @@ struct Image_window : Window
 {
 	Image_type image;
 
-	Image_window(const Image_type& image) : image(image)
+	Image_window(const Image_type& image, int flags = DEF_WINDOW) : image(image)
 	{
 		init(L"window", image.width, image.height, [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)->LRESULT
 			{
@@ -21,16 +21,22 @@ struct Image_window : Window
 
 				return DefWindowProc(hwnd, msg, wParam, lParam);
 			});
+
+		if (flags == 0)
+		{
+			SetWindowLong(handle, GWL_STYLE, 0); //remove all window styles, check MSDN for details
+			ShowWindow(handle, SW_SHOW);
+		}
 	}
 };
 
 template <typename Image_type>
-Image_window<Image_type>* image_window(const Image_type& image)
+int image_window(const Image_type& image, int flags = DEF_WINDOW)
 {
-	return new Image_window<Image_type>(image);
+	return (new Image_window<Image_type>(image, flags))->class_id;
 }
 
-Image_window<Image>* image_window(const wchar_t* name)
+int image_window(const wchar_t* name, int flags = DEF_WINDOW)
 {
-	return new Image_window<Image>(name);
+	return (new Image_window<Image>(name, flags))->class_id;
 }

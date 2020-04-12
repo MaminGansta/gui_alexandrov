@@ -8,6 +8,10 @@ struct My_window : Window
 	Image_type bg;
 
 	Button btn;
+	Button bClear;
+	std::vector<int> windows;
+
+
 	Label label;
 	Text text;
 	ComboBox b;
@@ -15,7 +19,6 @@ struct My_window : Window
 	CheckBox aac;
 	RadioButton aaa;
 	RadioButton aaav;
-
 
 	My_window()
 	{
@@ -27,6 +30,19 @@ struct My_window : Window
 
 				switch (msg)
 				{
+					case WM_COMMAND:
+					{
+						if (LOWORD(wParam) == window->btn.id)
+							window->windows.push_back(image_window(window->bg));
+
+						if (LOWORD(wParam) == window->bClear.id)
+						{
+							for (int id : window->windows)
+								Window::close(id);
+						
+							window->windows.clear();
+						}
+					}break;
 					case WM_PAINT:
 					{
 						draw_image(window->canvas, window->bg, 0.0f, 0.0f, 1.0f, 1.0f);
@@ -38,6 +54,8 @@ struct My_window : Window
 
 
 			btn.init(getHWND(), L"button", 0.1f, 0.1f, .1f, 0.1f, RESIZABLE);
+			bClear.init(handle, L"Clear", 0.01f, 0.8f, 0.1f, 0.1f, RESIZABLE);
+
 			label.init(getHWND(), L"some text dsaf\nadsfadsfdasfdasf", 0.2f, 0.2f, 0.1f, 0.1f, RESIZABLE);
 			set_font_size(btn.handle, 20);
 			
@@ -64,83 +82,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
 	al_init(hInstance);
 
-	//new My_window<Image>();
-
-	//fImage fbg(L"back.png");
-	fImage fbg(L"hd_stock.jpeg");
-	Image bg = fbg;
-
-	Create_Image_window(fbg);
-
-	
-	Gaussian_filter<Image> gf;
-	Gaussian_filter<fImage> fgf;
-	
-	Sharp_filter<Image, 2> sf;
-	Sharp_filter<fImage, 2> fsf;
-
-	Box_filter<Image> bf;
-	Box_filter<fImage, 3> fbf;
-
-	// apply second confolution for first and make new kernal
-	auto kernal_fimage = new_kernal(fgf, fsf);
-
-	auto kernal_image = new_kernal(gf, sf);
-
-
-
-	float start = get_time();
-	//bg = RGB2YCbCr(bg);
-	//bg = gauss_filter(bg);
-	//bg = sharp_filter(bg);
-	//bg = sobel(bg);
-	//bg = sobel_avg(bg);
-	//bg = box_filter(bg);
-
-	//bg = auto_contrast(bg);
-	//bg = hist_alignment(bg);
-	//bg = gray_world(bg);
-
-	//bg = gf.apply_async(bg);
-	//bg = sf.apply_async(bg);
-	//bg = bf.apply_async(bg);
-
-	// bg = kernal_image.apply_async(bg);
-
-	bg = median_filter(bg);
-
-	output(L"\n%f\n", get_time() - start);
-	Create_Image_window(bg);
-
-
-	
-	start = get_time();
-	//fbg = gf.apply(fbg);
-	//fbg = RGB2YCbCr(fbg);
-	//fbg = gauss_filter(fbg);
-	//fbg = sharp_filter(fbg);
-	//fbg = sobel(fbg);
-	//fbg = sobel_avg(fbg);
-	//fbg = box_filter(fbg);
-
-	//fbg = auto_contrast(fbg);
-	//fbg = hist_alignment(fbg);
-	//fbg = gray_world(fbg);
-
-	//fbg = fgf.apply_async(fbg);
-	//fbg = fbf.apply_async(fbg);
-	//fbg = fsf.apply_async(fbg);
-
-	//fbg = kernal_fimage.apply_async(fbg);
-
-	fbg = median_filter(fbg);
-
-	output(L"\n%f\n", get_time() - start);
-	Create_Image_window(fbg);
-
+	My_window<Image>* window = new My_window<Image>();
 
 
 	Window::wait_msg_proc();
-
 	return 0;
 }

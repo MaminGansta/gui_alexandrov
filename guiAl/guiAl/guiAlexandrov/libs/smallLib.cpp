@@ -1,13 +1,3 @@
-#include <cassert>
-#include <memory.h>
-#include <utility>
-#include <malloc.h>
-#include <stdio.h>
-#include <string>
-#include <random>
-#include <limits.h>
-#include <chrono>
-
 #ifndef MAX
 #define MAX(a,b) (a > b? a : b)
 #endif
@@ -45,6 +35,7 @@ namespace small
 			for (int i = 0; i < other.size; i++)
 				push_back(other.data[i]);
 		}
+
 		array(array<T, capacity>&& other)
 		{
 			size = other.size;
@@ -80,6 +71,12 @@ namespace small
 		}
 
 		T& operator [] (int idx)
+		{
+			assert((unsigned)idx < size);
+			return data[idx];
+		}
+
+		const T& operator [] (int idx) const
 		{
 			assert((unsigned)idx < size);
 			return data[idx];

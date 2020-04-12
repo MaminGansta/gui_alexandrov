@@ -22,11 +22,22 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include <cstdio>
 #include <wchar.h>
 #include <tchar.h>
+#include <cmath>
+#include <malloc.h>
+
 
 #include <array>
 #include <vector>
 #include <algorithm>
 #include <functional>
+
+#include <cassert>
+#include <utility>
+#include <string>
+#include <random>
+#include <limits.h>
+#include <chrono>
+#include <thread>
 
 
 void doutput(const char* format, ...)
@@ -92,6 +103,8 @@ HINSTANCE hInst;
 #endif
 
 // unity build
+
+// thread pool
 #include "libs/thread_pool.cpp"
 thread_pool workers(MAX_THREADS);
 
@@ -105,7 +118,7 @@ thread_pool workers(MAX_THREADS);
 #include "libs/time.cpp"
 #include "input/io.cpp"
 
-// image tarnsformation
+// image tarnsformations
 #include "operators/color/histogram.cpp"
 #include "operators/image_conversion.cpp"
 #include "operators/median_filter.cpp"
@@ -116,6 +129,7 @@ thread_pool workers(MAX_THREADS);
 
 // high_lavel_gui elements
 #include "high_lavel_gui/image_window.cpp"
+#include "high_lavel_gui/file_explorer_window.cpp"
 
 void al_init(HINSTANCE hInstance)
 {
