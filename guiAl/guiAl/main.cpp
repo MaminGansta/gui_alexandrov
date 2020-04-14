@@ -45,7 +45,20 @@ struct My_window : Window
 					}break;
 					case WM_PAINT:
 					{
-						draw_image(window->canvas, window->bg, 0.0f, 0.0f, 1.0f, 1.0f);
+						draw_image_a(window->canvas, window->bg, 0.0f, 0.0f, 1.0f, 1.0f);
+
+						draw_image_a(window->canvas, window->bg, 0.5f, 0.5f, 0.5f, 0.5f, 0.3f);
+
+
+						float start = get_time();
+						draw_line_a(window->canvas, 0, 0, 0.5f, 0.5f, fColor(1.0f, 0, 1.0f), 10);
+						output("%f\n", get_time() - start);
+
+						start = get_time();
+						draw_line(window->canvas, 0, 0.1f, 0.5f, 0.6f, fColor(1.0f, 0, 1.0f), 10);
+						output("%f\n", get_time() - start);
+
+
 						window->render_canvas();
 					}return 0;
 				}
@@ -53,24 +66,24 @@ struct My_window : Window
 			});
 
 
-			btn.init(getHWND(), L"button", 0.1f, 0.1f, .1f, 0.1f, RESIZABLE);
-			bClear.init(handle, L"Clear", 0.01f, 0.8f, 0.1f, 0.1f, RESIZABLE);
-
-			label.init(getHWND(), L"some text dsaf\nadsfadsfdasfdasf", 0.2f, 0.2f, 0.1f, 0.1f, RESIZABLE);
-			set_font_size(btn.handle, 20);
-			
-			
-			text.init(getHWND(), 0.1f, 0.6f, 0.2f, 0.2f);
-			
-			b.init(getHWND(), 0.4f, 0.2f);
-			std::vector<std::wstring> combo_elements{ L"Mercury", L"Venus", L"Earth", L"Mars", L"Jupiter", L"Saturn", L"Uranus", L"NOT_Neptune" };
-			b.add(combo_elements);
-			
-			aa.init(getHWND(), L"Check", 0.5f, 0.3f);
-			aac.init(getHWND(), L"Check2", 0.5f, 0.4f);
-			
-			aaa.init(getHWND(), L"Radio", 0.4f, 0.6f, 0.1f, 0.1f, RESIZABLE);
-			aaav.init(getHWND(), L"Radio2", 0.4f, 0.7f, 0.1f, 0.1f, RESIZABLE);
+			//btn.init(getHWND(), L"button", 0.1f, 0.1f, .1f, 0.1f, RESIZABLE);
+			//bClear.init(handle, L"Clear", 0.01f, 0.8f, 0.1f, 0.1f, RESIZABLE);
+			//
+			//label.init(getHWND(), L"some text dsaf\nadsfadsfdasfdasf", 0.2f, 0.2f, 0.1f, 0.1f, RESIZABLE);
+			//set_font_size(btn.handle, 20);
+			//
+			//
+			//text.init(getHWND(), 0.1f, 0.6f, 0.2f, 0.2f);
+			//
+			//b.init(getHWND(), 0.4f, 0.2f);
+			//std::vector<std::wstring> combo_elements{ L"Mercury", L"Venus", L"Earth", L"Mars", L"Jupiter", L"Saturn", L"Uranus", L"NOT_Neptune" };
+			//b.add(combo_elements);
+			//
+			//aa.init(getHWND(), L"Check", 0.5f, 0.3f);
+			//aac.init(getHWND(), L"Check2", 0.5f, 0.4f);
+			//
+			//aaa.init(getHWND(), L"Radio", 0.4f, 0.6f, 0.1f, 0.1f, RESIZABLE);
+			//aaav.init(getHWND(), L"Radio2", 0.4f, 0.7f, 0.1f, 0.1f, RESIZABLE);
 
 	}
 

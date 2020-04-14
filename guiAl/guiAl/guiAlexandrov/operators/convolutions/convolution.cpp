@@ -148,6 +148,7 @@ struct Kernal<fImage, size>
 					res[y * res.width + x].b = max(min(bgr.m128_f32[0], 1.0f), 0.0f);
 					res[y * res.width + x].g = max(min(bgr.m128_f32[1], 1.0f), 0.0f);
 					res[y * res.width + x].r = max(min(bgr.m128_f32[2], 1.0f), 0.0f);
+					res[y * res.width + x].a = original[y * res.width + x].a;
 				}
 			}
 		}
@@ -177,6 +178,7 @@ struct Kernal<fImage, size>
 					res[y * res.width + x].b = max(min(bgr.m128_f32[0], 1.0f), 0.0f);
 					res[y * res.width + x].g = max(min(bgr.m128_f32[1], 1.0f), 0.0f);
 					res[y * res.width + x].r = max(min(bgr.m128_f32[2], 1.0f), 0.0f);
+					res[y * res.width + x].a = original[y * res.width + x].a;
 				}
 			}
 		}
@@ -234,6 +236,7 @@ struct Kernal<fImage, size>
 							res[y * res.width + x].b = max(min(bgr.m128_f32[0], 1.0f), 0.0f);
 							res[y * res.width + x].g = max(min(bgr.m128_f32[1], 1.0f), 0.0f);
 							res[y * res.width + x].r = max(min(bgr.m128_f32[2], 1.0f), 0.0f);
+							res[y * res.width + x].a = original[y * res.width + x].a;
 						}
 					}
 				});
@@ -266,6 +269,7 @@ struct Kernal<fImage, size>
 					res[y * res.width + x].b = max(min(bgr.m128_f32[0], 1.0f), 0.0f);
 					res[y * res.width + x].g = max(min(bgr.m128_f32[1], 1.0f), 0.0f);
 					res[y * res.width + x].r = max(min(bgr.m128_f32[2], 1.0f), 0.0f);
+					res[y * res.width + x].a = original[y * res.width + x].a;
 				}
 			}
 		}
@@ -295,6 +299,7 @@ struct Kernal<fImage, size>
 					res[y * res.width + x].b = max(min(bgr.m128_f32[0], 1.0f), 0.0f);
 					res[y * res.width + x].g = max(min(bgr.m128_f32[1], 1.0f), 0.0f);
 					res[y * res.width + x].r = max(min(bgr.m128_f32[2], 1.0f), 0.0f);
+					res[y * res.width + x].a = original[y * res.width + x].a;
 				}
 			}
 		}
@@ -332,6 +337,7 @@ struct Kernal<fImage, size>
 				res[y * res.width + x].Y = chanel_clip(brightnes);
 				res[y * res.width + x].U = original[y * res.width + x].U;
 				res[y * res.width + x].V = original[y * res.width + x].V;
+				res[y * res.width + x].a = original[y * res.width + x].a;
 			}
 		}
 
@@ -361,6 +367,7 @@ struct Kernal<fImage, size>
 					res[y * res.width + x].Y = chanel_clip(brightnes);
 					res[y * res.width + x].U = original[y * res.width + x].U;
 					res[y * res.width + x].V = original[y * res.width + x].V;
+					res[y * res.width + x].a = original[y * res.width + x].a;
 				}
 			}
 		}
@@ -388,6 +395,7 @@ struct Kernal<fImage, size>
 					res[y * res.width + x].Y = chanel_clip(brightnes);
 					res[y * res.width + x].U = original[y * res.width + x].U;
 					res[y * res.width + x].V = original[y * res.width + x].V;
+					res[y * res.width + x].a = original[y * res.width + x].a;
 				}
 			}
 		}
@@ -508,6 +516,7 @@ struct Kernal<Image, size>
 				res[y * res.width + x].r = chanel_clip(r / coef);
 				res[y * res.width + x].g = chanel_clip(g / coef);
 				res[y * res.width + x].b = chanel_clip(b / coef);
+				res[y * res.width + x].a = original[y * res.width + x].a;
 			}
 		}
 
@@ -540,6 +549,7 @@ struct Kernal<Image, size>
 					res[y * res.width + x].r = chanel_clip(r / coef);
 					res[y * res.width + x].g = chanel_clip(g / coef);
 					res[y * res.width + x].b = chanel_clip(b / coef);
+					res[y * res.width + x].a = original[y * res.width + x].a;
 				}
 			}
 		}
@@ -570,6 +580,7 @@ struct Kernal<Image, size>
 					res[y * res.width + x].r = chanel_clip(r / coef);
 					res[y * res.width + x].g = chanel_clip(g / coef);
 					res[y * res.width + x].b = chanel_clip(b / coef);
+					res[y * res.width + x].a = original[y * res.width + x].a;
 				}
 			}
 		}
@@ -626,6 +637,7 @@ struct Kernal<Image, size>
 							res[y * res.width + x].r = chanel_clip(r / coef);
 							res[y * res.width + x].g = chanel_clip(g / coef);
 							res[y * res.width + x].b = chanel_clip(b / coef);
+							res[y * res.width + x].a = original[y * res.width + x].a;
 						}
 					}
 				});
@@ -659,6 +671,7 @@ struct Kernal<Image, size>
 					res[y * res.width + x].r = chanel_clip(r / coef);
 					res[y * res.width + x].g = chanel_clip(g / coef);
 					res[y * res.width + x].b = chanel_clip(b / coef);
+					res[y * res.width + x].a = original[y * res.width + x].a;
 				}
 			}
 		}
@@ -689,6 +702,7 @@ struct Kernal<Image, size>
 					res[y * res.width + x].r = chanel_clip(r / coef);
 					res[y * res.width + x].g = chanel_clip(g / coef);
 					res[y * res.width + x].b = chanel_clip(b / coef);
+					res[y * res.width + x].a = original[y * res.width + x].a;
 				}
 			}
 		}
@@ -726,6 +740,7 @@ struct Kernal<Image, size>
 				res[y * res.width + x].Y = chanel_clip(brightnes / coef);
 				res[y * res.width + x].U = original[y * res.width + x].U;
 				res[y * res.width + x].V = original[y * res.width + x].V;
+				res[y * res.width + x].a = original[y * res.width + x].a;
 			}
 		}
 
@@ -755,6 +770,7 @@ struct Kernal<Image, size>
 					res[y * res.width + x].Y = chanel_clip(brightnes / coef);
 					res[y * res.width + x].U = original[y * res.width + x].U;
 					res[y * res.width + x].V = original[y * res.width + x].V;
+					res[y * res.width + x].a = original[y * res.width + x].a;
 				}
 			}
 		}
@@ -782,6 +798,7 @@ struct Kernal<Image, size>
 					res[y * res.width + x].Y = chanel_clip(brightnes / coef);
 					res[y * res.width + x].U = original[y * res.width + x].U;
 					res[y * res.width + x].V = original[y * res.width + x].V;
+					res[y * res.width + x].a = original[y * res.width + x].a;
 				}
 			}
 		}
