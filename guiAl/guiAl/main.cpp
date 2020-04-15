@@ -43,14 +43,12 @@ struct My_window : Window
 							window->windows.clear();
 						}
 					}break;
-					case WM_PAINT:
+					case WM_SIZE:
 					{
 						draw_image_async(window->canvas, window->bg, 0.0f, 0.0f, 1.0f, 1.0f);
 						
 						draw_image_async_a(window->canvas, window->bg, 0.5f, 0.5f, 0.5f, 0.5f, 0.3f);
 						
-						
-
 						draw_filled_rect_async_a(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0, 50));
 						draw_rect(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0), 2);
 
@@ -62,7 +60,6 @@ struct My_window : Window
 
 						render_text(window->canvas, 0.6f, 0.8f, L"S1MPLE TEXT (rendering)", Color(), get_def_font(25));
 
-						window->render_canvas();
 					}return 0;
 				}
 				return DefWindowProc(hwnd, msg, wParam, lParam);

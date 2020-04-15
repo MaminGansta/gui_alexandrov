@@ -156,7 +156,7 @@ struct Component_crt
 		if (pointer == components.end()) return;
 		
 		for (auto& component : pointer->second)
-			RedrawWindow(component.hwnd, 0, 0, RDW_INVALIDATE | RDW_NOCHILDREN);
+			RedrawWindow(component.hwnd, 0, 0, RDW_INVALIDATE);
 	}
 
 	auto& operator[] (HWND parent)
@@ -295,7 +295,7 @@ struct Window
 			Window* window = (Window*)args[0];
 			if (window == NULL)	return DefWindowProc(hwnd, msg, wParam, lParam);
 
-			PAINTSTRUCT plug;
+			PAINTSTRUCT ps;
 			switch (msg)
 			{
 				case WM_SIZE:
@@ -305,7 +305,7 @@ struct Window
 				}break;
 				case WM_PAINT:
 				{
-					BeginPaint(hwnd, &plug);
+					BeginPaint(hwnd, &ps);
 				}break;
 				case  WM_GETMINMAXINFO:
 				{
@@ -320,13 +320,16 @@ struct Window
 			
 			// user's callback
 			LRESULT res = args.callback(hwnd, msg, wParam, lParam, args);
-
+			
 			switch (msg)
 			{
 				case WM_PAINT:
 				{
-					EndPaint(hwnd, &plug);
+					window->render_canvas(ps.rcPaint);
+
+
 					components.redraw(hwnd);
+					EndPaint(hwnd, &ps);
 				}break;
 				case WM_CLOSE:
 				{
@@ -380,9 +383,28 @@ struct Window
 		SendMessage(hwnd, WM_CLOSE, 0, 0);
 	}
 
-	void render_canvas()
+	void render_canvas(const RECT& rect)
 	{
-		StretchDIBits(hdc, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height, canvas.data, &canvas.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
+		HDC hdc = GetDC(NULL);
+		HDC memDC = CreateCompatibleDC(hdc);
+		HBITMAP hBmp = CreateHBITMAPfromByteArray(hdc, canvas.width, canvas.height, canvas.data);
+
+
+		HGDIOBJ oldBMP = SelectObject(memDC, hBmp);
+
+		//RECT& rect = ps.rcPaint;
+		int width = rect.right - rect.left;
+		int height = rect.bottom - rect.top;
+
+		// redraw area
+		BitBlt(this->hdc, rect.left, rect.top, width, height, memDC, rect.left, rect.top, SRCCOPY);
+
+
+		SelectObject(memDC, oldBMP);
+		DeleteDC(memDC);
+		ReleaseDC(NULL, hdc);
+
+		//StretchDIBits(hdc, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height, canvas.data, &canvas.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
 	}
 
 	void redraw()
