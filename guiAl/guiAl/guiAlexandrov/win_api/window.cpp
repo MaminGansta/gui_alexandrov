@@ -45,17 +45,19 @@ struct Component
 	float x, y, width, height;
 	UINT type;
 	UINT style;
-	HWND handle;
+	HWND hwnd;
 	HWND parent;
 
 	Component(int id, float x, float y, float width, float height,
-		      UINT type, UINT style, HWND handle, HWND parent)
+		      UINT type, UINT style, HWND hwnd, HWND parent)
 		: 
 		id(id), x(x), y(y), width(width), height(height),
-		type(type), style(style), handle(handle), parent(parent)
-	{}
+		type(type), style(style), hwnd(hwnd), parent(parent)
+	{
+		set_font(hwnd, DEF_FONT);
+	}
 
-	virtual ~Component() {};// DestroyWindow(handle);
+	virtual ~Component() {};// DestroyWindow(hwnd);
 
 	void resize(RECT& rect)
 	{
@@ -69,7 +71,7 @@ struct Component
 		if (type == DYNAMIC)
 			flags = SWP_NOSIZE;
 
-		SetWindowPos(handle, 0, x * nWidth, y * nHeight, width * nWidth + 1, height * nHeight + 1, flags);
+		SetWindowPos(hwnd, 0, x * nWidth, y * nHeight, width * nWidth + 1, height * nHeight + 1, flags);
 	}
 
 	void resize(float width, float height)
@@ -82,7 +84,7 @@ struct Component
 		int nWidth = rect.right - rect.left;
 		int nHeight = rect.bottom - rect.top;
 		
-		SetWindowPos(handle, 0, 0, 0, width * nWidth + 1, height * nHeight + 1, SWP_NOZORDER | SWP_NOMOVE);
+		SetWindowPos(hwnd, 0, 0, 0, width * nWidth + 1, height * nHeight + 1, SWP_NOZORDER | SWP_NOMOVE);
 	}
 
 	void move(float x, float y)
@@ -95,12 +97,12 @@ struct Component
 		int nWidth = rect.right - rect.left;
 		int nHeight = rect.bottom - rect.top;
 
-		SetWindowPos(handle, 0, x * nWidth, y * nHeight, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+		SetWindowPos(hwnd, 0, x * nWidth, y * nHeight, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 	}
 
 
-	void hide() { ShowWindow(handle, SW_HIDE); }
-	void show() { ShowWindow(handle, SW_SHOWNOACTIVATE); }
+	void hide() { ShowWindow(hwnd, SW_HIDE); }
+	void show() { ShowWindow(hwnd, SW_SHOWNOACTIVATE); }
 };
 
 
@@ -112,7 +114,7 @@ struct Component_crt
 	{
 		auto pointer = std::find_if(components.begin(), components.end(), [&parent](const std::pair<HWND, std::vector<Component>>& elem) {return elem.first == parent;});
 		
-		// if no such handle in storage
+		// if no such hwnd in storage
 		if (pointer == components.end())
 		{
 			components.push_back(std::make_pair(parent, std::vector<Component>()));
@@ -131,7 +133,7 @@ struct Component_crt
 
 		// release components of this parent
 		for (auto& comp : pointer->second)
-		  DestroyWindow(comp.handle);
+		  DestroyWindow(comp.hwnd);
 
 		components.erase(pointer);
 	}
@@ -154,7 +156,7 @@ struct Component_crt
 		if (pointer == components.end()) return;
 		
 		for (auto& component : pointer->second)
-			RedrawWindow(component.handle, 0, 0, RDW_INVALIDATE | RDW_NOCHILDREN);
+			RedrawWindow(component.hwnd, 0, 0, RDW_INVALIDATE | RDW_NOCHILDREN);
 	}
 
 	auto& operator[] (HWND parent)
@@ -179,7 +181,7 @@ struct Component_id
 {
 	int id;
 	HWND parent;
-	HWND handle;
+	HWND hwnd;
 
 	Component_id() : id(global_id++) {}
 
@@ -204,7 +206,7 @@ struct Component_id
 		int nWidth = rect.right - rect.left;
 		int nHeight = rect.bottom - rect.top;
 
-		SetWindowPos(handle, 0, 0, 0, width * nWidth + 1, height * nHeight + 1, SWP_NOZORDER | SWP_NOMOVE);
+		SetWindowPos(hwnd, 0, 0, 0, width * nWidth + 1, height * nHeight + 1, SWP_NOZORDER | SWP_NOMOVE);
 	}
 
 	void move(float x, float y)
@@ -219,12 +221,12 @@ struct Component_id
 		int nWidth = rect.right - rect.left;
 		int nHeight = rect.bottom - rect.top;
 
-		SetWindowPos(handle, 0, x * nWidth, y * nHeight, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+		SetWindowPos(hwnd, 0, x * nWidth, y * nHeight, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 	}
 
 
-	void hide() { ShowWindow(handle, SW_HIDE); }
-	void show() { ShowWindow(handle, SW_SHOWNOACTIVATE); }
+	void hide() { ShowWindow(hwnd, SW_HIDE); }
+	void show() { ShowWindow(hwnd, SW_SHOWNOACTIVATE); }
 };
 
 
@@ -238,7 +240,7 @@ struct Window
 	static std::vector<std::pair<int, Window*>> windows;
 
 	int class_id;
-	HWND handle;
+	HWND hwnd;
 	HDC hdc;
 	Canvas canvas;
 	int min_w = 0, min_h = 0;
@@ -342,8 +344,8 @@ struct Window
 			assert(false);
 		}
 
-		handle = CreateWindow(wc.lpszClassName, window_name.c_str(), style, CW_USEDEFAULT, CW_USEDEFAULT, width, height, parent, (HMENU)0, (HINSTANCE)hInst, NULL);
-		hdc = GetDC(handle);
+		hwnd = CreateWindow(wc.lpszClassName, window_name.c_str(), style, CW_USEDEFAULT, CW_USEDEFAULT, width, height, parent, (HMENU)0, (HINSTANCE)hInst, NULL);
+		hdc = GetDC(hwnd);
 
 		// set window def ssize
 		set_min_max_size(width, height, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
@@ -352,12 +354,12 @@ struct Window
 		windows.push_back(std::make_pair(class_id, this));
 
 		// put window ptr to global holder
-		arguments.add(handle, this, NULL, callback);
+		arguments.add(hwnd, this, NULL, callback);
 
 		// repeat messages
-		SendMessage(handle, WM_CREATE, 0, 0);
-		SendMessage(handle, WM_SIZE, 0, 0);
-		SendMessage(handle, WM_PAINT, 0, 0);
+		SendMessage(hwnd, WM_CREATE, 0, 0);
+		SendMessage(hwnd, WM_SIZE, 0, 0);
+		SendMessage(hwnd, WM_PAINT, 0, 0);
 	}
 
 	virtual ~Window()
@@ -366,8 +368,8 @@ struct Window
 		auto pointer = std::find_if(windows.begin(), windows.end(), [id](const std::pair<int, Window*>& a) {return id == a.first; });
 		windows.erase(pointer);
 
-		arguments.remove(handle);
-		components.remove(handle);
+		arguments.remove(hwnd);
+		components.remove(hwnd);
 
 		if (windows.size() == 0)
 			PostQuitMessage(0);
@@ -375,18 +377,18 @@ struct Window
 
 	void close()
 	{
-		SendMessage(handle, WM_CLOSE, 0, 0);
+		SendMessage(hwnd, WM_CLOSE, 0, 0);
 	}
 
 	void render_canvas()
 	{
-		StretchDIBits(hdc, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height, canvas.memory, &canvas.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
+		StretchDIBits(hdc, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height, canvas.data, &canvas.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
 	}
 
 	void redraw()
 	{
 		//RedrawWindow(getHWND(), 0, 0, RDW_INVALIDATE | RDW_ALLCHILDREN);
-		SendMessage(handle, WM_PAINT, 0, 0);
+		SendMessage(hwnd, WM_PAINT, 0, 0);
 	}
 
 #define MAX_WIN_SIZE -1
@@ -409,7 +411,7 @@ struct Window
 			max_h = maxh;
 	}
 
-	HWND getHWND() { return handle; }
+	HWND getHWND() { return hwnd; }
 
 	// static elements
 	static Window* get_window(int id)
@@ -421,7 +423,7 @@ struct Window
 	static void close(int id)
 	{
 		Window* window = Window::get_window(id);
-		if (window) SendMessage(window->handle, WM_CLOSE, 0, 0);
+		if (window) SendMessage(window->hwnd, WM_CLOSE, 0, 0);
 	}
 
 
@@ -496,7 +498,7 @@ struct Button : Component_id
 		int nWidth = rect.right - rect.left;
 		int nHeight = rect.bottom - rect.top;
 
-		handle = CreateWindow(
+		hwnd = CreateWindow(
 			L"BUTTON",  // Predefined class; Unicode assumed 
 			text.c_str(), // Button text 
 			style,     // Styles 
@@ -509,7 +511,7 @@ struct Button : Component_id
 			hInst,
 			NULL);      // Pointer not needed.
 
-		Component comp(id, x, y, width, height, type, style, handle, parent);
+		Component comp(id, x, y, width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
 	}
 
@@ -541,10 +543,10 @@ struct RadioButton : Component_id
 		int nWidth = rect.right - rect.left;
 		int nHeight = rect.bottom - rect.top;
 
-		handle = CreateWindow(L"Button", text.c_str(), style,
+		hwnd = CreateWindow(L"Button", text.c_str(), style,
 			x * nWidth, y * nHeight, width * nWidth, height * nHeight, parent, (HMENU)id, hInst, NULL);
 
-		Component comp(id, x, y, width, height, type, style, handle, parent);
+		Component comp(id, x, y, width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
 	}
 
@@ -577,16 +579,16 @@ struct CheckBox : Component_id
 		int nWidth = rect.right - rect.left;
 		int nHeight = rect.bottom - rect.top;
 
-		handle = CreateWindow(L"Button", text.c_str(), style,
+		hwnd = CreateWindow(L"Button", text.c_str(), style,
 			x* nWidth, y* nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
 
-		Component comp(id, x, y, width, height, type, style, handle, parent);
+		Component comp(id, x, y, width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
 	}
 
 	bool checked()
 	{
-		return SendMessage(handle, BM_GETCHECK, 0, 0) == BST_CHECKED;
+		return SendMessage(hwnd, BM_GETCHECK, 0, 0) == BST_CHECKED;
 	}
 
 };
@@ -614,21 +616,21 @@ struct ComboBox : Component_id
 		int nWidth = rect.right - rect.left;
 		int nHeight = rect.bottom - rect.top;
 
-		handle = CreateWindow(L"ComboBox", L"combo", style,
+		hwnd = CreateWindow(L"ComboBox", L"combo", style,
 			x* nWidth, y* nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
 
-		Component comp(id, x, y, width, height, type, style, handle, parent);
+		Component comp(id, x, y, width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
 	}
 
 	void add(const std::wstring& element)
 	{
 		// Add string to combobox.
-		SendMessage(handle, (UINT)CB_ADDSTRING, (WPARAM)0, (LPARAM)element.c_str());
+		SendMessage(hwnd, (UINT)CB_ADDSTRING, (WPARAM)0, (LPARAM)element.c_str());
 
 		// Send the CB_SETCURSEL message to display an initial item 
 		//  in the selection field  
-		SendMessage(handle, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
+		SendMessage(hwnd, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
 
 	}
 
@@ -636,47 +638,47 @@ struct ComboBox : Component_id
 	{
 		// Add strings to combobox.
 		for (auto& element : elements)
-			SendMessage(handle, (UINT)CB_ADDSTRING, (WPARAM)0, (LPARAM)element.c_str());
+			SendMessage(hwnd, (UINT)CB_ADDSTRING, (WPARAM)0, (LPARAM)element.c_str());
 
-		SendMessage(handle, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
+		SendMessage(hwnd, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
 	}
 
 	void set_selected(int i)
 	{
-		ComboBox_SetCurSel(handle, i);
+		ComboBox_SetCurSel(hwnd, i);
 	}
 
 	UINT choosed_index()
 	{
-		return SendMessage(handle, (UINT)CB_GETCURSEL, (WPARAM)0, (LPARAM)0);
+		return SendMessage(hwnd, (UINT)CB_GETCURSEL, (WPARAM)0, (LPARAM)0);
 	}
 	
 	std::wstring choosed()
 	{
-		int ItemIndex = SendMessage(handle, (UINT)CB_GETCURSEL, (WPARAM)0, (LPARAM)0);
+		int ItemIndex = SendMessage(hwnd, (UINT)CB_GETCURSEL, (WPARAM)0, (LPARAM)0);
 		TCHAR  ListItem[256];
-		(TCHAR)SendMessage(handle, (UINT)CB_GETLBTEXT, (WPARAM)ItemIndex, (LPARAM)ListItem);
+		(TCHAR)SendMessage(hwnd, (UINT)CB_GETLBTEXT, (WPARAM)ItemIndex, (LPARAM)ListItem);
 		return std::wstring(ListItem);
 	}
 
 	void remove(int idx)
 	{
-		SendMessage(handle, CB_DELETESTRING, (WPARAM)0, (LPARAM)0);
+		SendMessage(hwnd, CB_DELETESTRING, (WPARAM)0, (LPARAM)0);
 	}
 
 	void remove(const std::wstring& name)
 	{
-		int idx = SendMessage(handle, CB_FINDSTRING, (WPARAM)0, (LPARAM)0);
-		SendMessage(handle, CB_DELETESTRING, (WPARAM)idx, (LPARAM)0);
+		int idx = SendMessage(hwnd, CB_FINDSTRING, (WPARAM)0, (LPARAM)0);
+		SendMessage(hwnd, CB_DELETESTRING, (WPARAM)idx, (LPARAM)0);
 	}
 
 	void clear()
 	{
-		int count = SendMessage(handle, CB_GETCOUNT, (WPARAM)0, (LPARAM)0);
+		int count = SendMessage(hwnd, CB_GETCOUNT, (WPARAM)0, (LPARAM)0);
 		for (int i = 0; i < count; i++)
-			SendMessage(handle, CB_DELETESTRING, (WPARAM)0, (LPARAM)0);
+			SendMessage(hwnd, CB_DELETESTRING, (WPARAM)0, (LPARAM)0);
 
-		ComboBox_SetText(handle, L"");
+		ComboBox_SetText(hwnd, L"");
 	}
 
 };
@@ -708,17 +710,17 @@ struct Label : Component_id
 		int nWidth = rect.right - rect.left;
 		int nHeight = rect.bottom - rect.top;
 
-		handle = CreateWindow(L"static", L"label", style,
+		hwnd = CreateWindow(L"static", L"label", style,
 		x* nWidth, y* nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
 
-		Component comp(id, x, y, width, height, type, style, handle, parent);
+		Component comp(id, x, y, width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
-		SetWindowText(handle, text.c_str());
+		SetWindowText(hwnd, text.c_str());
 	}
 
 	void set_text(const std::wstring& text)
 	{
-		SetWindowText(handle, text.c_str());
+		SetWindowText(hwnd, text.c_str());
 	}
 
 };
@@ -750,16 +752,16 @@ struct Text : Component_id
 		int nWidth = rect.right - rect.left;
 		int nHeight = rect.bottom - rect.top;
 
-		handle = CreateWindow(L"edit", L"", style,
+		hwnd = CreateWindow(L"edit", L"", style,
 		x* nWidth, y* nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
 		
-		Component comp(id, x, y, width, height, type, style, handle, parent);
+		Component comp(id, x, y, width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
 	}
 
 	TCHAR* get_text()
 	{
-		int nLength = GetWindowTextLength(handle);
+		int nLength = GetWindowTextLength(hwnd);
 		if (nLength > 0)
 		{
 			if (nLength > cap)
@@ -768,7 +770,7 @@ struct Text : Component_id
 				::operator delete(text);
 				text = (TCHAR*)::operator new(cap * sizeof(TCHAR));
 			}
-			GetWindowText(handle, text, nLength + 1);
+			GetWindowText(hwnd, text, nLength + 1);
 			return text;
 		}
 		return NULL;
@@ -776,20 +778,20 @@ struct Text : Component_id
 
 	void set_text(const TCHAR* text)
 	{
-		SetWindowText(handle, text);
+		SetWindowText(hwnd, text);
 	}
 
 	void clear()
 	{
 		*text = '\0';
-		SetWindowText(handle, NULL);
+		SetWindowText(hwnd, NULL);
 	}
 		
 	~Text() {  ::operator delete(text); }
 };
 
 
-// ========================= Table ================================ Not a table actually and very slow, because rows*cols windows's handlels are used
+// ========================= Table ================================ Not a table actually and very slow, because rows*cols windows's hwndls are used
 #define TOTAL_SIZE 0
 #define CELL_SIZE 1
 
@@ -832,9 +834,9 @@ struct Table : Component_id
 			table[i].hide();
 
 		// just indicator of this class
-		this->handle = handle = CreateWindow(L"BUTTON", L"", 0, 0, 0, 0, 0, parent, NULL, hInst, NULL);
+		this->hwnd = hwnd = CreateWindow(L"BUTTON", L"", 0, 0, 0, 0, 0, parent, NULL, hInst, NULL);
 
-		Component comp(id, x, y, width, height, type, STATIC, handle, parent);
+		Component comp(id, x, y, width, height, type, STATIC, hwnd, parent);
 		components.add(parent, comp);
 	}
 
@@ -958,15 +960,15 @@ struct ListView : Component_id
 		int nWidth = rect.right - rect.left;
 		int nHeight = rect.bottom - rect.top;
 
-		handle = CreateWindow(WC_LISTVIEW, L"", style,
+		hwnd = CreateWindow(WC_LISTVIEW, L"", style,
 			x * nWidth, y * nHeight, width * nWidth, height * nHeight,
 			parent, (HMENU)id, hInst, NULL);
 
-		ListView_SetExtendedListViewStyleEx(handle, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+		ListView_SetExtendedListViewStyleEx(hwnd, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
 		this->parent = parent;
 
-		Component comp(id, x, y, width, height, type, style, handle, parent);
+		Component comp(id, x, y, width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
 	}
 
@@ -1001,7 +1003,7 @@ struct ListView : Component_id
 				lvc.fmt = LVCFMT_RIGHT; // Right-aligned column.
 
 			// Insert the columns into the list view.
-			if (ListView_InsertColumn(handle, iCol, &lvc) == -1)
+			if (ListView_InsertColumn(hwnd, iCol, &lvc) == -1)
 				doutput("listview insert problem");
 		}
 	}
@@ -1010,7 +1012,7 @@ struct ListView : Component_id
 	{
 		int textMaxLen = 10;
 
-		int iLastIndex = ListView_GetItemCount(handle);
+		int iLastIndex = ListView_GetItemCount(hwnd);
 
 		LVITEM lvi;
 		lvi.mask = LVIF_TEXT;
@@ -1019,12 +1021,12 @@ struct ListView : Component_id
 		lvi.pszText = (LPWSTR)row[0].c_str();
 		lvi.iSubItem = 0;
 
-		if (ListView_InsertItem(handle, &lvi) != -1)
+		if (ListView_InsertItem(hwnd, &lvi) != -1)
 			for (int i = 1; i < row.size(); i++)
-				ListView_SetItemText(handle, iLastIndex, i, (LPWSTR)row[i].c_str());
+				ListView_SetItemText(hwnd, iLastIndex, i, (LPWSTR)row[i].c_str());
 		
 			// align the table
-		ListView_SetColumnWidth(handle, 1, LVSCW_AUTOSIZE);
+		ListView_SetColumnWidth(hwnd, 1, LVSCW_AUTOSIZE);
 	}
 
 	void add_rows(std::vector<std::vector<std::wstring>> rows)
@@ -1033,7 +1035,7 @@ struct ListView : Component_id
 
 		for (int i = 0; i < rows.size(); i++)
 		{
-			int iLastIndex = ListView_GetItemCount(handle);
+			int iLastIndex = ListView_GetItemCount(hwnd);
 
 			LVITEM lvi;
 			lvi.mask = LVIF_TEXT;
@@ -1042,12 +1044,12 @@ struct ListView : Component_id
 			lvi.pszText = (LPWSTR)rows[i][0].c_str();
 			lvi.iSubItem = 0;
 
-			if (ListView_InsertItem(handle, &lvi) != -1)
+			if (ListView_InsertItem(hwnd, &lvi) != -1)
 				for (int j = 1; j < rows[i].size(); j++)
-					ListView_SetItemText(handle, iLastIndex, j, (LPWSTR)rows[i][j].c_str());
+					ListView_SetItemText(hwnd, iLastIndex, j, (LPWSTR)rows[i][j].c_str());
 
 			// align the table
-			ListView_SetColumnWidth(handle, 1, LVSCW_AUTOSIZE);
+			ListView_SetColumnWidth(hwnd, 1, LVSCW_AUTOSIZE);
 		}
 	}
 
@@ -1057,7 +1059,7 @@ struct ListView : Component_id
 		
 		for (int j = 1; j < i; j++)
 		{
-			int iLastIndex = ListView_GetItemCount(handle);
+			int iLastIndex = ListView_GetItemCount(hwnd);
 
 			LVITEM lvi;
 			lvi.mask = LVIF_TEXT;
@@ -1066,45 +1068,26 @@ struct ListView : Component_id
 			lvi.pszText = (LPWSTR)buffer;
 			lvi.iSubItem = 0;
 
-			if (ListView_InsertItem(handle, &lvi) != -1)
-				ListView_SetItemText(handle, iLastIndex, j, (LPWSTR)buffer);
+			if (ListView_InsertItem(hwnd, &lvi) != -1)
+				ListView_SetItemText(hwnd, iLastIndex, j, (LPWSTR)buffer);
 		}
 
 	}
 
 	void clear()
 	{
-		ListView_DeleteAllItems(handle);
+		ListView_DeleteAllItems(hwnd);
 	}
 
 	void remove_row(int i)
 	{
-		ListView_DeleteItem(handle, i);
+		ListView_DeleteItem(hwnd, i);
 	}
 
 	int rows()
 	{
-		return ListView_GetItemCount(handle);
+		return ListView_GetItemCount(hwnd);
 	}
 };
 
-
-// ============== Some functions ======================
-
-#define wtoi(str) ( str ? _wtoi(str) : 0)
-#define wtof(str) ( str ? _wtof(str) : 0.0f)
-
-
-void set_font_size(HWND handle, int size)
-{
-	HFONT hFont = CreateFont(size, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Arial");
-	//HFONT hFont SendMessage(handle, WM_GETFONT, 0, 0);
-	SendMessage(handle, WM_SETFONT, WPARAM(hFont), FALSE);
-}
-
-
-void set_font(HWND handle, HFONT font)
-{
-	SendMessage(handle, WM_SETFONT, WPARAM(font), FALSE);
-}
 

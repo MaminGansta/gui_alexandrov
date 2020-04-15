@@ -172,7 +172,7 @@ struct fColor
 	fColor(Color color) : r(float(color.r) / 255.0f), g(float(color.g) / 255.0f), b(float(color.b) / 255.0f), a(float(color.a) / 255.0f) {}
 
 
-	fColor operator +(const fColor& f)
+	fColor operator +(const fColor& f) const
 	{
 		return fColor(r + f.r, g + f.g, b + f.b);
 	}
@@ -185,12 +185,12 @@ struct fColor
 		return *this;
 	}
 
-	fColor operator /(float f)
+	fColor operator /(float f) const
 	{
 		return fColor(r / f, g / f, b / f);
 	}
 
-	fColor operator * (float f)
+	fColor operator * (float f) const
 	{
 		return fColor(min(1.0f, r * f), min(1.0f, g * f), min(1.0f, b * f));
 	}

@@ -4,14 +4,14 @@
 #endif
 
 template <typename Image_type, typename Color_type>
-void drawPixel(Image_type& surface, int x, int y, Color_type color)
+void drawPixel(Image_type& surface, int x, int y, const Color_type& color)
 {
 	if ((uint32_t)y >= surface.height || (uint32_t)x >= surface.width) return;
 	surface[y * surface.width + x] = color;
 }
 
 template <typename Image_type, typename Color_type>
-void drawPixel(Image_type& surface, int x, int y, Color_type color, int width)
+void drawPixel(Image_type& surface, int x, int y, const Color_type& color, int width)
 {
 	int half_width = (width + 1) / 2;
 
@@ -21,9 +21,8 @@ void drawPixel(Image_type& surface, int x, int y, Color_type color, int width)
 }
 
 
-
 template <typename Image_type, typename Color_type>
-void draw_filled_circle_a(Image_type& surface, int x, int y, Color_type color, int radius)
+void draw_filled_circle(Image_type& surface, int x, int y, const Color_type& color, int radius)
 {
 	for (int i = -radius; i < radius; i++)
 	{
@@ -38,7 +37,7 @@ void draw_filled_circle_a(Image_type& surface, int x, int y, Color_type color, i
 
 
 template <typename Image_type, typename Color_type>
-void drawLine(Image_type& surface, int x, int y, int x2, int y2, Color_type color, int width = 1)
+void drawLine(Image_type& surface, int x, int y, int x2, int y2, const Color_type& color, int width = 1)
 {
 	bool yLonger = false;
 	int shortLen = y2 - y;
@@ -87,7 +86,7 @@ void drawLine(Image_type& surface, int x, int y, int x2, int y2, Color_type colo
 
 
 template <typename Image_type, typename Color_type>
-void draw_line(Image_type& surface, float fx0, float fy0, float fx1, float fy1, Color_type color, int width = 1)
+void draw_line(Image_type& surface, float fx0, float fy0, float fx1, float fy1, const Color_type& color, int width = 1)
 {
 	int x0 = fx0 * surface.width;
 	int y0 = fy0 * surface.height;
@@ -96,20 +95,9 @@ void draw_line(Image_type& surface, float fx0, float fy0, float fx1, float fy1, 
 	drawLine(surface, x0, y0, x1, y1, color, width);
 }
 
-template <typename Image_type, typename Color_type>
-void add_line(Image_type& surface, float fx0, float fy0, float fx1, float fy1, Color_type color, int width = 1)
-{
-	int x0 = fx0 * surface.width;
-	int y0 = fy0 * surface.height;
-	int x1 = fx1 * surface.width;
-	int y1 = fy1 * surface.height;
-	addLine(surface, x0, y0, x1, y1, color, width);
-}
-
-
 
 template <typename Image_type, typename Color_type>
-void draw_filled_circle(Image_type& surface, float fx, float fy, Color_type color, float fradius)
+void draw_filled_circle(Image_type& surface, float fx, float fy, const Color_type& color, float fradius)
 {
 	int x = fx * surface.width;
 	int y = fy * surface.height;
@@ -124,7 +112,22 @@ void draw_filled_circle(Image_type& surface, float fx, float fy, Color_type colo
 
 
 template <typename Image_type, typename Color_type>
-void draw_filled_rect(Image_type& surface, float fx, float fy, float fwidth, float fheight, Color_type color)
+void draw_rect(Image_type& surface, float fx, float fy, float fwidth, float fheight, const Color_type& color, int pixel_width = 1)
+{
+	int x0 = surface.width * fx;
+	int y0 = surface.height * fy;
+
+	int width = surface.width * fwidth;
+	int height = surface.height * fheight;
+
+	drawLine(surface, x0, y0, x0 + width, y0, color, pixel_width);
+	drawLine(surface, x0, y0, x0, y0 + height, color, pixel_width);
+	drawLine(surface, x0 + width, y0, x0 + width, y0 + height, color, pixel_width);
+	drawLine(surface, x0, y0 + height, x0 + width, y0 + height, color, pixel_width);
+}
+
+template <typename Image_type, typename Color_type>
+void draw_filled_rect(Image_type& surface, float fx, float fy, float fwidth, float fheight, const Color_type& color)
 {
 	int x0 = surface.width * fx;
 	int y0 = surface.height * fy;
@@ -137,9 +140,8 @@ void draw_filled_rect(Image_type& surface, float fx, float fy, float fwidth, flo
 			drawPixel(surface, x, y, color);
 }
 
-
 template <typename Image_type, typename Color_type>
-void draw_filled_rect_async(Image_type& surface, float fx, float fy, float fwidth, float fheight, Color_type color)
+void draw_filled_rect_async(Image_type& surface, float fx, float fy, float fwidth, float fheight, const Color_type& color)
 {
 	int x0 = surface.width * fx;
 	int y0 = surface.height * fy;
@@ -240,7 +242,7 @@ void draw_image_async(Surface_type& surface, const Image_type& image,
 // ======================= alpha blending ==============================
 
 template <typename Image_type>
-void drawPixel_a(Image_type& surface, int x, int y, fColor color)
+void drawPixel_a(Image_type& surface, int x, int y, const fColor& color)
 {
 	if ((uint32_t)y >= surface.height || (uint32_t)x >= surface.width) return;
 	fColor dest = surface[y * surface.width + x];
@@ -249,7 +251,7 @@ void drawPixel_a(Image_type& surface, int x, int y, fColor color)
 }
 
 template <typename Image_type>
-void drawPixel_a(Image_type& surface, int x, int y, fColor color, int width)
+void drawPixel_a(Image_type& surface, int x, int y, const fColor& color, int width)
 {
 	int half_width = (width + 1) / 2;
 
@@ -260,7 +262,7 @@ void drawPixel_a(Image_type& surface, int x, int y, fColor color, int width)
 
 
 template <typename Image_type>
-void draw_filled_circle_a(Image_type& surface, float fx, float fy, fColor color, float fradius)
+void draw_filled_circle_a(Image_type& surface, float fx, float fy, const fColor& color, float fradius)
 {
 	int x = fx * surface.width;
 	int y = fy * surface.height;
@@ -276,7 +278,7 @@ void draw_filled_circle_a(Image_type& surface, float fx, float fy, fColor color,
 }
 
 template <typename Image_type>
-void draw_filled_circle_a(Image_type& surface, int x, int y, fColor color, int radius)
+void draw_filled_circle_a(Image_type& surface, int x, int y, const fColor& color, int radius)
 {
 	for (int i = -radius; i < radius; i++)
 	{
@@ -289,12 +291,10 @@ void draw_filled_circle_a(Image_type& surface, int x, int y, fColor color, int r
 }
 			
 
-
-
 template <typename Image_type, typename Color_type>
-void drawLine_a(Image_type& surface, int x, int y, int x2, int y2, Color_type color, int width = 1)
+void drawLine_a(Image_type& surface, int x, int y, int x2, int y2, const Color_type& color, int width = 1)
 {
-	color.a /= (width / 3 + 1);
+	//color.a /= (width / 3 + 1);
 	bool yLonger = false;
 	int shortLen = y2 - y;
 	int longLen = x2 - x;
@@ -341,7 +341,7 @@ void drawLine_a(Image_type& surface, int x, int y, int x2, int y2, Color_type co
 }
 
 template <typename Image_type, typename Color_type>
-void draw_line_a(Image_type& surface, float fx0, float fy0, float fx1, float fy1, Color_type color, int width = 1)
+void draw_line_a(Image_type& surface, float fx0, float fy0, float fx1, float fy1, const Color_type& color, int width = 1)
 {
 	int x0 = fx0 * surface.width;
 	int y0 = fy0 * surface.height;
@@ -350,6 +350,64 @@ void draw_line_a(Image_type& surface, float fx0, float fy0, float fx1, float fy1
 	drawLine_a(surface, x0, y0, x1, y1, color, width);
 }
 
+
+
+
+template <typename Image_type, typename Color_type>
+void draw_rect_a(Image_type& surface, float fx, float fy, float fwidth, float fheight, const Color_type& color, int pixel_width = 1)
+{
+	int x0 = surface.width * fx;
+	int y0 = surface.height * fy;
+
+	int width = surface.width * fwidth;
+	int height = surface.height * fheight;
+
+	drawLine_a(surface, x0, y0, x0 + width, y0, color, pixel_width);
+	drawLine_a(surface, x0, y0, x0, y0 + height, color, pixel_width);
+	drawLine_a(surface, x0 + width, y0, x0 + width, y0 + height, color, pixel_width);
+	drawLine_a(surface, x0, y0 + height, x0 + width, y0 + height, color, pixel_width);
+}
+
+template <typename Image_type, typename Color_type>
+void draw_filled_rect_a(Image_type& surface, float fx, float fy, float fwidth, float fheight, const Color_type& color)
+{
+	int x0 = surface.width * fx;
+	int y0 = surface.height * fy;
+
+	int width = surface.width * fwidth;
+	int height = surface.height * fheight;
+
+	for (int y = y0; y < y0 + height; y++)
+		for (int x = x0; x < width; x++)
+			drawPixel_a(surface, x, y, color);
+}
+
+template <typename Image_type, typename Color_type>
+void draw_filled_rect_async_a(Image_type& surface, float fx, float fy, float fwidth, float fheight, const Color_type& color)
+{
+	int x0 = surface.width * fx;
+	int y0 = surface.height * fy;
+
+	int width = surface.width * fwidth;
+	int height = surface.height * fheight;
+
+	std::future<void> res[MAX_THREADS];
+
+	for (int i = 0; i < workers.size; i++)
+	{
+		int from_x = x0 + (i)*width / workers.size;
+		int to_x = x0 + (i + 1) * width / workers.size;
+
+		res[i] = workers.add_task([y0, height, from_x, to_x, &surface, &color]() {
+			for (int y = y0; y < y0 + height; y++)
+				for (int x = from_x; x < to_x; x++)
+					drawPixel_a(surface, x, y, color);
+			});
+	}
+
+	for (int i = 0; i < workers.size; i++)
+		res[i].get();
+}
 
 
 

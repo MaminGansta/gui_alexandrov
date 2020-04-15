@@ -46,18 +46,21 @@ struct My_window : Window
 					case WM_PAINT:
 					{
 						draw_image_a(window->canvas, window->bg, 0.0f, 0.0f, 1.0f, 1.0f);
-
+						
 						draw_image_a(window->canvas, window->bg, 0.5f, 0.5f, 0.5f, 0.5f, 0.3f);
+						
+						
+
+						draw_filled_rect_a(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0, 50));
+						draw_rect(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0), 2);
+
+						draw_rect_a(window->canvas, 0.5f, 0.5f, 0.5f, 0.5f, Color(0, 0, 0, 30), 2);
 
 
-						float start = get_time();
-						draw_line_a(window->canvas, 0, 0, 0.5f, 0.5f, fColor(1.0f, 0, 1.0f), 10);
-						output("%f\n", get_time() - start);
+						draw_filled_circle_a(window->canvas, 0.1f, 0.1f, Color(0, 0, 255, 150), 0.1f);
 
-						start = get_time();
-						draw_line(window->canvas, 0, 0.1f, 0.5f, 0.6f, fColor(1.0f, 0, 1.0f), 10);
-						output("%f\n", get_time() - start);
 
+						render_text(window->canvas, 0.1f, 0.1f, L"asdfdsaf");
 
 						window->render_canvas();
 					}return 0;
@@ -67,10 +70,10 @@ struct My_window : Window
 
 
 			//btn.init(getHWND(), L"button", 0.1f, 0.1f, .1f, 0.1f, RESIZABLE);
-			//bClear.init(handle, L"Clear", 0.01f, 0.8f, 0.1f, 0.1f, RESIZABLE);
+			//bClear.init(hwnd, L"Clear", 0.01f, 0.8f, 0.1f, 0.1f, RESIZABLE);
 			//
 			//label.init(getHWND(), L"some text dsaf\nadsfadsfdasfdasf", 0.2f, 0.2f, 0.1f, 0.1f, RESIZABLE);
-			//set_font_size(btn.handle, 20);
+			//set_font_size(btn.hwnd, 20);
 			//
 			//
 			//text.init(getHWND(), 0.1f, 0.6f, 0.2f, 0.2f);
@@ -85,6 +88,15 @@ struct My_window : Window
 			//aaa.init(getHWND(), L"Radio", 0.4f, 0.6f, 0.1f, 0.1f, RESIZABLE);
 			//aaav.init(getHWND(), L"Radio2", 0.4f, 0.7f, 0.1f, 0.1f, RESIZABLE);
 
+
+			//SetWindowLong(hwnd,
+			//	GWL_EXSTYLE,
+			//	GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
+			//
+			//LONG style = GetWindowLong(hwnd, GWL_EXSTYLE);
+			//style = style | WS_EX_LAYERED;
+			//SetWindowLong(hwnd, GWL_EXSTYLE, style);
+			//SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 100, 2);
 	}
 
 };

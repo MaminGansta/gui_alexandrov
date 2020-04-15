@@ -110,13 +110,15 @@ thread_pool workers(MAX_THREADS);
 
 // gui layout
 #include "image/canvas.cpp"
-#include "win_api/window.cpp"
 #include "image/image.cpp"
 #include "image/draw.cpp"
+#include "image/text.cpp"
+
 #include "input/input.cpp"
+#include "input/io.cpp"
 #include "libs/timer.cpp"
 #include "libs/time.cpp"
-#include "input/io.cpp"
+#include "win_api/window.cpp"
 
 // image tarnsformations
 #include "operators/color/histogram.cpp"

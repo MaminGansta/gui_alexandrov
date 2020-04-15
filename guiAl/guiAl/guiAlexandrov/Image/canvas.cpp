@@ -9,7 +9,7 @@ struct Color
 		uint32_t whole;
 	};
 
-	inline Color() : r(0), g(0), b(0) {}
+	inline Color() : r(0), g(0), b(0), a(0) {}
 	inline Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) : r(r), g(g), b(b), a(a) {}
 	inline Color(uint8_t color) : r(color), g(color), b(color), a(255) {}
 
@@ -23,12 +23,12 @@ struct Color
 		return Color(r - color.r, g - color.g, b - color.b);
 	}
 
-	Color operator *(float f)
+	Color operator *(float f) const
 	{
 		return Color(r * f, g * f, b * f);
 	}
 
-	Color operator /(float f)
+	Color operator /(float f) const
 	{
 		return Color(r / f, g / f, b / f);
 	}
@@ -57,12 +57,12 @@ struct Canvas
 	int height, width;
 	int whole_size;
 	int capacity = 0;
-	Color* memory = nullptr;
+	Color* data = nullptr;
 
 	BITMAPINFO bitmap_info;
 
 	~Canvas() {
-		safe_releaseArr(memory);
+		safe_releaseArr(data);
 	}
 
 	void resize(HWND hwnd)
@@ -85,20 +85,20 @@ struct Canvas
 		if (whole_size < capacity) return;
 
 		capacity = width * height;
-		delete[] memory;
-		memory = new Color[capacity];
+		delete[] data;
+		data = new Color[capacity];
 	}
 
 	Color& operator [] (int inx)
 	{
 		assert((uint32_t)inx < whole_size);
-		return memory[inx];
+		return data[inx];
 	}
 
 	void reserve(int capacity)
 	{
 		this->capacity = capacity;
-		delete[] memory;
-		memory = new Color[capacity];
+		delete[] data;
+		data = new Color[capacity];
 	}
 };

@@ -24,6 +24,9 @@
     <ClCompile Include="guiAlexandrov\high_lavel_gui\file_explorer_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="guiAlexandrov\image\text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="guiAlexandrov\include.h">

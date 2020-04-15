@@ -24,8 +24,8 @@ struct Image_window : Window
 
 		if (flags == 0)
 		{
-			SetWindowLong(handle, GWL_STYLE, 0); //remove all window styles, check MSDN for details
-			ShowWindow(handle, SW_SHOW);
+			SetWindowLong(hwnd, GWL_STYLE, 0); //remove all window styles, check MSDN for details
+			ShowWindow(hwnd, SW_SHOW);
 		}
 		set_min_max_size(0, 0);
 	}
