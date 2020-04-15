@@ -61,6 +61,10 @@ void WriteTextOnByteArray(int nImageWidth, int nImageHeight, int x, int y, void*
 	SetBkMode(memDC, TRANSPARENT);
 	SetTextColor(memDC, textColor);
 	
+	int height;
+	GetCharWidth32A(memDC,0,0, &height);
+	y -= height;
+
 	TextOutW(memDC, x, y, szText, wcslen(szText));
 	SelectObject(memDC, oldBMP);
 	SelectObject(memDC, oldFont);
@@ -86,6 +90,6 @@ template <typename Surface_type>
 void render_text(Surface_type& surface, float fx, float fy, const std::wstring& text, const Color& color = Color(), HFONT hFont = DEF_FONT)
 {
 	int x = surface.width * fx;
-	int y = surface.height * fy;
+	int y = surface.height * (1.0f - fy);
 	WriteTextOnByteArray(surface.width, surface.height, x, y, surface.data, hFont, text.c_str(), RGB(color.r, color.g, color.b));
 }

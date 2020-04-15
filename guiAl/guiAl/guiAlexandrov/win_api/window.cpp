@@ -503,7 +503,7 @@ struct Button : Component_id
 			text.c_str(), // Button text 
 			style,     // Styles 
 			x * nWidth,         // x position 
-			y * nHeight,         // y position 
+			(1.0f - y - height) * nHeight,         // y position 
 			width * nWidth,     // Button width
 			height * nHeight,    // Button height
 			parent,    // Parent window
@@ -511,7 +511,7 @@ struct Button : Component_id
 			hInst,
 			NULL);      // Pointer not needed.
 
-		Component comp(id, x, y, width, height, type, style, hwnd, parent);
+		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
 	}
 
@@ -544,9 +544,9 @@ struct RadioButton : Component_id
 		int nHeight = rect.bottom - rect.top;
 
 		hwnd = CreateWindow(L"Button", text.c_str(), style,
-			x * nWidth, y * nHeight, width * nWidth, height * nHeight, parent, (HMENU)id, hInst, NULL);
+			x * nWidth, (1.0f - y - height) * nHeight, width * nWidth, height * nHeight, parent, (HMENU)id, hInst, NULL);
 
-		Component comp(id, x, y, width, height, type, style, hwnd, parent);
+		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
 	}
 
@@ -580,9 +580,9 @@ struct CheckBox : Component_id
 		int nHeight = rect.bottom - rect.top;
 
 		hwnd = CreateWindow(L"Button", text.c_str(), style,
-			x* nWidth, y* nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
+			x* nWidth, (1.0f - y - height) * nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
 
-		Component comp(id, x, y, width, height, type, style, hwnd, parent);
+		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
 	}
 
@@ -617,9 +617,9 @@ struct ComboBox : Component_id
 		int nHeight = rect.bottom - rect.top;
 
 		hwnd = CreateWindow(L"ComboBox", L"combo", style,
-			x* nWidth, y* nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
+			x* nWidth, (1.0f - y - height) * nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
 
-		Component comp(id, x, y, width, height, type, style, hwnd, parent);
+		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
 	}
 
@@ -711,9 +711,9 @@ struct Label : Component_id
 		int nHeight = rect.bottom - rect.top;
 
 		hwnd = CreateWindow(L"static", L"label", style,
-		x* nWidth, y* nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
+		x* nWidth, (1.0f - y - height) * nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
 
-		Component comp(id, x, y, width, height, type, style, hwnd, parent);
+		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
 		SetWindowText(hwnd, text.c_str());
 	}
@@ -753,9 +753,9 @@ struct Text : Component_id
 		int nHeight = rect.bottom - rect.top;
 
 		hwnd = CreateWindow(L"edit", L"", style,
-		x* nWidth, y* nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
+		x* nWidth, (1.0f - y - height) * nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
 		
-		Component comp(id, x, y, width, height, type, style, hwnd, parent);
+		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
 	}
 
@@ -961,14 +961,14 @@ struct ListView : Component_id
 		int nHeight = rect.bottom - rect.top;
 
 		hwnd = CreateWindow(WC_LISTVIEW, L"", style,
-			x * nWidth, y * nHeight, width * nWidth, height * nHeight,
+			x * nWidth, (1.0f - y - height) * nHeight, width * nWidth, height * nHeight,
 			parent, (HMENU)id, hInst, NULL);
 
 		ListView_SetExtendedListViewStyleEx(hwnd, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
 		this->parent = parent;
 
-		Component comp(id, x, y, width, height, type, style, hwnd, parent);
+		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
 	}
 

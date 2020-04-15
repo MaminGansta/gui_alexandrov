@@ -60,7 +60,7 @@ struct My_window : Window
 						draw_filled_circle_a(window->canvas, 0.1f, 0.1f, Color(0, 0, 255, 150), 0.1f);
 
 
-						render_text(window->canvas, 0.2f, 0.1f, L"S1MPLE TEXT", Color(), get_def_font(25));
+						render_text(window->canvas, 0.6f, 0.8f, L"S1MPLE TEXT (rendering)", Color(), get_def_font(25));
 
 						window->render_canvas();
 					}return 0;
@@ -69,7 +69,7 @@ struct My_window : Window
 			});
 
 
-			btn.init(getHWND(), L"button", 0.1f, 0.1f, .1f, 0.1f, RESIZABLE);
+			btn.init(getHWND(), L"button", 0.1f, 0.1f, 0.1f, 0.1f, RESIZABLE);
 			bClear.init(hwnd, L"Clear", 0.01f, 0.8f, 0.1f, 0.1f, RESIZABLE);
 			
 			label.init(getHWND(), L"some text dsaf\nadsfadsfdasfdasf", 0.2f, 0.2f, 0.1f, 0.1f, RESIZABLE, DEF_LABEL);
