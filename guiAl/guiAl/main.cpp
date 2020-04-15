@@ -45,13 +45,13 @@ struct My_window : Window
 					}break;
 					case WM_PAINT:
 					{
-						draw_image_a(window->canvas, window->bg, 0.0f, 0.0f, 1.0f, 1.0f);
+						draw_image_async(window->canvas, window->bg, 0.0f, 0.0f, 1.0f, 1.0f);
 						
-						draw_image_a(window->canvas, window->bg, 0.5f, 0.5f, 0.5f, 0.5f, 0.3f);
+						draw_image_async_a(window->canvas, window->bg, 0.5f, 0.5f, 0.5f, 0.5f, 0.3f);
 						
 						
 
-						draw_filled_rect_a(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0, 50));
+						draw_filled_rect_async_a(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0, 50));
 						draw_rect(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0), 2);
 
 						draw_rect_a(window->canvas, 0.5f, 0.5f, 0.5f, 0.5f, Color(0, 0, 0, 30), 2);
@@ -60,7 +60,7 @@ struct My_window : Window
 						draw_filled_circle_a(window->canvas, 0.1f, 0.1f, Color(0, 0, 255, 150), 0.1f);
 
 
-						render_text(window->canvas, 0.1f, 0.1f, L"asdfdsaf");
+						render_text(window->canvas, 0.2f, 0.1f, L"S1MPLE TEXT", Color(), get_def_font(25));
 
 						window->render_canvas();
 					}return 0;
@@ -69,24 +69,24 @@ struct My_window : Window
 			});
 
 
-			//btn.init(getHWND(), L"button", 0.1f, 0.1f, .1f, 0.1f, RESIZABLE);
-			//bClear.init(hwnd, L"Clear", 0.01f, 0.8f, 0.1f, 0.1f, RESIZABLE);
-			//
-			//label.init(getHWND(), L"some text dsaf\nadsfadsfdasfdasf", 0.2f, 0.2f, 0.1f, 0.1f, RESIZABLE);
-			//set_font_size(btn.hwnd, 20);
-			//
-			//
-			//text.init(getHWND(), 0.1f, 0.6f, 0.2f, 0.2f);
-			//
-			//b.init(getHWND(), 0.4f, 0.2f);
-			//std::vector<std::wstring> combo_elements{ L"Mercury", L"Venus", L"Earth", L"Mars", L"Jupiter", L"Saturn", L"Uranus", L"NOT_Neptune" };
-			//b.add(combo_elements);
-			//
-			//aa.init(getHWND(), L"Check", 0.5f, 0.3f);
-			//aac.init(getHWND(), L"Check2", 0.5f, 0.4f);
-			//
-			//aaa.init(getHWND(), L"Radio", 0.4f, 0.6f, 0.1f, 0.1f, RESIZABLE);
-			//aaav.init(getHWND(), L"Radio2", 0.4f, 0.7f, 0.1f, 0.1f, RESIZABLE);
+			btn.init(getHWND(), L"button", 0.1f, 0.1f, .1f, 0.1f, RESIZABLE);
+			bClear.init(hwnd, L"Clear", 0.01f, 0.8f, 0.1f, 0.1f, RESIZABLE);
+			
+			label.init(getHWND(), L"some text dsaf\nadsfadsfdasfdasf", 0.2f, 0.2f, 0.1f, 0.1f, RESIZABLE, DEF_LABEL);
+			set_font_size(btn.hwnd, 20);
+			
+			
+			text.init(getHWND(), 0.1f, 0.6f, 0.2f, 0.2f, RESIZABLE, DEF_TEXT | WS_VSCROLL | WS_HSCROLL);
+			
+			b.init(getHWND(), 0.4f, 0.2f);
+			std::vector<std::wstring> combo_elements{ L"Mercury", L"Venus", L"Earth", L"Mars", L"Jupiter", L"Saturn", L"Uranus", L"NOT_Neptune" };
+			b.add(combo_elements);
+			
+			aa.init(getHWND(), L"Check", 0.5f, 0.3f);
+			aac.init(getHWND(), L"Check2", 0.5f, 0.4f);
+			
+			aaa.init(getHWND(), L"Radio", 0.4f, 0.6f, 0.1f, 0.1f, RESIZABLE);
+			aaav.init(getHWND(), L"Radio2", 0.4f, 0.7f, 0.1f, 0.1f, RESIZABLE);
 
 
 			//SetWindowLong(hwnd,

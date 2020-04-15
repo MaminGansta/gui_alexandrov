@@ -1,18 +1,21 @@
 
 
-
 // ============== from text ======================
 
 #define wtoi(str) ( str ? _wtoi(str) : 0)
 #define wtof(str) ( str ? _wtof(str) : 0.0f)
 
 
-
-
 // ================== font =======================
 
 // Defult font for all compontnts
 HFONT DEF_FONT = CreateFont(16, 0, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Arial");
+
+
+HFONT get_def_font(int size)
+{
+	return CreateFont(size, 0, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Arial");
+}
 
 void set_font_size(HWND hwnd, int size)
 {
