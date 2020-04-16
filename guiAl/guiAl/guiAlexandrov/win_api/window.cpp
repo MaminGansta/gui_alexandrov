@@ -326,11 +326,11 @@ struct Window
 				case WM_PAINT:
 				{
 					window->render_canvas(ps.rcPaint);
-
-
 					components.redraw(hwnd);
 					EndPaint(hwnd, &ps);
-				}break;
+				}return 0;
+				case WM_ERASEBKGND:
+					return 1;
 				case WM_CLOSE:
 				{
 					safe_release(window);

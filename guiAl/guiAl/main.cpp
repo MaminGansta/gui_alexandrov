@@ -84,16 +84,6 @@ struct My_window : Window
 			
 			aaa.init(getHWND(), L"Radio", 0.4f, 0.6f, 0.1f, 0.1f, RESIZABLE);
 			aaav.init(getHWND(), L"Radio2", 0.4f, 0.7f, 0.1f, 0.1f, RESIZABLE);
-
-
-			//SetWindowLong(hwnd,
-			//	GWL_EXSTYLE,
-			//	GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
-			//
-			//LONG style = GetWindowLong(hwnd, GWL_EXSTYLE);
-			//style = style | WS_EX_LAYERED;
-			//SetWindowLong(hwnd, GWL_EXSTYLE, style);
-			//SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 100, 2);
 	}
 
 };
