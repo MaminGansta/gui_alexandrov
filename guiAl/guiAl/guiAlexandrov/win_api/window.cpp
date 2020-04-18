@@ -299,23 +299,22 @@ struct Window
 			switch (msg)
 			{
 				case WM_SIZE:
-				{
 					window->canvas.resize(hwnd);
 					components.resize(hwnd);
-				}break;
+					break;
+
 				case WM_PAINT:
-				{
 					BeginPaint(hwnd, &ps);
-				}break;
+					break;
+
 				case  WM_GETMINMAXINFO:
-				{
 					LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
 					lpMMI->ptMinTrackSize.x = window->min_w;
 					lpMMI->ptMinTrackSize.y = window->min_h;
-				
+
 					lpMMI->ptMaxTrackSize.x = window->max_w;
 					lpMMI->ptMaxTrackSize.y = window->max_h;
-				}break;
+					break;
 			}
 			
 			// user's callback
@@ -323,18 +322,41 @@ struct Window
 			
 			switch (msg)
 			{
+				case WM_SYSKEYDOWN:
+					if (wParam == VK_ALT)
+						Input::vk_alt = true;
+
+					if (wParam == VK_F10)
+						Input::vk_f10 = true;
+
+					break;
+
+				//case WM_SYSKEYUP:
+				//	break;
+
+				case WM_KEYDOWN:
+					Input::pressed_any = true;
+					Input::keys[wParam] += 1;
+					Input::key_was_pressed[wParam] = true;
+					break;
+
+				case WM_KEYUP:
+					Input::keys[wParam] = 0;
+					break;
+
+				case WM_CHAR:
+					Input::char_buffer[(wchar_t)wParam] = true;
+					break;
+
 				case WM_PAINT:
-				{
 					window->render_canvas(ps.rcPaint);
 					components.redraw(hwnd);
 					EndPaint(hwnd, &ps);
-				}return 0;
-				case WM_ERASEBKGND:
-					return 1;
+					return 0;
+
 				case WM_CLOSE:
-				{
 					safe_release(window);
-				}return 0;
+					return 0;
 			}
 
 			return res;
@@ -389,16 +411,29 @@ struct Window
 		HDC memDC = CreateCompatibleDC(hdc);
 		HBITMAP hBmp = CreateHBITMAPfromByteArray(hdc, canvas.width, canvas.height, canvas.data);
 
-
 		HGDIOBJ oldBMP = SelectObject(memDC, hBmp);
 
-		//RECT& rect = ps.rcPaint;
 		int width = rect.right - rect.left;
 		int height = rect.bottom - rect.top;
 
 		// redraw area
 		BitBlt(this->hdc, rect.left, rect.top, width, height, memDC, rect.left, rect.top, SRCCOPY);
 
+		SelectObject(memDC, oldBMP);
+		DeleteDC(memDC);
+		ReleaseDC(NULL, hdc);
+	}
+
+	void render_canvas()
+	{
+		HDC hdc = GetDC(NULL);
+		HDC memDC = CreateCompatibleDC(hdc);
+		HBITMAP hBmp = CreateHBITMAPfromByteArray(hdc, canvas.width, canvas.height, canvas.data);
+
+		HGDIOBJ oldBMP = SelectObject(memDC, hBmp);
+
+		// redraw area
+		BitBlt(this->hdc, 0, 0, canvas.width, canvas.height, memDC, 0, 0, SRCCOPY);
 
 		SelectObject(memDC, oldBMP);
 		DeleteDC(memDC);
@@ -411,6 +446,16 @@ struct Window
 	{
 		//RedrawWindow(getHWND(), 0, 0, RDW_INVALIDATE | RDW_ALLCHILDREN);
 		SendMessage(hwnd, WM_PAINT, 0, 0);
+	}
+
+	int height()
+	{
+		return canvas.height;
+	}
+
+	int widht()
+	{
+		return canvas.width;
 	}
 
 #define MAX_WIN_SIZE -1

@@ -96,7 +96,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	My_window<Image>* window = new My_window<Image>();
 
-
 	Window::wait_msg_proc();
 	return 0;
 }

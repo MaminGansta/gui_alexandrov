@@ -15,18 +15,12 @@ struct Image_window : Window
 					case WM_PAINT:
 					{
 						draw_image(window->canvas, window->image, 0.0f, 0.0f, 1.0f, 1.0f);
-						//window->render_canvas();
 					}break;
 				}
 
 				return DefWindowProc(hwnd, msg, wParam, lParam);
 			});
 
-		if (flags == 0)
-		{
-			SetWindowLong(hwnd, GWL_STYLE, 0); //remove all window styles, check MSDN for details
-			ShowWindow(hwnd, SW_SHOW);
-		}
 		set_min_max_size(0, 0);
 	}
 };

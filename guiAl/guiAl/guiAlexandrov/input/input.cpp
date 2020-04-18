@@ -1,5 +1,5 @@
 
-// mouse
+// ======================= Mouse ============================
 
 enum Mouse_buttons
 {
@@ -10,56 +10,97 @@ enum Mouse_buttons
 };
 
 
-struct Buttons
-{
-	bool is_down{ false };
-	bool changed{ false };
-	bool pressed{ false };
-};
-
-
 struct Mouse_Input
 {
-	float pos_x, pos_y;
-	Buttons buttons[MOUSE_BUTTONS_COUNT];
+	int pos_x, pos_y;
+	
 };
 
 
 
-// keyboard
 
-enum Keyboard_buttons
+
+
+// ========================= keyboard ==============================
+
+struct Input
 {
-	BUTTON_UP,
-	BUTTON_DOWN,
-	BUTTON_LEFT,
-	BUTTON_RIGHT,
+	static bool pressed_any;
 
-	BUTTONS_COUNT
-};
+	// ============== key input =================
+	static int keys[256];
+	// if key was pressed from last call
+	static bool key_was_pressed[256];
 
-
-struct Key_Input
-{
-	Buttons buttons[BUTTONS_COUNT];
-
-	Key_Input()
+	// from last call
+	static bool any_key_pressed()
 	{
-		for (int i = 0; i < BUTTONS_COUNT; i++)
-		{
-			buttons[i].is_down = false;
-			buttons[i].changed = false;
-		}
+		bool temp = pressed_any;
+		pressed_any = false;
+		return temp;
 	}
 
-	void discard()
+	static bool pressed(int key_code)
 	{
-		for (int i = 0; i < BUTTONS_COUNT; i++)
-		{
-			buttons[i].is_down = false;
-			buttons[i].changed = false;
-		}
+		return keys[key_code] > 1;
 	}
+
+	static bool clicked(int key_code)
+	{
+		return keys[key_code] == 1;
+	}
+
+	// was pressed from last call
+	static bool was_pressed(int key_code)
+	{
+		bool temp = key_was_pressed[key_code];
+		key_was_pressed[key_code] = false;
+		return  temp;
+	}
+
+
+	// =========== char input ==============
+	static bool char_buffer[512];
+
+	// was pressed from last call
+	static bool char_pressed(wchar_t char_code)
+	{
+		bool temp = char_buffer[char_code];
+		char_buffer[char_code] = false;
+		return temp;
+	}
+
+	static void char_buffer_clear()
+	{
+		memset(char_buffer, 0, sizeof(char_buffer));
+	}
+
+	// =========== system input =============
+#define VK_ALT 0
+	static bool vk_alt;
+	static bool vk_f10;
+
+	static bool syskey_pressed(int code)
+	{
+		bool temp = false;
+		if (code == VK_ALT)
+			temp = vk_alt, vk_alt = false;
+
+		if (code == VK_F10)
+			temp = vk_f10, vk_f10 = false;
+
+		return temp;
+	}
+
 };
+
+int Input::keys[256];
+bool Input::pressed_any = false;
+bool Input::char_buffer[512];
+bool Input::key_was_pressed[256];
+
+bool Input::vk_alt = false;
+bool Input::vk_f10 = false;
+
 
 
