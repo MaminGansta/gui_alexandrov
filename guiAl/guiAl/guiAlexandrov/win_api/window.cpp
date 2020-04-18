@@ -245,6 +245,7 @@ struct Window
 	Canvas canvas;
 	int min_w = 0, min_h = 0;
 	int max_w = 600, max_h = 800;
+	bool redraw_hard = false;
 
 	Window() {}
 	Window(
@@ -297,16 +298,8 @@ struct Window
 			PAINTSTRUCT ps;
 			switch (msg)
 			{
-				case WM_SIZE:
-					window->canvas.resize(hwnd);
-					components.resize(hwnd);
-					break;
-
-				case WM_PAINT:
-					BeginPaint(hwnd, &ps);
-					break;
-
 				case  WM_GETMINMAXINFO:
+				{
 					LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
 					lpMMI->ptMinTrackSize.x = window->min_w;
 					lpMMI->ptMinTrackSize.y = window->min_h;
@@ -314,21 +307,17 @@ struct Window
 					lpMMI->ptMaxTrackSize.x = window->max_w;
 					lpMMI->ptMaxTrackSize.y = window->max_h;
 					break;
-			}
-			
-			// user's callback
-			LRESULT res = args.callback(hwnd, msg, wParam, lParam, args);
-			
-			switch (msg)
-			{
-				// Keyboard
+				}
+
+
+					// Keyboard
 				case WM_SYSKEYDOWN:
 					if (wParam == VK_ALT) Input::vk_alt = true;
 					if (wParam == VK_F10) Input::vk_f10 = true;
 					break;
 
-				//case WM_SYSKEYUP:
-				//	break;
+					//case WM_SYSKEYUP:
+					//	break;
 
 				case WM_KEYDOWN:
 					Input::pressed_any = true;
@@ -345,7 +334,7 @@ struct Window
 					break;
 
 
-				// Mouse
+					// Mouse
 				case WM_MOUSEMOVE:
 				{
 					float xPos = GET_X_LPARAM(lParam);
@@ -354,7 +343,7 @@ struct Window
 					Mouse::pos_y = 1.0f - yPos / window->canvas.height;
 				}break;
 
-				
+
 				case WM_RBUTTONDOWN:
 				case WM_MBUTTONDOWN:
 				case WM_LBUTTONDOWN:
@@ -370,9 +359,29 @@ struct Window
 					Mouse::buttons[WM_LBUTTONDOWN - 512] = 0;
 					break;
 
+
+				case WM_SIZE:
+					window->canvas.resize(hwnd);
+					components.resize(hwnd);
+					break;
+
+				case WM_PAINT:
+					BeginPaint(hwnd, &ps);
+					break;
+			}
+			
+			// user's callback
+			LRESULT res = args.callback(hwnd, msg, wParam, lParam, args);
+			
+			switch (msg)
+			{
 				// Other
 				case WM_PAINT:
-					window->render_canvas(ps.rcPaint);
+					if (!window->redraw_hard)
+						window->render_canvas(ps.rcPaint);
+					else
+						window->render_canvas();
+					
 					components.redraw(hwnd);
 					EndPaint(hwnd, &ps);
 					return 0;
@@ -468,7 +477,9 @@ struct Window
 	void redraw()
 	{
 		//RedrawWindow(getHWND(), 0, 0, RDW_INVALIDATE | RDW_ALLCHILDREN);
+		redraw_hard = true;
 		SendMessage(hwnd, WM_PAINT, 0, 0);
+		redraw_hard = true;
 	}
 
 	int height()
@@ -638,6 +649,11 @@ struct RadioButton : Component_id
 
 		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
+	}
+
+	int chosed()
+	{
+		return SendMessage(hwnd, BM_GETCHECK, 0, 0);
 	}
 
 };
