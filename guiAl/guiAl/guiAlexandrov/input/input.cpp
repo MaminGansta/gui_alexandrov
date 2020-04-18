@@ -1,20 +1,34 @@
 
 // ======================= Mouse ============================
 
-enum Mouse_buttons
+struct Mouse
 {
-	LBUTTON,
-	RBUTTON,
+	static int buttons[16];
+	static bool key_was_pressed[16];
+	static float pos_x, pos_y;
 
-	MOUSE_BUTTONS_COUNT
+	static bool pressed(int code)
+	{
+		return buttons[code] > 1;
+	}
+
+	static bool clicked(int code)
+	{
+		return buttons[code] == 1;
+	}
+
+	static int was_pressed(int code)
+	{
+		bool temp = key_was_pressed[code];
+		key_was_pressed[code] = false;
+		return temp;
+	}
 };
 
-
-struct Mouse_Input
-{
-	int pos_x, pos_y;
-	
-};
+int Mouse::buttons[16];
+bool Mouse::key_was_pressed[16];
+float Mouse::pos_x = 0.0f;
+float Mouse::pos_y = 0.0f;
 
 
 

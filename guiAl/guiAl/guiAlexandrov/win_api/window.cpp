@@ -285,7 +285,6 @@ struct Window
 		wc.lpszMenuName = NULL;
 		wc.lpszClassName = class_name;
 		wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-		wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 
 
 		// global callback function
@@ -322,13 +321,10 @@ struct Window
 			
 			switch (msg)
 			{
+				// Keyboard
 				case WM_SYSKEYDOWN:
-					if (wParam == VK_ALT)
-						Input::vk_alt = true;
-
-					if (wParam == VK_F10)
-						Input::vk_f10 = true;
-
+					if (wParam == VK_ALT) Input::vk_alt = true;
+					if (wParam == VK_F10) Input::vk_f10 = true;
 					break;
 
 				//case WM_SYSKEYUP:
@@ -348,6 +344,33 @@ struct Window
 					Input::char_buffer[(wchar_t)wParam] = true;
 					break;
 
+
+				// Mouse
+				case WM_MOUSEMOVE:
+				{
+					float xPos = GET_X_LPARAM(lParam);
+					float yPos = GET_Y_LPARAM(lParam);
+					Mouse::pos_x = xPos / window->canvas.width;
+					Mouse::pos_y = 1.0f - yPos / window->canvas.height;
+				}break;
+
+				
+				case WM_RBUTTONDOWN:
+				case WM_MBUTTONDOWN:
+				case WM_LBUTTONDOWN:
+				case WM_XBUTTONDOWN:
+					Mouse::buttons[WM_LBUTTONDOWN - 512] += 1;
+					Mouse::key_was_pressed[WM_LBUTTONDOWN - 512] = true;
+					break;
+
+				case WM_LBUTTONUP:
+				case WM_MBUTTONUP:
+				case WM_RBUTTONUP:
+				case WM_XBUTTONUP:
+					Mouse::buttons[WM_LBUTTONDOWN - 512] = 0;
+					break;
+
+				// Other
 				case WM_PAINT:
 					window->render_canvas(ps.rcPaint);
 					components.redraw(hwnd);
