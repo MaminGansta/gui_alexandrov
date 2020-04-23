@@ -1,18 +1,4 @@
 
-
-template <typename T>
-T chanel_clip(T color);
-
-template <>
-float chanel_clip<float>(float color) { return MIN(MAX(color, 0.0f), 1.0f); }
-
-template <>
-int chanel_clip<int>(int color) { return MIN(MAX(color, 0), 255); }
-
-template <>
-uint8_t chanel_clip<uint8_t>(uint8_t color) { return MIN(MAX(color, 0), 255); }
-
-
 // ============= standart image ==================
 
 struct Image
@@ -82,16 +68,30 @@ struct Image
 		if (raw == NULL) return;
 
 		data = new Color[width * height];
-
-		for (int y = 0; y < height; y++)
+		
+		if (chanels == 3)
 		{
-			for (int x = 0; x < width; x++)
+			for (int y = 0; y < height; y++)
 			{
-				int pos = (y * width + x) * chanels;
-				data[(height - y - 1) * width + x] = Color(raw[pos], raw[pos + 1], raw[pos + 2]);
+				for (int x = 0; x < width; x++)
+				{
+					int pos = (y * width + x) * chanels;
+					data[(height - y - 1) * width + x] = Color(raw[pos], raw[pos + 1], raw[pos + 2]);
+				}
 			}
 		}
-
+		else if (chanels == 4)
+		{
+			for (int y = 0; y < height; y++)
+			{
+				for (int x = 0; x < width; x++)
+				{
+					int pos = (y * width + x) * chanels;
+					data[(height - y - 1) * width + x] = Color(raw[pos], raw[pos + 1], raw[pos + 2], raw[pos + 3]);
+				}
+			}
+		}
+		
 		invalid = false;
 		stbi_image_free(raw);
 	}
@@ -153,62 +153,7 @@ struct Image
 };
 
 
-
 // =============== float Image  ==================
-
-struct fColor
-{
-	union
-	{
-		struct { float b, g, r, a; };
-		struct { float Y, U, V; };
-		float raw[4];
-	};
-
-	fColor() = default;
-	fColor(float r, float g, float b, float a = 1.0f) : r(r), g(g), b(b), a(a) {}
-	fColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) : r(float(r) / 255.0f), g(float(g) / 255.0f), b(float(b) / 255.0f), a(float(a) / 255.0f) {}
-	fColor(float color) : r(color), g(color), b(color), a(1.0f) {}
-	fColor(Color color) : r(float(color.r) / 255.0f), g(float(color.g) / 255.0f), b(float(color.b) / 255.0f), a(float(color.a) / 255.0f) {}
-
-
-	fColor operator +(const fColor& f) const
-	{
-		return fColor(r + f.r, g + f.g, b + f.b);
-	}
-
-	fColor& operator +=(const fColor& f)
-	{
-		r = min(1.0f, r + f.r);
-		g = min(1.0f, g + f.g);
-		b = min(1.0f, b + f.b);
-		return *this;
-	}
-
-	fColor operator /(float f) const
-	{
-		return fColor(r / f, g / f, b / f);
-	}
-
-	fColor operator * (float f) const
-	{
-		return fColor(min(1.0f, r * f), min(1.0f, g * f), min(1.0f, b * f));
-	}
-
-	fColor& operator *= (float f)
-	{
-		r = min(1.0f, r * f);
-		g = min(1.0f, g * f);
-		b = min(1.0f, b * f);
-		return *this;
-	}
-
-	operator Color() const
-	{
-		return Color(chanel_clip<int>(r * 255.0f), chanel_clip<int>(g * 255.0f), chanel_clip<int>(b * 255.0f), chanel_clip<int>(a * 255.0f));
-	}
-};
-
 
 struct fImage
 {
@@ -237,12 +182,26 @@ struct fImage
 
 		data = new fColor[width * height];
 
-		for (int y = 0; y < height; y++)
+		if (chanels == 3)
 		{
-			for (int x = 0; x < width; x++)
+			for (int y = 0; y < height; y++)
 			{
-				int pos = (y * width + x) * chanels;
-				data[(height - y - 1) * width + x] = fColor(raw[pos], raw[pos + 1], raw[pos + 2]);
+				for (int x = 0; x < width; x++)
+				{
+					int pos = (y * width + x) * chanels;
+					data[(height - y - 1) * width + x] = fColor(raw[pos], raw[pos + 1], raw[pos + 2]);
+				}
+			}
+		}
+		else if (chanels == 4)
+		{
+			for (int y = 0; y < height; y++)
+			{
+				for (int x = 0; x < width; x++)
+				{
+					int pos = (y * width + x) * chanels;
+					data[(height - y - 1) * width + x] = fColor(raw[pos], raw[pos + 1], raw[pos + 2], raw[pos + 3]);
+				}
 			}
 		}
 

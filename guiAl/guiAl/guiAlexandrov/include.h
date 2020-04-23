@@ -109,6 +109,7 @@ HINSTANCE hInst;
 thread_pool workers(MAX_THREADS);
 
 // gui layout
+#include "image/color.cpp"
 #include "image/canvas.cpp"
 #include "image/image.cpp"
 #include "image/draw.cpp"

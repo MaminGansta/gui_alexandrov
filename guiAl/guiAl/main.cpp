@@ -6,6 +6,9 @@ template <typename Image_type>
 struct My_window : Window
 {
 	Image_type bg;
+	Image_type dice;
+	Image_type cloud;
+	Image_type kek;
 
 	Button btn;
 	Button bClear;
@@ -23,6 +26,9 @@ struct My_window : Window
 	My_window()
 	{
 		bg.open(L"back.png");
+		dice.open(L"dice.png");
+		cloud.open(L"cloud.png");
+		kek.open(L"kek.png");
 
 		init(L"window", 800, 600, [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)->LRESULT
 			{
@@ -45,9 +51,15 @@ struct My_window : Window
 					}break;
 					case WM_SIZE:
 					{
-
 						draw_image_async(window->canvas, window->bg, 0.0f, 0.0f, 1.0f, 1.0f);
+
+						draw_image_async_a(window->canvas, window->kek, 0.3f, -0.1f, 0.6f, 0.5f);
+						draw_image_async_a(window->canvas, window->cloud, 0.0f, 0.0f, 0.7f, 0.7f);
+						draw_image_async_a(window->canvas, window->dice, 0.5f, 0.0f, 0.5f, 0.5f);
+
+
 						draw_image_async_a(window->canvas, window->bg, 0.5f, 0.5f, 0.5f, 0.5f, 0.3f);
+
 
 						draw_filled_rect_async_a(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0, 50));
 						draw_rect(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0), 2);

@@ -175,7 +175,7 @@ template <typename Surface_type, typename Image_type>
 void draw_image(Surface_type& surface, const Image_type& image,
 	float fpos_x, float fpos_y, float fwidth, float fheight)
 {
-	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f || image.invalid) return;
+	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || image.invalid) return;
 
 	int pos_x = surface.width * fpos_x;
 	int pos_y = surface.height * fpos_y;
@@ -192,7 +192,8 @@ void draw_image(Surface_type& surface, const Image_type& image,
 		{
 			assert(x < surface.width);
 			Color color = image.get_pixel_scaled(x, y, width, height);
-			surface[(y + pos_y) * surface.width + (x + pos_x)] = color;
+			//surface[(y + pos_y) * surface.width + (x + pos_x)] = color;
+			drawPixel(surface, x + pos_x, y + pos_y, color);
 		}
 	}
 }
@@ -202,7 +203,7 @@ template <typename Surface_type, typename Image_type>
 void draw_image_async(Surface_type& surface, const Image_type& image,
 	float fpos_x, float fpos_y, float fwidth, float fheight)
 {
-	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f) return;
+	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || image.invalid) return;
 
 	int pos_x = surface.width * fpos_x;
 	int pos_y = surface.height * fpos_y;
@@ -227,7 +228,8 @@ void draw_image_async(Surface_type& surface, const Image_type& image,
 					{
 						assert(x < surface.width);
 						Color color = image.get_pixel_scaled(x, y, width, height);
-						surface[(y + pos_y) * surface.width + (x + pos_x)] = color;
+						//surface[(y + pos_y) * surface.width + (x + pos_x)] = color;
+						drawPixel(surface, x + pos_x, y + pos_y, color);
 					}
 			});
 	}
@@ -291,10 +293,10 @@ void draw_filled_circle_a(Image_type& surface, int x, int y, const fColor& color
 }
 			
 
-template <typename Image_type, typename Color_type>
-void drawLine_a(Image_type& surface, int x, int y, int x2, int y2, const Color_type& color, int width = 1)
+template <typename Image_type>
+void drawLine_a(Image_type& surface, int x, int y, int x2, int y2, fColor color, int width = 1)
 {
-	//color.a /= (width / 3 + 1);
+	color.a /= (width / 3 + 1);
 	bool yLonger = false;
 	int shortLen = y2 - y;
 	int longLen = x2 - x;
@@ -340,8 +342,8 @@ void drawLine_a(Image_type& surface, int x, int y, int x2, int y2, const Color_t
 	}
 }
 
-template <typename Image_type, typename Color_type>
-void draw_line_a(Image_type& surface, float fx0, float fy0, float fx1, float fy1, const Color_type& color, int width = 1)
+template <typename Image_type>
+void draw_line_a(Image_type& surface, float fx0, float fy0, float fx1, float fy1, fColor color, int width = 1)
 {
 	int x0 = fx0 * surface.width;
 	int y0 = fy0 * surface.height;
@@ -353,8 +355,8 @@ void draw_line_a(Image_type& surface, float fx0, float fy0, float fx1, float fy1
 
 
 
-template <typename Image_type, typename Color_type>
-void draw_rect_a(Image_type& surface, float fx, float fy, float fwidth, float fheight, const Color_type& color, int pixel_width = 1)
+template <typename Image_type>
+void draw_rect_a(Image_type& surface, float fx, float fy, float fwidth, float fheight, fColor color, int pixel_width = 1)
 {
 	int x0 = surface.width * fx;
 	int y0 = surface.height * fy;
@@ -368,8 +370,8 @@ void draw_rect_a(Image_type& surface, float fx, float fy, float fwidth, float fh
 	drawLine_a(surface, x0, y0 + height, x0 + width, y0 + height, color, pixel_width);
 }
 
-template <typename Image_type, typename Color_type>
-void draw_filled_rect_a(Image_type& surface, float fx, float fy, float fwidth, float fheight, const Color_type& color)
+template <typename Image_type>
+void draw_filled_rect_a(Image_type& surface, float fx, float fy, float fwidth, float fheight, fColor color)
 {
 	int x0 = surface.width * fx;
 	int y0 = surface.height * fy;
@@ -382,8 +384,8 @@ void draw_filled_rect_a(Image_type& surface, float fx, float fy, float fwidth, f
 			drawPixel_a(surface, x, y, color);
 }
 
-template <typename Image_type, typename Color_type>
-void draw_filled_rect_async_a(Image_type& surface, float fx, float fy, float fwidth, float fheight, const Color_type& color)
+template <typename Image_type>
+void draw_filled_rect_async_a(Image_type& surface, float fx, float fy, float fwidth, float fheight, fColor color)
 {
 	int x0 = surface.width * fx;
 	int y0 = surface.height * fy;
@@ -418,7 +420,7 @@ template <typename Surface_type, typename Image_type>
 void draw_image_a(Surface_type& surface, const Image_type& image,
 	float fpos_x, float fpos_y, float fwidth, float fheight)
 {
-	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f || image.invalid) return;
+	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || image.invalid) return;
 
 	int pos_x = surface.width * fpos_x;
 	int pos_y = surface.height * fpos_y;
@@ -445,7 +447,7 @@ template <typename Surface_type, typename Image_type>
 void draw_image_async_a(Surface_type& surface, const Image_type& image,
 	float fpos_x, float fpos_y, float fwidth, float fheight)
 {
-	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f) return;
+	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || image.invalid) return;
 
 	int pos_x = surface.width * fpos_x;
 	int pos_y = surface.height * fpos_y;
@@ -484,7 +486,7 @@ template <typename Surface_type, typename Image_type>
 void draw_image_a(Surface_type& surface, const Image_type& image,
 	float fpos_x, float fpos_y, float fwidth, float fheight, float alpha)
 {
-	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f || image.invalid) return;
+	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || image.invalid) return;
 
 	int pos_x = surface.width * fpos_x;
 	int pos_y = surface.height * fpos_y;
@@ -512,7 +514,7 @@ template <typename Surface_type, typename Image_type>
 void draw_image_async_a(Surface_type& surface, const Image_type& image,
 	float fpos_x, float fpos_y, float fwidth, float fheight, float alpha)
 {
-	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f) return;
+	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || image.invalid) return;
 
 	int pos_x = surface.width * fpos_x;
 	int pos_y = surface.height * fpos_y;
