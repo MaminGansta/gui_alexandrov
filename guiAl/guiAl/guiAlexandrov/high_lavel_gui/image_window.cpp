@@ -14,7 +14,11 @@ struct Image_window : Window
 				{
 					case WM_PAINT:
 					{
+						PAINTSTRUCT ps;
+						BeginPaint(hwnd, &ps);
 						draw_image(window->canvas, window->image, 0.0f, 0.0f, 1.0f, 1.0f);
+						window->render_canvas(ps.rcPaint);
+						EndPaint(hwnd, &ps);
 					}break;
 				}
 
