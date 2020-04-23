@@ -192,7 +192,6 @@ void draw_image(Surface_type& surface, const Image_type& image,
 		{
 			assert(x < surface.width);
 			Color color = image.get_pixel_scaled(x, y, width, height);
-			//surface[(y + pos_y) * surface.width + (x + pos_x)] = color;
 			drawPixel(surface, x + pos_x, y + pos_y, color);
 		}
 	}
@@ -228,8 +227,46 @@ void draw_image_async(Surface_type& surface, const Image_type& image,
 					{
 						assert(x < surface.width);
 						Color color = image.get_pixel_scaled(x, y, width, height);
-						//surface[(y + pos_y) * surface.width + (x + pos_x)] = color;
 						drawPixel(surface, x + pos_x, y + pos_y, color);
+					}
+			});
+	}
+
+	for (int i = 0; i < workers.size; i++)
+		res[i].get();
+}
+
+// no bound cheking here, if image outside the canvas it wouldn't be drawn
+template <typename Surface_type, typename Image_type>
+void draw_image_async_direct(Surface_type& surface, const Image_type& image,
+	float fpos_x, float fpos_y, float fwidth, float fheight)
+{
+	if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f || image.invalid) return;
+
+	int pos_x = surface.width * fpos_x;
+	int pos_y = surface.height * fpos_y;
+
+	fwidth = min(fwidth, 1.0f - fpos_x);
+	fheight = min(fheight, 1.0f - fpos_y);
+
+	int width = surface.width * fwidth;
+	int height = surface.height * fheight;
+
+	std::future<void> res[MAX_THREADS];
+
+	for (int i = 0; i < workers.size; i++)
+	{
+		int from_x = i * width / workers.size;
+		int to_x = (i + 1) * width / workers.size;
+
+		res[i] = workers.add_task([from_x, to_x, pos_y, pos_x, height, width, &surface, &image]()
+			{
+				for (int y = 0; y < height; y++)
+					for (int x = from_x; x < to_x; x++)
+					{
+						assert(x < surface.width);
+						Color color = image.get_pixel_scaled(x, y, width, height);
+						surface[(y + pos_y) * surface.width + (x + pos_x)] = color;
 					}
 			});
 	}
