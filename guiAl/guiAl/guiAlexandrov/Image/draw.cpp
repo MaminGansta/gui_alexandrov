@@ -236,7 +236,7 @@ void draw_image_async(Surface_type& surface, const Image_type& image,
 		res[i].get();
 }
 
-// no bound cheking here, if image outside the canvas it wouldn't be drawn
+// no bound cheking here, if image outside the canvas it wouldn'd 
 template <typename Surface_type, typename Image_type>
 void draw_image_async_direct(Surface_type& surface, const Image_type& image,
 	float fpos_x, float fpos_y, float fwidth, float fheight)
@@ -562,26 +562,19 @@ void draw_image_async_a(Surface_type& surface, const Image_type& image,
 	int width = surface.width * fwidth;
 	int height = surface.height * fheight;
 
-	std::future<void> res[MAX_THREADS];
 
-	for (int i = 0; i < workers.size; i++)
-	{
-		int from_x = i * width / workers.size;
-		int to_x = (i + 1) * width / workers.size;
-
-		res[i] = workers.add_task([alpha, from_x, to_x, pos_y, pos_x, height, width, &surface, &image]()
-			{
+	ASYNC_FOR(0, width)
+		[alpha, from, to, pos_y, pos_x, height, width, &surface, &image]()
+		{
 				for (int y = 0; y < height; y++)
-					for (int x = from_x; x < to_x; x++)
+					for (int x = from; x < to; x++)
 					{
 						assert(x < surface.width);
 						fColor color = image.get_pixel_scaled(x, y, width, height);
 						color.a = alpha;
 						drawPixel_a(surface, x + pos_x, y + pos_y, color);
 					}
-			});
-	}
+		}
+	END_FOR
 
-	for (int i = 0; i < workers.size; i++)
-		res[i].get();
 }

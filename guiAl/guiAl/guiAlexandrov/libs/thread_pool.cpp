@@ -1,4 +1,3 @@
-
 #include <cmath>
 #include <thread>
 #include <vector>
@@ -80,3 +79,26 @@ private:
 			thread.join();
 	}
 };
+
+
+
+// lamda with necessary params [from, to](){ for (int i = from; i < to; i++}
+#define ASYNC_FOR(from_param, to_param)											\
+			{																	\
+				std::future<void> res[MAX_THREADS];								\
+				int af_width = to_param - from_param;							\
+				for (int i = 0; i < workers.size; i++)							\
+				{																\
+					int from = i * af_width / workers.size + from_param;		\
+					int to = (i + 1) * af_width / workers.size + from_param;	\
+					res[i] = workers.add_task(
+
+
+
+#define END_FOR																	\
+					);															\
+				}																\
+																				\
+				for (int i = 0; i < workers.size; i++)							\
+					res[i].get();												\
+			}

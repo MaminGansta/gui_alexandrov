@@ -117,7 +117,6 @@ thread_pool workers(MAX_THREADS);
 
 #include "input/input.cpp"
 #include "input/io.cpp"
-#include "libs/timer.cpp"
 #include "libs/time.cpp"
 #include "win_api/window.cpp"
 
