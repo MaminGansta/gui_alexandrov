@@ -156,7 +156,7 @@ struct Component_crt
 		if (pointer == components.end()) return;
 		
 		for (auto& component : pointer->second)
-			RedrawWindow(component.hwnd, 0, 0, RDW_INVALIDATE);
+			RedrawWindow(component.hwnd, 0, 0, RDW_INVALIDATE | RDW_ALLCHILDREN);
 	}
 
 	auto& operator[] (HWND parent)
@@ -421,24 +421,26 @@ struct Window
 		SendMessage(hwnd, WM_CLOSE, 0, 0);
 	}
 
-	void render_canvas(const RECT& rect)
+	void render_canvas(const PAINTSTRUCT& ps)
 	{
+
+
 		HDC hdc = GetDC(NULL);
 		HDC memDC = CreateCompatibleDC(hdc);
 		HBITMAP hBmp = CreateHBITMAPfromByteArray(hdc, canvas.width, canvas.height, canvas.data);
 		
 		HGDIOBJ oldBMP = SelectObject(memDC, hBmp);
 		
+		const RECT& rect = ps.rcPaint;
 		int width = rect.right - rect.left;
 		int height = rect.bottom - rect.top;
 		
 		// redraw area
-		BitBlt(this->hdc, rect.left, rect.top, width, height, memDC, rect.left, rect.top, SRCCOPY);
+		BitBlt(ps.hdc, rect.left, rect.top, width, height, memDC, rect.left, rect.top, SRCCOPY);
 		
 		SelectObject(memDC, oldBMP);
 		DeleteDC(memDC);
 		ReleaseDC(NULL, hdc);
-		components.redraw(hwnd);
 	}
 
 	void render_canvas()

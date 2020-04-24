@@ -75,8 +75,7 @@ struct My_window : Window
 					{
 						PAINTSTRUCT ps;
 						BeginPaint(hwnd, &ps);
-
-						window->render_canvas(ps.rcPaint);
+						window->render_canvas(ps);
 						EndPaint(hwnd, &ps);
 					}break;
 				}

@@ -17,7 +17,7 @@ struct Image_window : Window
 						PAINTSTRUCT ps;
 						BeginPaint(hwnd, &ps);
 						draw_image(window->canvas, window->image, 0.0f, 0.0f, 1.0f, 1.0f);
-						window->render_canvas(ps.rcPaint);
+						window->render_canvas(ps);
 						EndPaint(hwnd, &ps);
 					}break;
 				}
