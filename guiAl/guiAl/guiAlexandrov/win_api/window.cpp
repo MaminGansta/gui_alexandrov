@@ -409,6 +409,7 @@ struct Window
 		auto pointer = std::find_if(windows.begin(), windows.end(), [id](const std::pair<int, Window*>& a) {return id == a.first; });
 		windows.erase(pointer);
 
+		ReleaseDC(hwnd, hdc);
 		arguments.remove(hwnd);
 		components.remove(hwnd);
 
