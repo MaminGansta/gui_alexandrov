@@ -1,12 +1,20 @@
 
 struct Canvas
 {
-	int height, width;
-	int whole_size;
+	int height = 0, width = 0;
+	int whole_size = 0;
 	int capacity = 0;
 	Color* data = nullptr;
 
 	BITMAPINFO bitmap_info;
+
+	Canvas()
+	{
+#ifdef FULL_SCREAN_CANVAS
+		capacity = GetSystemMetrics(SM_CXSCREEN) * GetSystemMetrics(SM_CYSCREEN);
+		data = new Color[capacity];
+#endif
+	}
 
 	~Canvas() {
 		safe_releaseArr(data);

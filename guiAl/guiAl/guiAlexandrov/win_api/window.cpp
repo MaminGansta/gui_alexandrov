@@ -343,18 +343,42 @@ struct Window
 				}break;
 
 
+				// Mouse buttons down
 				case WM_RBUTTONDOWN:
+					Mouse::buttons[WM_RBUTTONDOWN - 512] += 1;
+					Mouse::key_was_pressed[WM_RBUTTONDOWN - 512] = true;
+					break;
+
 				case WM_MBUTTONDOWN:
+					Mouse::buttons[WM_MBUTTONDOWN - 512] += 1;
+					Mouse::key_was_pressed[WM_MBUTTONDOWN - 512] = true;
+					break;
+
 				case WM_LBUTTONDOWN:
-				case WM_XBUTTONDOWN:
 					Mouse::buttons[WM_LBUTTONDOWN - 512] += 1;
 					Mouse::key_was_pressed[WM_LBUTTONDOWN - 512] = true;
 					break;
 
-				case WM_LBUTTONUP:
+				case WM_XBUTTONDOWN:
+					Mouse::buttons[WM_XBUTTONDOWN - 512] += 1;
+					Mouse::key_was_pressed[WM_XBUTTONDOWN - 512] = true;
+					break;
+
+
+				// Mouse buttons up
 				case WM_MBUTTONUP:
+					Mouse::buttons[WM_MBUTTONDOWN - 512] = 0;
+					break;
+
 				case WM_RBUTTONUP:
+					Mouse::buttons[WM_RBUTTONDOWN - 512] = 0;
+					break;
+
 				case WM_XBUTTONUP:
+					Mouse::buttons[WM_XBUTTONDOWN - 512] = 0;
+					break;
+
+				case WM_LBUTTONUP:
 					Mouse::buttons[WM_LBUTTONDOWN - 512] = 0;
 					break;
 
@@ -420,6 +444,7 @@ struct Window
 	void close()
 	{
 		SendMessage(hwnd, WM_CLOSE, 0, 0);
+		SendMessage(hwnd, WM_DESTROY, 0, 0);
 	}
 
 	void render_canvas(const PAINTSTRUCT& ps)
@@ -451,8 +476,7 @@ struct Window
 
 	void redraw()
 	{
-		//RedrawWindow(getHWND(), 0, 0, RDW_INVALIDATE | RDW_ALLCHILDREN);
-		SendMessage(hwnd, WM_PAINT, 0, 0);
+		RedrawWindow(getHWND(), 0, 0, RDW_INVALIDATE | RDW_ALLCHILDREN);
 	}
 
 	int height()
@@ -546,7 +570,7 @@ struct Button : Component_id
 		float y,
 		float width,
 		float height,
-		UINT type = DYNAMIC,
+		UINT type = RESIZABLE,
 		UINT style = DEF_BUTTON
 	)
 	{
@@ -560,7 +584,7 @@ struct Button : Component_id
 		float y,
 		float width = 0.1f,
 		float height = 0.1f,
-		UINT type = DYNAMIC,
+		UINT type = RESIZABLE,
 		UINT style = DEF_BUTTON
 		)
 	{
@@ -602,12 +626,12 @@ struct RadioButton : Component_id
 	RadioButton(const RadioButton& other) { Component* comp = other.get();  init(comp->parent, other.text, comp->x, comp->y, comp->width, comp->height, comp->type, comp->style); }
 	RadioButton& operator= (const RadioButton& other) { Component* comp = other.get();  init(comp->parent, other.text, comp->x, comp->y, comp->width, comp->height, comp->type, comp->style); }
 
-	RadioButton(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC, UINT style = DEF_RADIO)
+	RadioButton(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_RADIO)
 	{
 		init(parent, text, x, y, width, height, type, style);
 	}
 
-	void init(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC, UINT style = DEF_RADIO)
+	void init(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_RADIO)
 	{
 		this->parent = parent;
 		this->text = text;
@@ -643,12 +667,12 @@ struct CheckBox : Component_id
 	CheckBox(const CheckBox& other) { Component* comp = other.get();  init(comp->parent, other.text, comp->x, comp->y, comp->width, comp->height, comp->type, comp->style); }
 	CheckBox& operator= (const CheckBox& other) { Component* comp = other.get();  init(comp->parent, other.text, comp->x, comp->y, comp->width, comp->height, comp->type, comp->style); }
 
-	CheckBox(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC, UINT style = DEF_CHECK)
+	CheckBox(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_CHECK)
 	{
 		init(parent, text, x, y, width, height, type, style);
 	}
 
-	void init(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC, UINT style = DEF_CHECK)
+	void init(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_CHECK)
 	{
 		this->parent = parent;
 		this->text = text;
@@ -681,12 +705,12 @@ struct ComboBox : Component_id
 	ComboBox(const ComboBox& other) { Component* comp = other.get();  init(comp->parent, comp->x, comp->y, comp->width, comp->height, comp->type, comp->style); }
 	ComboBox& operator= (const ComboBox& other) { Component* comp = other.get();  init(comp->parent, comp->x, comp->y, comp->width, comp->height, comp->type, comp->style); }
 
-	ComboBox(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC, UINT style = DEF_COMBO)
+	ComboBox(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_COMBO)
 	{
 		init(parent, x, y, width, height, type, style);
 	}
 
-	void init(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC, UINT style = DEF_COMBO)
+	void init(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_COMBO)
 	{
 		this->parent = parent;
 
@@ -774,12 +798,12 @@ struct Label : Component_id
 	Label(const Label& other) { Component* comp = other.get();  init(comp->parent, other.text, comp->x, comp->y, comp->width, comp->height, comp->type, comp->style); }
 	Label& operator= (const Label& other) { Component* comp = other.get();  init(comp->parent, other.text, comp->x, comp->y, comp->width, comp->height, comp->type, comp->style); }
 
-	Label(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC, UINT style = DEF_LABEL)
+	Label(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_LABEL)
 	{
 		init(parent, text, x, y, width, height, type, style);
 	}
 
-	void init(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC, UINT style = DEF_LABEL)
+	void init(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_LABEL)
 	{
 		this->parent = parent;
 		this->text = text;
@@ -816,12 +840,12 @@ struct Text : Component_id
 	Text(const Text& other) { Component* comp = other.get();  init(comp->parent, comp->x, comp->y, comp->width, comp->height, comp->type, comp->style); }
 	Text& operator= (const Text& other) { Component* comp = other.get();  init(comp->parent, comp->x, comp->y, comp->width, comp->height, comp->type, comp->style); }
 
-	Text(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC, UINT style = DEF_TEXT)
+	Text(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_TEXT)
 	{
 		init(parent, x, y, width, height, type, style);
 	}
 
-	void init(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC, UINT style = DEF_TEXT)
+	void init(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_TEXT)
 	{
 		this->parent = parent;
 		text = (TCHAR*)::operator new(cap * sizeof(TCHAR));
@@ -884,12 +908,12 @@ struct Table : Component_id
 	std::vector<Text> table;
 
 	Table() = default;
-	Table(HWND paretn, int max_row, int max_col, float x, float y, float width, float height, int size_type = TOTAL_SIZE, int type = DYNAMIC)
+	Table(HWND paretn, int max_row, int max_col, float x, float y, float width, float height, int size_type = TOTAL_SIZE, int type = RESIZABLE)
 	{
 		init(paretn, max_row, max_col, x, y, width, height, size_type, type);
 	}
 
-	void init(HWND parent, int max_row, int max_col, float x, float y, float width, float height, int size_type = TOTAL_SIZE, int type = DYNAMIC)
+	void init(HWND parent, int max_row, int max_col, float x, float y, float width, float height, int size_type = TOTAL_SIZE, int type = RESIZABLE)
 	{
 		this->cap_row = max_row;
 		this->cap_col = max_col;
@@ -1020,12 +1044,12 @@ struct ListView : Component_id
 	int columns = 0;
 
 	ListView() = default;
-	ListView(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC, UINT style = DEF_LISTVIEW)
+	ListView(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_LISTVIEW)
 	{
 		init(parent, x, y, width, height, type, style);
 	}
 
-	void init(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = DYNAMIC, UINT style = DEF_LISTVIEW)
+	void init(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_LISTVIEW)
 	{
 
 		INITCOMMONCONTROLSEX icex;
