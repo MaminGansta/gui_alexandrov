@@ -63,12 +63,11 @@ struct My_window : Window
 
 						draw_filled_rect_async_a(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0, 50));
 						draw_rect(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0), 2);
-
+						
 						draw_rect_a(window->canvas, 0.5f, 0.5f, 0.5f, 0.5f, Color(0, 0, 0, 30), 2);
 						draw_filled_circle_a(window->canvas, 0.1f, 0.1f, Color(0, 0, 255, 150), 0.1f);
-
+						
 						render_text(window->canvas, 0.6f, 0.8f, L"S1MPLE TEXT (rendering)", Color(), get_def_font(25));
-
 					}break;
 
 					case WM_PAINT:
