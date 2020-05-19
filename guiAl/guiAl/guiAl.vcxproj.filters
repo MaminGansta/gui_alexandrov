@@ -27,6 +27,9 @@
     <ClCompile Include="guiAlexandrov\image\text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="guiAlexandrov\libs\log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="guiAlexandrov\include.h">

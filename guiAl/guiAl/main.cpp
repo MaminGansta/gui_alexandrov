@@ -1,6 +1,4 @@
-#define MAX_THREADS 8
 #include "guiAlexandrov/include.h"
-
 
 template <typename Image_type>
 struct My_window : Window

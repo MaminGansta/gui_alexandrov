@@ -3,13 +3,13 @@ template <typename T>
 T chanel_clip(T color);
 
 template <>
-float chanel_clip<float>(float color) { return MIN(MAX(color, 0.0f), 1.0f); }
+float chanel_clip<float>(float color) { return min(max(color, 0.0f), 1.0f); }
 
 template <>
-int chanel_clip<int>(int color) { return MIN(MAX(color, 0), 255); }
+int chanel_clip<int>(int color) { return min(max(color, 0), 255); }
 
 template <>
-uint8_t chanel_clip<uint8_t>(uint8_t color) { return MIN(MAX(color, 0), 255); }
+uint8_t chanel_clip<uint8_t>(uint8_t color) { return min(max(color, 0), 255); }
 
 
 

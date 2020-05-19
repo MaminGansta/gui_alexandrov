@@ -18,6 +18,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include <CommCtrl.h>
 #include <windowsx.h>
 
+#include <cassert>
 #include <cstdint>
 #include <cstdio>
 #include <wchar.h>
@@ -26,80 +27,25 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include <malloc.h>
 
 
-#include <array>
-#include <vector>
-#include <algorithm>
-#include <functional>
+// some output
+#include "libs/log.cpp"
 
-#include <cassert>
-#include <utility>
-#include <string>
-#include <random>
-#include <limits.h>
-#include <chrono>
-#include <thread>
-
-
-void doutput(const char* format, ...)
-{
-#if _DEBUG
-	char log[128];
-	va_list args;
-	va_start(args, format);
-	vsprintf_s(log, format, args);
-	OutputDebugStringA(log);
-	va_end(args);
-#endif
-}
-
-void doutput(const wchar_t* format, ...)
-{
-#if _DEBUG
-	wchar_t log[128];
-	va_list args;
-	va_start(args, format);
-	vswprintf_s(log, format, args);
-	OutputDebugStringW(log);
-	va_end(args);
-#endif
-}
-
-
-void output(const char* format, ...)
-{
-	char log[128];
-	va_list args;
-	va_start(args, format);
-	vsprintf_s(log, format, args);
-	OutputDebugStringA(log);
-	va_end(args);
-}
-
-void output(const wchar_t* format, ...)
-{
-	wchar_t log[128];
-	va_list args;
-	va_start(args, format);
-	vswprintf_s(log, format, args);
-	OutputDebugStringW(log);
-	va_end(args);
-}
-
-
-
-
+#ifdef SMALL_LIB
 #undef small
 #include "libs/smallLib.cpp"
+#endif
+
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_WINDOWS_UTF8
 #include "libs/stb_image.h"
 
+
 // globals
 HINSTANCE hInst;
 
 #ifndef MAX_THREADS
-#define MAX_THREADS 16
+#define MAX_THREADS 8
 #endif
 
 // unity build
@@ -121,6 +67,7 @@ thread_pool workers(MAX_THREADS);
 #include "win_api/window.cpp"
 
 // image tarnsformations
+#ifdef IMAGE_PROCESSING
 #include "operators/color/histogram.cpp"
 #include "operators/image_conversion.cpp"
 #include "operators/median_filter.cpp"
@@ -128,10 +75,13 @@ thread_pool workers(MAX_THREADS);
 #include "operators/color/gray_world.cpp"
 #include "operators/color/histogram_alignment.cpp"
 #include "operators/convolutions/convolution.cpp"
+#endif
+
 
 // high_lavel_gui elements
 #include "high_lavel_gui/image_window.cpp"
 #include "high_lavel_gui/file_explorer_window.cpp"
+
 
 void al_init(HINSTANCE hInstance)
 {

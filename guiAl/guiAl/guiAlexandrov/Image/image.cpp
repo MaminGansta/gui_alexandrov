@@ -31,7 +31,6 @@ struct Image
 		other.invalid = true;
 		invalid = false;
 	}
-
 	Image& operator= (const Image& copy)
 	{
 		delete[] data;
@@ -54,6 +53,7 @@ struct Image
 		invalid = false;
 		return *this;
 	}
+
 
 	void open(const wchar_t* filename_utf8)
 	{
@@ -95,7 +95,6 @@ struct Image
 		invalid = false;
 		stbi_image_free(raw);
 	}
-
 
 	void resize(int width, int height)
 	{
