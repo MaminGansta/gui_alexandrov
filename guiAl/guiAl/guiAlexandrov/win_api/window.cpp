@@ -251,7 +251,8 @@ struct Window
 		const std::wstring& window_name,
 		int width,
 		int height,
-		std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback,
+		std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback =
+		[](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)->LRESULT { return DefWindowProc(hwnd, msg, wParam, lParam); },
 		UINT style = DEF_WINDOW,
 		HWND parent = NULL
 	)
@@ -263,7 +264,8 @@ struct Window
 		const std::wstring& window_name,
 		int width,
 		int height,
-		std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback,
+		std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback =
+		[](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)->LRESULT { return DefWindowProc(hwnd, msg, wParam, lParam); },
 		UINT style = DEF_WINDOW,
 		HWND parent = NULL
 	)
