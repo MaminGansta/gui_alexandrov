@@ -527,7 +527,7 @@ struct Window
 	}
 
 
-	static void default_msg_proc() {
+	static void peak_msg_proc() {
 		MSG msg;
 		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
