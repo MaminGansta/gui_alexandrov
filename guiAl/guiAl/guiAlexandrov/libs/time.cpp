@@ -1,5 +1,6 @@
 #include <chrono>
 #include <thread>
+#include <functional>
 
 using namespace std::chrono;
 
@@ -13,24 +14,8 @@ float get_time()
 }
 
 
-struct Time
-{
-	float init_time;
 
-	Time()
-	{
-		init_time = get_time();
-	}
-
-	~Time()
-	{
-		float elapsed = init_time - get_time();
-		doutput("%f\n", elapsed);
-	}
-};
-
-
-void Speed_test(std::function<void()> target)
+float Speed_test(std::function<void()> target)
 {
 	float total_time = 0;
 	for (int i = 0; i < 10; i++)
@@ -40,7 +25,7 @@ void Speed_test(std::function<void()> target)
 		total_time += get_time() - start;
 	}
 
-	doutput("%f\n", total_time * 0.1f);
+	return total_time * 0.1f;
 }
 
 
@@ -62,7 +47,7 @@ struct Timer
 
 
 	inline Timer(float frame_time_lock = 0.0f) : m_frameLock(frame_time_lock > 0.0f),
-		m_frameLock_time(frame_time_lock)
+												 m_frameLock_time(frame_time_lock)
 	{
 		privius = high_resolution_clock::now();
 	}

@@ -27,7 +27,11 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include <malloc.h>
 
 
-// some output
+// basics
+#include "input/io.cpp"
+#include "libs/time.cpp"
+
+// file and console log
 #include "libs/log.cpp"
 
 #ifdef SMALL_LIB
@@ -62,8 +66,6 @@ thread_pool workers(MAX_THREADS);
 #include "image/text.cpp"
 
 #include "input/input.cpp"
-#include "input/io.cpp"
-#include "libs/time.cpp"
 #include "win_api/window.cpp"
 
 // image tarnsformations

@@ -1,10 +1,16 @@
 
 /*
 	Return heap allocated buffer with file data
+
+
+	// error code
+	0 - File cant be opened
+	1 - Read failled
+	2 - write failled
 */
 
 template <typename T>
-T* read_file(T* file_name , int& len)
+T* read_file(T* file_name , int& len, int* error = NULL)
 {
 	HANDLE hFile;
 
@@ -16,10 +22,10 @@ T* read_file(T* file_name , int& len)
 		FILE_ATTRIBUTE_NORMAL,
 		NULL);
 
+	
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
-		doutput(L"hFile is NULL\n");
-		doutput(L"Target file is %s\n", file_name);
+		if (error) *error = 0;
 		return  NULL;
 	}
 
@@ -32,7 +38,7 @@ T* read_file(T* file_name , int& len)
 
 	if (!bResult)
 	{
-		doutput("Read failed\n");
+		if (error) *error = 1;
 		return NULL;
 	}
 
@@ -46,7 +52,7 @@ T* read_file(T* file_name , int& len)
 */
 
 template <typename T>
-int write_file(T* file_name, T* data, int len)
+int write_file(T* file_name, T* data, int len, int* error = NULL)
 {
 	HANDLE hFile;
 
@@ -60,8 +66,7 @@ int write_file(T* file_name, T* data, int len)
 
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
-		doutput(L"hFile is NULL\n");
-		doutput(L"Target file is %s\n", file_name);
+		if (error) *error = 0;
 		return 0;
 	}
 
@@ -71,7 +76,7 @@ int write_file(T* file_name, T* data, int len)
 
 	if (!bResult)
 	{
-		doutput("Write failed\n");
+		if (error) *error = 2;
 		return 0;
 	}
 

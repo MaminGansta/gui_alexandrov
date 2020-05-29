@@ -57,7 +57,7 @@ struct Component
 		set_font(hwnd, DEF_FONT);
 	}
 
-	virtual ~Component() {};// DestroyWindow(hwnd);
+	virtual ~Component() {};
 
 	void resize(RECT& rect)
 	{
@@ -251,8 +251,7 @@ struct Window
 		const std::wstring& window_name,
 		int width,
 		int height,
-		std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback =
-		[](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)->LRESULT { return DefWindowProc(hwnd, msg, wParam, lParam); },
+		std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback,
 		UINT style = DEF_WINDOW,
 		HWND parent = NULL
 	)
@@ -264,8 +263,7 @@ struct Window
 		const std::wstring& window_name,
 		int width,
 		int height,
-		std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback =
-		[](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)->LRESULT { return DefWindowProc(hwnd, msg, wParam, lParam); },
+		std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback,
 		UINT style = DEF_WINDOW,
 		HWND parent = NULL
 	)
@@ -527,7 +525,7 @@ struct Window
 	}
 
 
-	static void peak_msg_proc() {
+	static void default_msg_proc() {
 		MSG msg;
 		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{

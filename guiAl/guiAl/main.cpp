@@ -1,3 +1,4 @@
+
 #include "guiAlexandrov/include.h"
 
 template <typename Image_type>
@@ -34,47 +35,47 @@ struct My_window : Window
 
 				switch (msg)
 				{
-					case WM_COMMAND:
+				case WM_COMMAND:
+				{
+					if (LOWORD(wParam) == window->btn.id)
+						window->windows.push_back(image_window(window->bg));
+
+					if (LOWORD(wParam) == window->bClear.id)
 					{
-						if (LOWORD(wParam) == window->btn.id)
-							window->windows.push_back(image_window(window->bg));
+						for (int id : window->windows)
+							Window::close(id);
 
-						if (LOWORD(wParam) == window->bClear.id)
-						{
-							for (int id : window->windows)
-								Window::close(id);
-						
-							window->windows.clear();
-						}
-					}break;
-					case WM_SIZE:
-					{
-						draw_image_async(window->canvas, window->bg, 0.0f, 0.0f, 1.0f, 1.0f);
+						window->windows.clear();
+					}
+				}break;
+				case WM_SIZE:
+				{
+					draw_image_async(window->canvas, window->bg, 0.0f, 0.0f, 1.0f, 1.0f);
 
-						draw_image_async_a(window->canvas, window->kek, 0.3f, -0.1f, 0.6f, 0.5f);
-						draw_image_async_a(window->canvas, window->cloud, 0.0f, 0.0f, 0.7f, 0.7f);
-						draw_image_async_a(window->canvas, window->dice, 0.5f, 0.0f, 0.5f, 0.5f);
+					draw_image_async_a(window->canvas, window->kek, 0.3f, -0.1f, 0.6f, 0.5f);
+					draw_image_async_a(window->canvas, window->cloud, 0.0f, 0.0f, 0.7f, 0.7f);
+					draw_image_async_a(window->canvas, window->dice, 0.5f, 0.0f, 0.5f, 0.5f);
 
 
-						draw_image_async_a(window->canvas, window->bg, 0.5f, 0.5f, 0.5f, 0.5f, 0.3f);
+					draw_image_async_a(window->canvas, window->bg, 0.5f, 0.5f, 0.5f, 0.5f, 0.3f);
 
 
-						draw_filled_rect_async_a(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0, 50));
-						draw_rect(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0), 2);
-						
-						draw_rect_a(window->canvas, 0.5f, 0.5f, 0.5f, 0.5f, Color(0, 0, 0, 30), 2);
-						draw_filled_circle_a(window->canvas, 0.1f, 0.1f, Color(0, 0, 255, 150), 0.1f);
-						
-						render_text_ml(window->canvas, 0.6f, 0.8f, L"S1MPLE TEXT \n(rendering)", Color(), get_def_font(25));
-					}break;
+					draw_filled_rect_async_a(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0, 50));
+					draw_rect(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0), 2);
 
-					case WM_PAINT:
-					{
-						PAINTSTRUCT ps;
-						BeginPaint(hwnd, &ps);
-						window->render_canvas(ps);
-						EndPaint(hwnd, &ps);
-					}break;
+					draw_rect_a(window->canvas, 0.5f, 0.5f, 0.5f, 0.5f, Color(0, 0, 0, 30), 2);
+					draw_filled_circle_a(window->canvas, 0.1f, 0.1f, Color(0, 0, 255, 150), 0.1f);
+
+					render_text_ml(window->canvas, 0.6f, 0.8f, L"S1MPLE TEXT \n(rendering)", Color(), get_def_font(25));
+				}break;
+
+				case WM_PAINT:
+				{
+					PAINTSTRUCT ps;
+					BeginPaint(hwnd, &ps);
+					window->render_canvas(ps);
+					EndPaint(hwnd, &ps);
+				}break;
 				}
 				return DefWindowProc(hwnd, msg, wParam, lParam);
 			});
@@ -109,6 +110,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	al_init(hInstance);
 
 	My_window<Image>* window = new My_window<Image>();
+
+
+	console::printf(L"hello world ");
+	console::printf(L"hello world\n");
+	console::printf(L"hello world");
+
 
 	Window::wait_msg_proc();
 	return 0;
