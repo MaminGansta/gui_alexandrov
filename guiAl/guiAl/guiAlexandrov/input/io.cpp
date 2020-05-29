@@ -1,16 +1,12 @@
 
 /*
-	Return heap allocated buffer with file data
+	Return heap allocated buffer with file data.
 
-
-	// error code
-	0 - File cant be opened
-	1 - Read failled
-	2 - write failled
+	if function return NULL, call GetLastError()
 */
 
 template <typename T>
-T* read_file(T* file_name , int& len, int* error = NULL)
+T* read_file(T* file_name , int& len)
 {
 	HANDLE hFile;
 
@@ -25,7 +21,7 @@ T* read_file(T* file_name , int& len, int* error = NULL)
 	
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
-		if (error) *error = 0;
+		gui::error_list.push_back(0);
 		return  NULL;
 	}
 
@@ -38,7 +34,7 @@ T* read_file(T* file_name , int& len, int* error = NULL)
 
 	if (!bResult)
 	{
-		if (error) *error = 1;
+		gui::error_list.push_back(1);
 		return NULL;
 	}
 
@@ -49,10 +45,12 @@ T* read_file(T* file_name , int& len, int* error = NULL)
 
 /*
 	return amount of chars that was written
+
+	if return 0, call GetLastErrorFunction
 */
 
 template <typename T>
-int write_file(T* file_name, T* data, int len, int* error = NULL)
+int write_file(T* file_name, T* data, int len)
 {
 	HANDLE hFile;
 
@@ -66,7 +64,7 @@ int write_file(T* file_name, T* data, int len, int* error = NULL)
 
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
-		if (error) *error = 0;
+		gui::error_list.push_back(0);
 		return 0;
 	}
 
@@ -76,7 +74,7 @@ int write_file(T* file_name, T* data, int len, int* error = NULL)
 
 	if (!bResult)
 	{
-		if (error) *error = 2;
+		gui::error_list.push_back(2);
 		return 0;
 	}
 

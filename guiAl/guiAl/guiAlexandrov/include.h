@@ -26,13 +26,18 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include <cmath>
 #include <malloc.h>
 
+// Basics
 
-// basics
+// error messages
+#include "error_handler/errors.cpp"
+
+// file io
 #include "input/io.cpp"
-#include "libs/time.cpp"
 
 // file and console log
-#include "libs/log.cpp"
+#include "input/log.cpp"
+
+
 
 #ifdef SMALL_LIB
 #undef small
@@ -46,7 +51,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 
 // globals
-HINSTANCE hInst;
+HINSTANCE _hInst;
 
 #ifndef MAX_THREADS
 #define MAX_THREADS 8
@@ -65,6 +70,7 @@ thread_pool workers(MAX_THREADS);
 #include "image/draw.cpp"
 #include "image/text.cpp"
 
+#include "libs/time.cpp"
 #include "input/input.cpp"
 #include "win_api/window.cpp"
 
@@ -85,8 +91,8 @@ thread_pool workers(MAX_THREADS);
 #include "high_lavel_gui/file_explorer_window.cpp"
 
 
-void al_init(HINSTANCE hInstance)
+void gui_init(HINSTANCE hInstance)
 {
-	hInst = hInstance;
+	_hInst = hInstance;
 	init_time = high_resolution_clock::now();
 }

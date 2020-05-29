@@ -87,7 +87,6 @@ void output(const wchar_t* format, ...)
 }
 
 
-
 void str_output(const wchar_t* str)
 {
 	OutputDebugStringW(str);
@@ -120,9 +119,9 @@ namespace Log
 	}
 
 
-	void dumb_log(wchar_t* filename)
+	bool dumb_log(wchar_t* filename)
 	{
-		write_file(filename, al_log.data(), al_log.size());
+		return write_file(filename, al_log.data(), al_log.size());
 	}
 
 }
@@ -143,23 +142,26 @@ namespace console
 	/*
 		Posible to rewrite console event handler
 		but not possible to prevent window closing
-		after console colse
+		after console colse (winapi doesn't support it)
 	*/
-
 	int create_console(BOOL (*WINAPI console_callback)(DWORD fdwCtrlType) = console_callback_plug)
 	{
-		if (console) return 0;
+		if (console) return 1;
 
-		AllocConsole();
+		if (!AllocConsole())
+		{
+			gui::error_list.push_back(3);
+			return 0;
+		}
 
 		if (!SetConsoleCtrlHandler(console_callback, TRUE))
 		{
-			//printf("\nERROR: Could not set control handler");
-			return 1;
+			gui::error_list.push_back(4);
+			return 0;
 		}
 
 		console = GetStdHandle(STD_OUTPUT_HANDLE);
-		return 0;
+		return 1;
 	}
 
 
@@ -168,12 +170,19 @@ namespace console
 	{
 		if (!console)
 		{
-			if (create_console())
-				return -1;
+			if (!create_console())
+				return 0;
 		}
 
 		DWORD written = 0;
-		WriteConsoleW(console, text, length, &written, NULL);
+		BOOL res = WriteConsoleW(console, text, length, &written, NULL);
+
+		if (!res)
+		{
+			gui::error_list.push_back(5);
+			return 0;
+		}
+
 		return written;
 	}
 
@@ -183,8 +192,8 @@ namespace console
 	{
 		if (!console)
 		{
-			if (create_console())
-				return -1;
+			if (!create_console())
+				return 0;
 		}
 
 		wchar_t log[buffer_size];
@@ -196,9 +205,16 @@ namespace console
 		
 		// print buffer to the console
 		DWORD written = 0;
-		WriteConsoleW(console, log, length, &written, NULL);
+		BOOL res = WriteConsoleW(console, log, length, &written, NULL);
 
 		va_end(args);
+
+		if (!res)
+		{
+			gui::error_list.push_back(5);
+			return 0;
+		}
+
 		return written;
 	}
 

@@ -5,7 +5,6 @@ struct Image
 {
 	int height = 0, width = 0;
 	Color* data = NULL;
-	bool invalid = true;
 
 	Image() = default;
 	Image(const wchar_t* filename_utf8)
@@ -19,7 +18,6 @@ struct Image
 		width = copy.width;
 		data = new Color[height * width];
 		memmove(data, copy.data, sizeof(Color) * height * width);
-		invalid = false;
 	}
 
 	Image(Image&& other)
@@ -28,8 +26,6 @@ struct Image
 		width = other.width;
 		height = other.height;
 		other.data = NULL;
-		other.invalid = true;
-		invalid = false;
 	}
 	Image& operator= (const Image& copy)
 	{
@@ -38,7 +34,6 @@ struct Image
 		width = copy.width;
 		data = new Color[height * width];
 		memmove(data, copy.data, sizeof(Color) * height * width);
-		invalid = false;
 		return *this;
 	}
 
@@ -49,13 +44,11 @@ struct Image
 		width = other.width;
 		height = other.height;
 		other.data = NULL;
-		other.invalid = true;
-		invalid = false;
 		return *this;
 	}
 
 
-	void open(const wchar_t* filename_utf8)
+	bool open(const wchar_t* filename_utf8)
 	{
 		delete[] data;
 
@@ -65,7 +58,11 @@ struct Image
 
 		uint8_t* raw = stbi_load(filename, &width, &height, &chanels, 0);
 
-		if (raw == NULL) return;
+		if (raw == NULL)
+		{
+			gui::error_list.push_back(8);
+			return false;
+		}
 
 		data = new Color[width * height];
 		
@@ -92,8 +89,13 @@ struct Image
 			}
 		}
 		
-		invalid = false;
 		stbi_image_free(raw);
+		return true;
+	}
+
+	bool valid() const
+	{
+		return width != 0 && height != 0 && data != NULL;
 	}
 
 	void resize(int width, int height)
@@ -102,13 +104,11 @@ struct Image
 		this->height = height;
 		delete[] data;
 		data = new Color[width * height];
-		invalid = false;
 	}
 
 	Image(int width, int height) : width(width), height(height)
 	{
 		data = new Color[width * height];
-		invalid = false;
 	}
 
 	Color& get_pixel(int x, int y)
@@ -158,7 +158,6 @@ struct fImage
 {
 	int height = 0, width = 0;
 	fColor* data = NULL;
-	bool invalid = true;
 
 	fImage() = default;
 	fImage(const wchar_t* filename_utf8)
@@ -166,7 +165,7 @@ struct fImage
 		open(filename_utf8);
 	}
 
-	void open(const wchar_t* filename_utf8)
+	bool open(const wchar_t* filename_utf8)
 	{
 		delete[] data;
 
@@ -177,7 +176,10 @@ struct fImage
 		uint8_t* raw = stbi_load(filename, &width, &height, &chanels, 0);
 
 		if (raw == NULL)
-			return;
+		{
+			gui::error_list.push_back(8);
+			return false;
+		}
 
 		data = new fColor[width * height];
 
@@ -205,13 +207,18 @@ struct fImage
 		}
 
 		stbi_image_free(raw);
-		invalid = false;
+		return true;
 	}
+
+	bool valid()
+	{
+		return width != 0 && height != 0 && data != NULL;
+	}
+
 
 	fImage(int width, int height) : width(width), height(height)
 	{
 		data = new fColor[width * height];
-		invalid = false;
 	}
 
 	fImage(const fImage & copy)
@@ -220,7 +227,6 @@ struct fImage
 		width = copy.width;
 		data = new fColor[height * width];
 		memmove(data, copy.data, sizeof(fColor) * height * width);
-		invalid = false;
 	}
 
 	fImage(fImage&& other)
@@ -229,8 +235,6 @@ struct fImage
 		width = other.width;
 		height = other.height;
 		other.data = NULL;
-		other.invalid = true;
-		invalid = false;
 	}
 
 	fImage(const Image& image)
@@ -248,7 +252,6 @@ struct fImage
 		width = copy.width;
 		data = new fColor[height * width];
 		memmove(data, copy.data, sizeof(fColor) * height * width);
-		invalid = false;
 		return *this;
 	}
 
@@ -259,8 +262,6 @@ struct fImage
 		width = other.width;
 		height = other.height;
 		other.data = NULL;
-		other.invalid = true;
-		invalid = false;
 		return *this;
 	}
 
@@ -273,7 +274,6 @@ struct fImage
 		this->height = height;
 		delete[] data;
 		data = new fColor[width * height];
-		invalid = false;
 	}
 
 	fColor& get_pixel(int x, int y)

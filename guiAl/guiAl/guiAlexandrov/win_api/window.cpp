@@ -1,5 +1,5 @@
 ﻿
-// =========================================== CALLBACK ARGUMENTS =============================================================
+// ========================================= CALLBACK ARGUMENTS ========================================================
 
 struct Args
 {
@@ -34,7 +34,7 @@ struct Arguments
 Arguments arguments;
 
 
-// ================================== WINDOW COMPONENTS ====================================================
+// =========================================== WINDOW COMPONENTS ====================================================
 #define STATIC 0
 #define DYNAMIC 1
 #define RESIZABLE 2
@@ -112,7 +112,8 @@ struct Component_crt
 
 	void add(HWND parent, Component& comp)
 	{
-		auto pointer = std::find_if(components.begin(), components.end(), [&parent](const std::pair<HWND, std::vector<Component>>& elem) {return elem.first == parent;});
+		auto pointer = std::find_if(components.begin(), components.end(), 
+			[&parent](const std::pair<HWND, std::vector<Component>>& elem) {return elem.first == parent;});
 		
 		// if no such hwnd in storage
 		if (pointer == components.end())
@@ -128,7 +129,8 @@ struct Component_crt
 
 	void remove(HWND parent)
 	{
-		auto pointer = std::find_if(components.begin(), components.end(), [&parent](const std::pair<HWND, std::vector<Component>>& elem) {return elem.first == parent;});
+		auto pointer = std::find_if(components.begin(), components.end(), 
+			[&parent](const std::pair<HWND, std::vector<Component>>& elem) {return elem.first == parent;});
 		if (pointer == components.end()) return;
 
 		// release components of this parent
@@ -140,7 +142,8 @@ struct Component_crt
 
 	void resize(HWND parent)
 	{
-		auto pointer = std::find_if(components.begin(), components.end(), [&parent](const std::pair<HWND, std::vector<Component>>& elem) {return elem.first == parent;});
+		auto pointer = std::find_if(components.begin(), components.end(), 
+			[&parent](const std::pair<HWND, std::vector<Component>>& elem) {return elem.first == parent;});
 		if (pointer == components.end()) return;
 		
 		RECT rect;
@@ -152,7 +155,8 @@ struct Component_crt
 
 	void redraw(HWND parent)
 	{
-		auto pointer = std::find_if(components.begin(), components.end(), [&parent](const std::pair<HWND, std::vector<Component>>& elem) {return elem.first == parent; });
+		auto pointer = std::find_if(components.begin(), components.end(), 
+			[&parent](const std::pair<HWND, std::vector<Component>>& elem) {return elem.first == parent; });
 		if (pointer == components.end()) return;
 		
 		for (auto& component : pointer->second)
@@ -161,7 +165,8 @@ struct Component_crt
 
 	auto& operator[] (HWND parent)
 	{
-		auto pointer = std::find_if(components.begin(), components.end(), [&parent](const std::pair<HWND, std::vector<Component>>& elem) {return elem.first == parent; });
+		auto pointer = std::find_if(components.begin(), components.end(), 
+			[&parent](const std::pair<HWND, std::vector<Component>>& elem) {return elem.first == parent; });
 
 		if (pointer == components.end())
 		{
@@ -176,7 +181,7 @@ struct Component_crt
 Component_crt components;
 
 
-int global_id = 0;
+int global_id = 1;
 struct Component_id
 {
 	int id;
@@ -239,8 +244,8 @@ struct Window
 	static int name_id;
 	static std::vector<std::pair<int, Window*>> windows;
 
-	int class_id;
-	HWND hwnd;
+	int class_id = 0;
+	HWND hwnd = 0;
 	HDC hdc;
 	Canvas canvas;
 	int min_w = 0, min_h = 0;
@@ -259,7 +264,7 @@ struct Window
 		init(window_name, width, height, callback, style, parent);
 	}
 
-	void init(
+	bool init(
 		const std::wstring& window_name,
 		int width,
 		int height,
@@ -278,7 +283,7 @@ struct Window
 		wc.style = CS_HREDRAW | CS_VREDRAW;
 		wc.cbClsExtra = 0;
 		wc.cbWndExtra = 0;
-		wc.hInstance = hInst;
+		wc.hInstance = _hInst;
 		wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 		wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
@@ -314,9 +319,6 @@ struct Window
 					if (wParam == VK_ALT) Input::vk_alt = true;
 					if (wParam == VK_F10) Input::vk_f10 = true;
 					break;
-
-					//case WM_SYSKEYUP:
-					//	break;
 
 				case WM_KEYDOWN:
 					Input::pressed_any = true;
@@ -405,11 +407,18 @@ struct Window
 
 		if (!RegisterClassEx(&wc))
 		{
-			MessageBox(NULL, L"Cannot register class", L"Error", MB_OK);
-			assert(false);
+			gui::error_list.push_back(6);
+			return false;
 		}
 
-		hwnd = CreateWindow(wc.lpszClassName, window_name.c_str(), style, CW_USEDEFAULT, CW_USEDEFAULT, width, height, parent, (HMENU)0, (HINSTANCE)hInst, NULL);
+		hwnd = CreateWindow(wc.lpszClassName, window_name.c_str(), style, CW_USEDEFAULT, CW_USEDEFAULT, width, height, parent, (HMENU)0, (HINSTANCE)_hInst, NULL);
+
+		if (!hwnd)
+		{
+			gui::error_list.push_back(7);
+			return false;
+		}
+
 		hdc = GetDC(hwnd);
 
 		// set window def ssize
@@ -425,6 +434,7 @@ struct Window
 		SendMessage(hwnd, WM_CREATE, 0, 0);
 		SendMessage(hwnd, WM_SIZE, 0, 0);
 		SendMessage(hwnd, WM_PAINT, 0, 0);
+		return true;
 	}
 
 	virtual ~Window()
@@ -436,7 +446,7 @@ struct Window
 		ReleaseDC(hwnd, hdc);
 		arguments.remove(hwnd);
 		components.remove(hwnd);
-
+		
 		if (windows.size() == 0)
 			PostQuitMessage(0);
 	}
@@ -487,6 +497,11 @@ struct Window
 	int widht()
 	{
 		return canvas.width;
+	}
+
+	bool active()
+	{
+		return hwnd;
 	}
 
 #define MAX_WIN_SIZE -1
@@ -577,7 +592,7 @@ struct Button : Component_id
 		init(parent, text, x, y, width, height, type, style);
 	}
 
-	void init(
+	bool init(
 		HWND parent,
 		const std::wstring& text,
 		float x,
@@ -606,11 +621,18 @@ struct Button : Component_id
 			height * nHeight,    // Button height
 			parent,    // Parent window
 			(HMENU)id, // menu.
-			hInst,
+			_hInst,
 			NULL);      // Pointer not needed.
+
+		if (!hwnd)
+		{
+			gui::error_list.push_back(7);
+			return false;
+		}
 
 		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
+		return true;
 	}
 
 };
@@ -631,7 +653,7 @@ struct RadioButton : Component_id
 		init(parent, text, x, y, width, height, type, style);
 	}
 
-	void init(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_RADIO)
+	bool init(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_RADIO)
 	{
 		this->parent = parent;
 		this->text = text;
@@ -642,10 +664,17 @@ struct RadioButton : Component_id
 		int nHeight = rect.bottom - rect.top;
 
 		hwnd = CreateWindow(L"Button", text.c_str(), style,
-			x * nWidth, (1.0f - y - height) * nHeight, width * nWidth, height * nHeight, parent, (HMENU)id, hInst, NULL);
+			x * nWidth, (1.0f - y - height) * nHeight, width * nWidth, height * nHeight, parent, (HMENU)id, _hInst, NULL);
+
+		if (!hwnd)
+		{
+			gui::error_list.push_back(7);
+			return false;
+		}
 
 		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
+		return true;
 	}
 
 	int chosed()
@@ -672,7 +701,7 @@ struct CheckBox : Component_id
 		init(parent, text, x, y, width, height, type, style);
 	}
 
-	void init(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_CHECK)
+	bool init(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_CHECK)
 	{
 		this->parent = parent;
 		this->text = text;
@@ -683,10 +712,17 @@ struct CheckBox : Component_id
 		int nHeight = rect.bottom - rect.top;
 
 		hwnd = CreateWindow(L"Button", text.c_str(), style,
-			x* nWidth, (1.0f - y - height) * nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
+			x* nWidth, (1.0f - y - height) * nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, _hInst, NULL);
+
+		if (!hwnd)
+		{
+			gui::error_list.push_back(7);
+			return false;
+		}
 
 		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
+		return true;
 	}
 
 	bool checked()
@@ -710,7 +746,7 @@ struct ComboBox : Component_id
 		init(parent, x, y, width, height, type, style);
 	}
 
-	void init(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_COMBO)
+	bool init(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_COMBO)
 	{
 		this->parent = parent;
 
@@ -720,10 +756,17 @@ struct ComboBox : Component_id
 		int nHeight = rect.bottom - rect.top;
 
 		hwnd = CreateWindow(L"ComboBox", L"combo", style,
-			x* nWidth, (1.0f - y - height) * nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
+			x* nWidth, (1.0f - y - height) * nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, _hInst, NULL);
+
+		if (!hwnd)
+		{
+			gui::error_list.push_back(7);
+			return false;
+		}
 
 		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
+		return true;
 	}
 
 	void add(const std::wstring& element)
@@ -803,7 +846,7 @@ struct Label : Component_id
 		init(parent, text, x, y, width, height, type, style);
 	}
 
-	void init(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_LABEL)
+	bool init(HWND parent, const std::wstring& text, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_LABEL)
 	{
 		this->parent = parent;
 		this->text = text;
@@ -814,11 +857,18 @@ struct Label : Component_id
 		int nHeight = rect.bottom - rect.top;
 
 		hwnd = CreateWindow(L"static", L"label", style,
-		x* nWidth, (1.0f - y - height) * nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
+		x* nWidth, (1.0f - y - height) * nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, _hInst, NULL);
+
+		if (!hwnd)
+		{
+			gui::error_list.push_back(7);
+			return false;
+		}
 
 		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
 		SetWindowText(hwnd, text.c_str());
+		return true;
 	}
 
 	void set_text(const std::wstring& text)
@@ -845,7 +895,7 @@ struct Text : Component_id
 		init(parent, x, y, width, height, type, style);
 	}
 
-	void init(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_TEXT)
+	bool init(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_TEXT)
 	{
 		this->parent = parent;
 		text = (TCHAR*)::operator new(cap * sizeof(TCHAR));
@@ -856,10 +906,17 @@ struct Text : Component_id
 		int nHeight = rect.bottom - rect.top;
 
 		hwnd = CreateWindow(L"edit", L"", style,
-		x* nWidth, (1.0f - y - height) * nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, hInst, NULL);
-		
+		x* nWidth, (1.0f - y - height) * nHeight, width* nWidth, height* nHeight, parent, (HMENU)id, _hInst, NULL);
+
+		if (!hwnd)
+		{
+			gui::error_list.push_back(7);
+			return false;
+		}
+
 		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
+		return true;
 	}
 
 	TCHAR* get_text()
@@ -913,7 +970,7 @@ struct Table : Component_id
 		init(paretn, max_row, max_col, x, y, width, height, size_type, type);
 	}
 
-	void init(HWND parent, int max_row, int max_col, float x, float y, float width, float height, int size_type = TOTAL_SIZE, int type = RESIZABLE)
+	bool init(HWND parent, int max_row, int max_col, float x, float y, float width, float height, int size_type = TOTAL_SIZE, int type = RESIZABLE)
 	{
 		this->cap_row = max_row;
 		this->cap_col = max_col;
@@ -937,10 +994,17 @@ struct Table : Component_id
 			table[i].hide();
 
 		// just indicator of this class
-		this->hwnd = hwnd = CreateWindow(L"BUTTON", L"", 0, 0, 0, 0, 0, parent, NULL, hInst, NULL);
+		this->hwnd = hwnd = CreateWindow(L"BUTTON", L"", 0, 0, 0, 0, 0, parent, NULL, _hInst, NULL);
+
+		if (!hwnd)
+		{
+			gui::error_list.push_back(7);
+			return false;
+		}
 
 		Component comp(id, x, y, width, height, type, STATIC, hwnd, parent);
 		components.add(parent, comp);
+		return true;
 	}
 
 	void create(const std::vector<std::wstring>& text_rows, const std::vector<std::wstring>& text_cols)
@@ -1049,7 +1113,7 @@ struct ListView : Component_id
 		init(parent, x, y, width, height, type, style);
 	}
 
-	void init(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_LISTVIEW)
+	bool init(HWND parent, float x, float y, float width = 0.1f, float height = 0.1f, UINT type = RESIZABLE, UINT style = DEF_LISTVIEW)
 	{
 
 		INITCOMMONCONTROLSEX icex;
@@ -1065,14 +1129,20 @@ struct ListView : Component_id
 
 		hwnd = CreateWindow(WC_LISTVIEW, L"", style,
 			x * nWidth, (1.0f - y - height) * nHeight, width * nWidth, height * nHeight,
-			parent, (HMENU)id, hInst, NULL);
+			parent, (HMENU)id, _hInst, NULL);
+
+		if (!hwnd)
+		{
+			gui::error_list.push_back(7);
+			return false;
+		}
 
 		ListView_SetExtendedListViewStyleEx(hwnd, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
-
 		this->parent = parent;
 
 		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
 		components.add(parent, comp);
+		return true;
 	}
 
 	void add_columns(std::vector<std::wstring> columns)

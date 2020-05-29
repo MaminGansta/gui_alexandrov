@@ -179,7 +179,7 @@ template <typename Surface_type, typename Image_type>
 void draw_image(Surface_type& surface, const Image_type& image,
 	float fpos_x, float fpos_y, float fwidth, float fheight)
 {
-	if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || image.invalid) return;
+	if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || !image.valid()) return;
 
 	int pos_x = surface.width * fpos_x;
 	int pos_y = surface.height * fpos_y;
@@ -202,7 +202,7 @@ template <typename Surface_type, typename Image_type>
 void draw_image_async(Surface_type& surface, const Image_type& image,
 	float fpos_x, float fpos_y, float fwidth, float fheight)
 {
-	if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || image.invalid) return;
+	if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || !image.valid()) return;
 
 	int pos_x = surface.width * fpos_x;
 	int pos_y = surface.height * fpos_y;
@@ -456,7 +456,7 @@ template <typename Surface_type, typename Image_type>
 void draw_image_a(Surface_type& surface, const Image_type& image,
 	float fpos_x, float fpos_y, float fwidth, float fheight)
 {
-	if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || image.invalid) return;
+	if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || image.invalid()) return;
 
 	int pos_x = surface.width * fpos_x;
 	int pos_y = surface.height * fpos_y;
@@ -479,7 +479,7 @@ template <typename Surface_type, typename Image_type>
 void draw_image_async_a(Surface_type& surface, const Image_type& image,
 	float fpos_x, float fpos_y, float fwidth, float fheight)
 {
-	if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || image.invalid) return;
+	if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || !image.valid()) return;
 
 	int pos_x = surface.width * fpos_x;
 	int pos_y = surface.height * fpos_y;
@@ -540,7 +540,7 @@ template <typename Surface_type, typename Image_type>
 void draw_image_async_a(Surface_type& surface, const Image_type& image,
 	float fpos_x, float fpos_y, float fwidth, float fheight, float alpha)
 {
-	if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || image.invalid) return;
+	if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || !image.valid()) return;
 
 	int pos_x = surface.width * fpos_x;
 	int pos_y = surface.height * fpos_y;

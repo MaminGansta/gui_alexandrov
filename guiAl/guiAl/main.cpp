@@ -1,4 +1,5 @@
 
+#define IMAGE_PROCESSING
 #include "guiAlexandrov/include.h"
 
 template <typename Image_type>
@@ -107,15 +108,11 @@ struct My_window : Window
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	al_init(hInstance);
+	gui_init(hInstance);
 
 	My_window<Image>* window = new My_window<Image>();
 
-
-	console::printf(L"hello world ");
 	console::printf(L"hello world\n");
-	console::printf(L"hello world");
-
 
 	Window::wait_msg_proc();
 	return 0;

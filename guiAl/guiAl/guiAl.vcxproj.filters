@@ -27,7 +27,10 @@
     <ClCompile Include="guiAlexandrov\image\text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="guiAlexandrov\libs\log.cpp">
+    <ClCompile Include="guiAlexandrov\input\log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="guiAlexandrov\error_handler\errors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
