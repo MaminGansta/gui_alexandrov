@@ -1,27 +1,26 @@
 
-#define IMAGE_PROCESSING
 #include "guiAlexandrov/include.h"
 
 template <typename Image_type>
-struct My_window : Window
+struct My_window : gui::Window
 {
 	Image_type bg;
 	Image_type dice;
 	Image_type cloud;
 	Image_type kek;
 
-	Button btn;
-	Button bClear;
+	gui::Button btn;
+	gui::Button bClear;
 	std::vector<int> windows;
 
 
-	Label label;
-	Text text;
-	ComboBox b;
-	CheckBox aa;
-	CheckBox aac;
-	RadioButton aaa;
-	RadioButton aaav;
+	gui::Label label;
+	gui::Text text;
+	gui::ComboBox b;
+	gui::CheckBox aa;
+	gui::CheckBox aac;
+	gui::RadioButton aaa;
+	gui::RadioButton aaav;
 
 	My_window()
 	{
@@ -49,6 +48,7 @@ struct My_window : Window
 						window->windows.clear();
 					}
 				}break;
+
 				case WM_SIZE:
 				{
 					draw_image_async(window->canvas, window->bg, 0.0f, 0.0f, 1.0f, 1.0f);
@@ -56,17 +56,17 @@ struct My_window : Window
 					draw_image_async_a(window->canvas, window->kek, 0.3f, -0.1f, 0.6f, 0.5f);
 					draw_image_async_a(window->canvas, window->cloud, 0.0f, 0.0f, 0.7f, 0.7f);
 					draw_image_async_a(window->canvas, window->dice, 0.5f, 0.0f, 0.5f, 0.5f);
-
-
+					
+					
 					draw_image_async_a(window->canvas, window->bg, 0.5f, 0.5f, 0.5f, 0.5f, 0.3f);
-
-
+					
+					
 					draw_filled_rect_async_a(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0, 50));
 					draw_rect(window->canvas, 0, 0, 0.5f, 0.5f, Color(255, 0, 0), 2);
-
+					
 					draw_rect_a(window->canvas, 0.5f, 0.5f, 0.5f, 0.5f, Color(0, 0, 0, 30), 2);
 					draw_filled_circle_a(window->canvas, 0.1f, 0.1f, Color(0, 0, 255, 150), 0.1f);
-
+					
 					render_text_ml(window->canvas, 0.6f, 0.8f, L"S1MPLE TEXT \n(rendering)", Color(), get_def_font(25));
 				}break;
 
@@ -82,8 +82,8 @@ struct My_window : Window
 			});
 
 
-			btn.init(getHWND(), L"button", 0.1f, 0.1f, 0.1f, 0.1f, RESIZABLE);
-			bClear.init(hwnd, L"Clear", 0.01f, 0.8f, 0.1f, 0.1f, RESIZABLE);
+			btn.init(getHWND(), L"button", 0.1f, 0.1f, 0.1f, 0.1f);
+			bClear.init(hwnd, L"Clear", 0.01f, 0.8f, 0.1f, 0.1f);
 			
 			label.init(getHWND(), L"some text dsaf\nadsfadsfdasfdasf", 0.2f, 0.2f, 0.1f, 0.1f, RESIZABLE, DEF_LABEL);
 			set_font_size(btn.hwnd, 20);
@@ -98,8 +98,8 @@ struct My_window : Window
 			aa.init(getHWND(), L"Check", 0.5f, 0.3f);
 			aac.init(getHWND(), L"Check2", 0.5f, 0.4f);
 			
-			aaa.init(getHWND(), L"Radio", 0.4f, 0.6f, 0.1f, 0.1f, RESIZABLE);
-			aaav.init(getHWND(), L"Radio2", 0.4f, 0.7f, 0.1f, 0.1f, RESIZABLE);
+			aaa.init(getHWND(), L"Radio", 0.4f, 0.6f, 0.1f, 0.1f);
+			aaav.init(getHWND(), L"Radio2", 0.4f, 0.7f, 0.1f, 0.1f);
 	}
 
 };
@@ -114,6 +114,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	console::printf(L"hello world\n");
 
-	Window::wait_msg_proc();
+	gui::Window::wait_msg_proc();
 	return 0;
 }

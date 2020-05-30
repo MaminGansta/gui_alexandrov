@@ -34,6 +34,13 @@ struct Arguments
 Arguments arguments;
 
 
+
+
+
+
+namespace gui
+{
+
 // =========================================== WINDOW COMPONENTS ====================================================
 #define STATIC 0
 #define DYNAMIC 1
@@ -1264,3 +1271,4 @@ struct ListView : Component_id
 };
 
 
+}

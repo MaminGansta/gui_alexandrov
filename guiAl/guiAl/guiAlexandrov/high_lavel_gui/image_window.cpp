@@ -1,6 +1,6 @@
 
 template <typename Image_type>
-struct Image_window : Window
+struct Image_window : gui::Window
 {
 	Image_type image;
 

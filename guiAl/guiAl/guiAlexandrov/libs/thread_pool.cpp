@@ -1,11 +1,11 @@
 #include <cmath>
 #include <thread>
 #include <vector>
-#include <algorithm>
 #include <condition_variable>
 #include <functional>
 #include <queue>
 #include <future>
+#include <atomic>
 
 #define MIN(a, b) (a < b ? a : b)
 
