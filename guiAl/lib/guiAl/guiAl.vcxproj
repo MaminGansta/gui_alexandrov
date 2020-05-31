@@ -26,26 +26,26 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -166,14 +166,19 @@
     <ClCompile Include="guiAlexandrov\image\color.cpp" />
     <ClCompile Include="guiAlexandrov\image\image.cpp" />
     <ClCompile Include="guiAlexandrov\image\text.cpp" />
-    <ClCompile Include="guiAlexandrov\input\input.cpp" />
-    <ClCompile Include="guiAlexandrov\input\log.cpp" />
-    <ClCompile Include="guiAlexandrov\input\file_io.cpp" />
+    <ClCompile Include="guiAlexandrov\io\input.cpp" />
+    <ClCompile Include="guiAlexandrov\io\log.cpp" />
+    <ClCompile Include="guiAlexandrov\io\file_io.cpp" />
     <ClCompile Include="guiAlexandrov\libs\thread_pool.cpp" />
     <ClCompile Include="guiAlexandrov\libs\time.cpp" />
     <ClCompile Include="guiAlexandrov\win_api\gui_init.cpp" />
     <ClCompile Include="guiAlexandrov\win_api\window.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="main.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="guiAlexandrov\error_handler\errors.h" />
@@ -185,10 +190,32 @@
     <ClInclude Include="guiAlexandrov\image\image.h" />
     <ClInclude Include="guiAlexandrov\image\stb_image.h" />
     <ClInclude Include="guiAlexandrov\image\text.h" />
-    <ClInclude Include="guiAlexandrov\include.h" />
-    <ClInclude Include="guiAlexandrov\input\file_io.h" />
-    <ClInclude Include="guiAlexandrov\input\input.h" />
-    <ClInclude Include="guiAlexandrov\input\log.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\error_handler\errors.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\guiAlexandrov.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\high_lavel_gui\file_explorer_window.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\high_lavel_gui\image_window.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\image\canvas.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\image\color.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\image\draw.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\image\image.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\image\text.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\image_processing\auto_contrast.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\image_processing\convolution.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\image_processing\gray_world.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\image_processing\histogram.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\image_processing\histogram_alignment.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\image_processing\image_conversion.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\image_processing\median_filter.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\io\file_io.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\io\input.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\io\log.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\libs\thread_pool.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\libs\time.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\win_api\gui_init.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\win_api\window.h" />
+    <ClInclude Include="guiAlexandrov\io\file_io.h" />
+    <ClInclude Include="guiAlexandrov\io\input.h" />
+    <ClInclude Include="guiAlexandrov\io\log.h" />
     <ClInclude Include="guiAlexandrov\libs\thread_pool.h" />
     <ClInclude Include="guiAlexandrov\libs\time.h" />
     <ClInclude Include="guiAlexandrov\image_processing\auto_contrast.h" />

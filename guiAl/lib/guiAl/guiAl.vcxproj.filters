@@ -27,16 +27,10 @@
     <ClCompile Include="guiAlexandrov\image\text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="guiAlexandrov\input\log.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="guiAlexandrov\error_handler\errors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="guiAlexandrov\win_api\window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="guiAlexandrov\input\input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="guiAlexandrov\image\color.cpp">
@@ -54,17 +48,20 @@
     <ClCompile Include="guiAlexandrov\libs\time.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="guiAlexandrov\input\file_io.cpp">
+    <ClCompile Include="guiAlexandrov\win_api\gui_init.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="guiAlexandrov\win_api\gui_init.cpp">
+    <ClCompile Include="guiAlexandrov\io\file_io.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="guiAlexandrov\io\input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="guiAlexandrov\io\log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="guiAlexandrov\include.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="guiAlexandrov\error_handler\errors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -77,9 +74,6 @@
     <ClInclude Include="guiAlexandrov\win_api\window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="guiAlexandrov\input\input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="guiAlexandrov\image\text.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -90,12 +84,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="guiAlexandrov\image\image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="guiAlexandrov\input\file_io.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="guiAlexandrov\input\log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="guiAlexandrov\libs\thread_pool.h">
@@ -132,6 +120,84 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="guiAlexandrov\win_api\gui_init.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\io\file_io.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\io\input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\io\log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\image\canvas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\image\color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\image\draw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\image\image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\image\text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\error_handler\errors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\high_lavel_gui\file_explorer_window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\high_lavel_gui\image_window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\image_processing\auto_contrast.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\image_processing\convolution.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\image_processing\gray_world.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\image_processing\histogram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\image_processing\histogram_alignment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\image_processing\image_conversion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\image_processing\median_filter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\io\file_io.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\io\input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\io\log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\libs\thread_pool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\libs\time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\win_api\gui_init.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\win_api\window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\guiAlexandrov.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
