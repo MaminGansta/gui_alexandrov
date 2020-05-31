@@ -1,5 +1,5 @@
 
-#include "image_window.h"
+#include "high_lavel_gui/image_window.h"
 
 
 namespace gui

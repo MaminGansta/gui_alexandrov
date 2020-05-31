@@ -1,6 +1,6 @@
 
 
-#include "image.h"
+#include "image/image.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_WINDOWS_UTF8

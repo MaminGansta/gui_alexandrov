@@ -1,5 +1,5 @@
 
-#include "color.h"
+#include "image/color.h"
 
 template <>
 float chanel_clip<float>(float color) { return __min(__max(color, 0.0f), 1.0f); }

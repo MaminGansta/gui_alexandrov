@@ -1,6 +1,6 @@
 
 
-#include "canvas.h"
+#include "image/canvas.h"
 
 
 	Canvas::Canvas()

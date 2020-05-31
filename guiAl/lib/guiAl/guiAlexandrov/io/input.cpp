@@ -1,8 +1,8 @@
 
-#include "input.h"
+#include "io/input.h"
+
 
 // ======================= Mouse ============================
-
 
 bool Mouse::pressed(int code)
 {
@@ -34,7 +34,6 @@ float Mouse::pos_y = 0.0f;
 
 
 // ========================= keyboard ==============================
-
 
 bool Input::any_key_pressed()
 {

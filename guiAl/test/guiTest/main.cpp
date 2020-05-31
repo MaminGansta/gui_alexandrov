@@ -1,34 +1,7 @@
 
-
-#include "guiAlexandrov/inlcude/win_api/window.h"
-
-#include "guiAlexandrov/inlcude/image/image.h"
-#include "guiAlexandrov/inlcude/image/draw.h"
-#include "guiAlexandrov/inlcude/image/text.h"
-
-
-#include "guiAlexandrov/inlcude/libs/thread_pool.h"
-#include "guiAlexandrov/inlcude/libs/time.h"
-
-
-#include "guiAlexandrov/inlcude/io/file_io.h"
-#include "guiAlexandrov/inlcude/io/input.h"
-#include "guiAlexandrov/inlcude/io/log.h"
-
-
-#include "guiAlexandrov/inlcude/image_processing/gray_world.h"
-#include "guiAlexandrov/inlcude/image_processing/histogram.h"
-#include "guiAlexandrov/inlcude/image_processing/convolution.h"
-#include "guiAlexandrov/inlcude/image_processing/median_filter.h"
-#include "guiAlexandrov/inlcude/image_processing/histogram_alignment.h"
-#include "guiAlexandrov/inlcude/image_processing/image_conversion.h"
-
-
-#include "guiAlexandrov/inlcude/high_lavel_gui/file_explorer_window.h"
-#include "guiAlexandrov/inlcude/high_lavel_gui/image_window.h"
-
-//#include "guiAlexandrov/inlcude/guiAlexandrov.h"
+#include "guiAlexandrov.h"
 #pragma comment (lib, "guiAl.lib")
+
 
 template <typename Image_type>
 struct My_window : gui::Window
