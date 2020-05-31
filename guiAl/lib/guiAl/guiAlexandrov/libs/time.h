@@ -6,7 +6,7 @@
 
 using namespace std::chrono;
 
-high_resolution_clock::time_point init_time;
+extern high_resolution_clock::time_point init_time;
 
 float get_time();
 

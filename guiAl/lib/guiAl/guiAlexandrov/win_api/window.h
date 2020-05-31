@@ -6,12 +6,12 @@ name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
 processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 
+#include "gui_init.h"
 #include "../input/input.h"
 #include "../image/color.h"
 #include "../image/text.h"
 #include "../image/canvas.h"
 #include "../error_handler/errors.h"
-
 
 #pragma comment( lib, "comctl32.lib" )
 #include <CommCtrl.h>
@@ -22,10 +22,6 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include <utility>
 #include <vector>
 #include <string>
-
-
-// global instange (set in gui init funtion)
-extern HINSTANCE _hInst;
 
 
 // ========================================= CALLBACK ARGUMENTS ========================================================
@@ -51,9 +47,6 @@ struct Arguments
 	void remove(HWND hwnd);
 };
 extern Arguments arguments;
-
-
-
 
 
 

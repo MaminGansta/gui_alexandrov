@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "../../image/image.h"
+#include "../image/image.h"
 #include "histogram.h"
 
 

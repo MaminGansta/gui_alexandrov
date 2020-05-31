@@ -57,6 +57,9 @@
     <ClCompile Include="guiAlexandrov\input\file_io.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="guiAlexandrov\win_api\gui_init.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="guiAlexandrov\include.h">
@@ -104,28 +107,31 @@
     <ClInclude Include="guiAlexandrov\image\draw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="guiAlexandrov\operators\color\histogram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="guiAlexandrov\operators\color\auto_contrast.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="guiAlexandrov\operators\color\gray_world.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="guiAlexandrov\operators\convolutions\convolution.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="guiAlexandrov\operators\median_filter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="guiAlexandrov\operators\image_conversion.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="guiAlexandrov\operators\color\histogram_alignment.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="guiAlexandrov\image\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\image_processing\auto_contrast.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\image_processing\convolution.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\image_processing\gray_world.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\image_processing\histogram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\image_processing\histogram_alignment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\image_processing\image_conversion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\image_processing\median_filter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiAlexandrov\win_api\gui_init.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

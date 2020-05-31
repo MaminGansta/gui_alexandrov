@@ -3,8 +3,8 @@
 #include <emmintrin.h>
 
 #include <stdint.h>
-#include "../../image/image.h"
-#include "../../libs/thread_pool.h"
+#include "../image/image.h"
+#include "../libs/thread_pool.h"
 #include "cstdlib"
 
 #ifndef PI

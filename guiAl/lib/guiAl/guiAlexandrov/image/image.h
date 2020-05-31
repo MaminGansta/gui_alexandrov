@@ -4,11 +4,8 @@
 #include <memory.h>
 #include "color.h"
 
-
-
-
-
 #include "../error_handler/errors.h"
+
 
 namespace gui
 {

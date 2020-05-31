@@ -1,8 +1,6 @@
 ﻿#include "window.h"
 
 
-// global
-HINSTANCE _hInst;
 
 // =========================================== CALLBACK ARGUMENTS ========================================================
 
@@ -251,6 +249,8 @@ namespace gui
 		swprintf_s(class_name, L"class_%d", class_id);
 	
 		WNDCLASSEX wc;
+		ZeroMemory(&wc, sizeof(wc));
+
 		wc.cbSize = sizeof(wc);
 		wc.style = CS_HREDRAW | CS_VREDRAW;
 		wc.cbClsExtra = 0;
@@ -271,7 +271,6 @@ namespace gui
 			Window* window = (Window*)args[0];
 			if (window == NULL)	return DefWindowProc(hwnd, msg, wParam, lParam);
 	
-			PAINTSTRUCT ps;
 			switch (msg)
 			{
 				case  WM_GETMINMAXINFO:

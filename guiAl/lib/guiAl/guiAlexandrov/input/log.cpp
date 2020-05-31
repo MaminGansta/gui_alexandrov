@@ -71,6 +71,9 @@ namespace gui
 
 	namespace Log
 	{
+		// global
+		std::vector<wchar_t> al_log;
+
 		void add_log(wchar_t* log, int lenght)
 		{
 			for (int i = 0; i < lenght; i++)
@@ -96,6 +99,9 @@ namespace gui
 
 	namespace console
 	{
+		// global
+		HANDLE console = 0;
+
 		// default console event handler
 		BOOL WINAPI console_callback_plug(DWORD fdwCtrlType)
 		{
@@ -142,7 +148,7 @@ namespace gui
 
 			if (!res)
 			{
-				gui::error_list.push_back(5);
+				error_list.push_back(5);
 				return 0;
 			}
 
@@ -174,7 +180,7 @@ namespace gui
 
 			if (!res)
 			{
-				gui::error_list.push_back(5);
+				error_list.push_back(5);
 				return 0;
 			}
 

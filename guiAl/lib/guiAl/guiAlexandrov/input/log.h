@@ -73,7 +73,7 @@ namespace gui
 
 	namespace Log
 	{
-		std::vector<wchar_t> al_log;
+		extern std::vector<wchar_t> al_log;
 
 		void add_log(wchar_t* log, int lenght);
 
@@ -86,7 +86,7 @@ namespace gui
 
 	namespace console
 	{
-		HANDLE console = 0;
+		extern HANDLE console;
 
 
 		// default console event handler

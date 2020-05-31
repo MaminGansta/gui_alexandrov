@@ -171,6 +171,7 @@
     <ClCompile Include="guiAlexandrov\input\file_io.cpp" />
     <ClCompile Include="guiAlexandrov\libs\thread_pool.cpp" />
     <ClCompile Include="guiAlexandrov\libs\time.cpp" />
+    <ClCompile Include="guiAlexandrov\win_api\gui_init.cpp" />
     <ClCompile Include="guiAlexandrov\win_api\window.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -190,13 +191,14 @@
     <ClInclude Include="guiAlexandrov\input\log.h" />
     <ClInclude Include="guiAlexandrov\libs\thread_pool.h" />
     <ClInclude Include="guiAlexandrov\libs\time.h" />
-    <ClInclude Include="guiAlexandrov\operators\color\auto_contrast.h" />
-    <ClInclude Include="guiAlexandrov\operators\color\gray_world.h" />
-    <ClInclude Include="guiAlexandrov\operators\color\histogram.h" />
-    <ClInclude Include="guiAlexandrov\operators\color\histogram_alignment.h" />
-    <ClInclude Include="guiAlexandrov\operators\image_conversion.h" />
-    <ClInclude Include="guiAlexandrov\operators\median_filter.h" />
-    <ClInclude Include="guiAlexandrov\operators\convolutions\convolution.h" />
+    <ClInclude Include="guiAlexandrov\image_processing\auto_contrast.h" />
+    <ClInclude Include="guiAlexandrov\image_processing\gray_world.h" />
+    <ClInclude Include="guiAlexandrov\image_processing\histogram.h" />
+    <ClInclude Include="guiAlexandrov\image_processing\histogram_alignment.h" />
+    <ClInclude Include="guiAlexandrov\image_processing\image_conversion.h" />
+    <ClInclude Include="guiAlexandrov\image_processing\median_filter.h" />
+    <ClInclude Include="guiAlexandrov\image_processing\convolution.h" />
+    <ClInclude Include="guiAlexandrov\win_api\gui_init.h" />
     <ClInclude Include="guiAlexandrov\win_api\window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

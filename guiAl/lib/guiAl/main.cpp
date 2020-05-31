@@ -1,13 +1,28 @@
 
 
 #include "guiAlexandrov/win_api/window.h"
+
+#include "guiAlexandrov/image/image.h"
 #include "guiAlexandrov/image/draw.h"
+
+#include "guiAlexandrov/image/text.h"
+#include "guiAlexandrov/libs/time.h"
+
 #include "guiAlexandrov/input/file_io.h"
+#include "guiAlexandrov/input/input.h"
+#include "guiAlexandrov/input/log.h"
+
+
+#include "guiAlexandrov/image_processing/gray_world.h"
+#include "guiAlexandrov/image_processing/histogram.h"
+#include "guiAlexandrov/image_processing/convolution.h"
+#include "guiAlexandrov/image_processing/median_filter.h"
+#include "guiAlexandrov/image_processing/histogram_alignment.h"
+#include "guiAlexandrov/image_processing/image_conversion.h"
+
+
+#include "guiAlexandrov/high_lavel_gui/file_explorer_window.h"
 #include "guiAlexandrov/high_lavel_gui/image_window.h"
-#include "guiAlexandrov/operators/color/gray_world.h"
-#include "guiAlexandrov/operators/color/histogram.h"
-#include "guiAlexandrov/operators/convolutions/convolution.h"
-#include "guiAlexandrov/operators/median_filter.h"
 
 
 template <typename Image_type>
@@ -54,7 +69,6 @@ struct My_window : gui::Window
 				case WM_SIZE:
 				{
 					gui::cpu::draw_image(window->canvas, window->bg, 0, 0, 1.0f, 1.0f);
-
 				}break;
 
 				case WM_PAINT:
@@ -97,9 +111,7 @@ struct My_window : gui::Window
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	//gui_init(hInstance);
-	_hInst = hInstance;
-
+	gui::init(hInstance);
 
 	gui::Image bg(L"bg.jpg");
 

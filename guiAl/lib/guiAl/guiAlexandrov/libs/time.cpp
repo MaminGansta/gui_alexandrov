@@ -3,6 +3,9 @@
 
 using namespace std::chrono;
 
+// global
+high_resolution_clock::time_point init_time;
+
 
 float get_time()
 {
