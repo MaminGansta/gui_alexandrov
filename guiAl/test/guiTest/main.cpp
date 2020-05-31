@@ -96,6 +96,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	bg = gui::cpu::gray_world<gui::Image>(bg);
+	bg = gui::cpu::box_filter(bg);
 
 
 	My_window<gui::Image>* window = new My_window<gui::Image>(bg);

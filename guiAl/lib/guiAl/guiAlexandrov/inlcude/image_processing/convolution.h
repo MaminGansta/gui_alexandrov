@@ -17,19 +17,19 @@ namespace gui
 	namespace cpu
 	{
 
-		// ============== Kernal class ===================
+		// ============== Kernel class ===================
 		template  <typename Image_type, size_t size>
-		struct Kernal;
+		struct Kernel;
 
 
 		// ========================== fImage represintation ===============================
 		template <size_t size>
-		struct Kernal<fImage, size>
+		struct Kernel<fImage, size>
 		{
-			float kernal[size][size];
+			float kernel[size][size];
 
-			Kernal() = default;
-			Kernal(std::initializer_list<float> coefs)
+			Kernel() = default;
+			Kernel(std::initializer_list<float> coefs)
 			{
 				assert(size * size == coefs.size());
 				auto coef_ptr = coefs.begin();
@@ -40,20 +40,20 @@ namespace gui
 					for (int j = 0; j < size; j++)
 					{
 						total += *coef_ptr;
-						kernal[i][j] = *coef_ptr++;
+						kernel[i][j] = *coef_ptr++;
 					}
 				}
 			}
-			void Kernal_init(float kernal[size][size])
+			void Kernal_init(float Kernel[size][size])
 			{
 				for (int i = 0; i < size; i++)
 					for (int j = 0; j < size; j++)
-						this->kernal[i][j] = kernal[i][j];
+						this->kernel[i][j] = Kernel[i][j];
 			}
 
 			// new convolution from existed
 			template <size_t second_size>
-			Kernal(const Kernal<fImage, size>& kernalF, const Kernal<fImage, second_size>& kernalS)
+			Kernel(const Kernel<fImage, size>& kernelF, const Kernel<fImage, second_size>& kernelS)
 			{
 				int pad = second_size / 2;
 				float total = 0.0f;
@@ -79,10 +79,10 @@ namespace gui
 								if (core_x >= size) core_x = size - (core_x - size) - 1;
 								if (core_y >= size) core_y = size - (core_y - size) - 1;
 
-								new_coef += kernalF.kernal[core_y][core_x] * kernalS.kernal[i][j];
+								new_coef += kernelF.kernel[core_y][core_x] * kernelS.kernel[i][j];
 							}
 						}
-						total += kernal[y][x] = new_coef;
+						total += kernel[y][x] = new_coef;
 					}
 				}
 
@@ -90,7 +90,7 @@ namespace gui
 				total = 1.0f / total;
 				for (int i = 0; i < size; i++)
 					for (int j = 0; j < size; j++)
-						kernal[i][j] *= total;
+						kernel[i][j] *= total;
 
 			}
 
@@ -121,7 +121,7 @@ namespace gui
 							for (int j = 0; j < size; j++)
 							{
 								__m128 pixel = _mm_load_ps(&original[(y - pad + i) * original.width + x - pad + j].b);
-								__m128 coef = _mm_set_ps1(kernal[i][j]);
+								__m128 coef = _mm_set_ps1(kernel[i][j]);
 								bgr = _mm_add_ps(bgr, _mm_mul_ps(pixel, coef));
 							}
 						}
@@ -151,7 +151,7 @@ namespace gui
 									if (core_y >= original.height) core_y = original.height - (core_y - original.height) - 1;
 
 									__m128 pixel = _mm_load_ps(&original[core_y * original.width + core_x].b);
-									__m128 coef = _mm_set_ps1(kernal[i][j]);
+									__m128 coef = _mm_set_ps1(kernel[i][j]);
 									bgr = _mm_add_ps(bgr, _mm_mul_ps(pixel, coef));
 								}
 							}
@@ -181,7 +181,7 @@ namespace gui
 									if (core_y >= original.height) core_y = original.height - (core_y - original.height) - 1;
 
 									__m128 pixel = _mm_load_ps(&original[core_y * original.width + core_x].b);
-									__m128 coef = _mm_set_ps1(kernal[i][j]);
+									__m128 coef = _mm_set_ps1(kernel[i][j]);
 									bgr = _mm_add_ps(bgr, _mm_mul_ps(pixel, coef));
 								}
 							}
@@ -239,7 +239,7 @@ namespace gui
 										for (int j = 0; j < size; j++)
 										{
 											__m128 pixel = _mm_load_ps(&original[(y - pad + i) * original.width + x - pad + j].b);
-											__m128 coef = _mm_set_ps1(kernal[i][j]);
+											__m128 coef = _mm_set_ps1(kernel[i][j]);
 											bgr = _mm_add_ps(bgr, _mm_mul_ps(pixel, coef));
 										}
 									}
@@ -272,7 +272,7 @@ namespace gui
 									if (core_y >= original.height) core_y = original.height - (core_y - original.height) - 1;
 
 									__m128 pixel = _mm_load_ps(&original[core_y * original.width + core_x].b);
-									__m128 coef = _mm_set_ps1(kernal[i][j]);
+									__m128 coef = _mm_set_ps1(kernel[i][j]);
 									bgr = _mm_add_ps(bgr, _mm_mul_ps(pixel, coef));
 								}
 							}
@@ -302,7 +302,7 @@ namespace gui
 									if (core_y >= original.height) core_y = original.height - (core_y - original.height) - 1;
 
 									__m128 pixel = _mm_load_ps(&original[core_y * original.width + core_x].b);
-									__m128 coef = _mm_set_ps1(kernal[i][j]);
+									__m128 coef = _mm_set_ps1(kernel[i][j]);
 									bgr = _mm_add_ps(bgr, _mm_mul_ps(pixel, coef));
 								}
 							}
@@ -342,7 +342,7 @@ namespace gui
 						float brightnes = 0.0f;
 						for (int i = 0; i < size; i++)
 							for (int j = 0; j < size; j++)
-								brightnes += original[(y - pad + i) * original.width + x - pad + j].Y * kernal[i][j];
+								brightnes += original[(y - pad + i) * original.width + x - pad + j].Y * kernel[i][j];
 
 						res[y * res.width + x].Y = chanel_clip(brightnes);
 						res[y * res.width + x].U = original[y * res.width + x].U;
@@ -370,7 +370,7 @@ namespace gui
 									if (core_x >= original.width) core_x = original.width - (core_x - original.width) - 1;
 									if (core_y >= original.height) core_y = original.height - (core_y - original.height) - 1;
 
-									brightnes += original[core_y * original.width + core_x].Y * kernal[i][j];
+									brightnes += original[core_y * original.width + core_x].Y * kernel[i][j];
 
 								}
 							}
@@ -399,7 +399,7 @@ namespace gui
 									if (core_x >= original.width) core_x = original.width - (core_x - original.width) - 1;
 									if (core_y >= original.height) core_y = original.height - (core_y - original.height) - 1;
 
-									brightnes += original[core_y * original.width + core_x].Y * kernal[i][j];
+									brightnes += original[core_y * original.width + core_x].Y * Kernel[i][j];
 								}
 							}
 							res[y * res.width + x].Y = chanel_clip(brightnes);
@@ -414,19 +414,19 @@ namespace gui
 			}
 
 
-			float* operator [] (int i) { return kernal[i]; }
+			float* operator [] (int i) { return Kernel[i]; }
 		};
 
 
 		// ========================= Image representation ===================================
 		template <size_t size>
-		struct Kernal<Image, size>
+		struct Kernel<Image, size>
 		{
 			int coef = 10000;
-			int kernal[size][size];
+			int kernel[size][size];
 
-			Kernal() = default;
-			Kernal(std::initializer_list<float> coefs)
+			Kernel() = default;
+			Kernel(std::initializer_list<float> coefs)
 			{
 				assert(size * size == coefs.size());
 				auto coef_ptr = coefs.begin();
@@ -437,21 +437,21 @@ namespace gui
 					for (int j = 0; j < size; j++)
 					{
 						total += *coef_ptr;
-						kernal[i][j] = *coef_ptr++ * 10000.0f;
+						kernel[i][j] = *coef_ptr++ * 10000.0f;
 					}
 				}
 			}
-			void Kernal_init(float kernal[size][size])
+			void Kernal_init(float Kernel[size][size])
 			{
 				for (int i = 0; i < size; i++)
 					for (int j = 0; j < size; j++)
-						this->kernal[i][j] = kernal[i][j] * 10000.0f;
+						this->kernel[i][j] = Kernel[i][j] * 10000.0f;
 			}
 
 
 			// new convolution from existed
 			template <size_t second_size>
-			Kernal(const Kernal<Image, size>& kernalF, const Kernal<Image, second_size>& kernalS)
+			Kernel(const Kernel<Image, size>& kernelF, const Kernel<Image, second_size>& kernelS)
 			{
 				int pad = second_size / 2;
 				float total = 0.0f;
@@ -477,10 +477,10 @@ namespace gui
 								if (core_x >= size) core_x = size - (core_x - size) - 1;
 								if (core_y >= size) core_y = size - (core_y - size) - 1;
 
-								new_coef += kernalF.kernal[core_y][core_x] * kernalS.kernal[i][j];
+								new_coef += kernelF.kernel[core_y][core_x] * kernelS.kernel[i][j];
 							}
 						}
-						total += kernal[y][x] = new_coef / coef;
+						total += Kernel[y][x] = new_coef / coef;
 					}
 				}
 
@@ -488,7 +488,7 @@ namespace gui
 				total = coef / total;
 				for (int i = 0; i < size; i++)
 					for (int j = 0; j < size; j++)
-						kernal[i][j] *= total;
+						kernel[i][j] *= total;
 
 			}
 
@@ -518,9 +518,9 @@ namespace gui
 							for (int j = 0; j < size; j++)
 							{
 								const Color& pixel = original[(y - pad + i) * original.width + x - pad + j];
-								r += pixel.r * kernal[i][j];
-								g += pixel.g * kernal[i][j];
-								b += pixel.b * kernal[i][j];
+								r += pixel.r * kernel[i][j];
+								g += pixel.g * kernel[i][j];
+								b += pixel.b * kernel[i][j];
 							}
 						}
 						res[y * res.width + x].r = chanel_clip(r / coef);
@@ -551,9 +551,9 @@ namespace gui
 
 									const Color& pixel = original[core_y * original.width + core_x];
 
-									r += pixel.r * kernal[i][j];
-									g += pixel.g * kernal[i][j];
-									b += pixel.b * kernal[i][j];
+									r += pixel.r * kernel[i][j];
+									g += pixel.g * kernel[i][j];
+									b += pixel.b * kernel[i][j];
 								}
 							}
 							res[y * res.width + x].r = chanel_clip(r / coef);
@@ -582,9 +582,9 @@ namespace gui
 									if (core_y >= original.height) core_y = original.height - (core_y - original.height) - 1;
 
 									const Color& pixel = original[core_y * original.width + core_x];
-									r += pixel.r * kernal[i][j];
-									g += pixel.g * kernal[i][j];
-									b += pixel.b * kernal[i][j];
+									r += pixel.r * kernel[i][j];
+									g += pixel.g * kernel[i][j];
+									b += pixel.b * kernel[i][j];
 								}
 							}
 							res[y * res.width + x].r = chanel_clip(r / coef);
@@ -639,9 +639,9 @@ namespace gui
 										for (int j = 0; j < size; j++)
 										{
 											const Color& pixel = original[(y - pad + i) * original.width + x - pad + j];
-											r += pixel.r * kernal[i][j];
-											g += pixel.g * kernal[i][j];
-											b += pixel.b * kernal[i][j];
+											r += pixel.r * kernel[i][j];
+											g += pixel.g * kernel[i][j];
+											b += pixel.b * kernel[i][j];
 										}
 									}
 									res[y * res.width + x].r = chanel_clip(r / coef);
@@ -673,9 +673,9 @@ namespace gui
 
 									const Color& pixel = original[core_y * original.width + core_x];
 
-									r += pixel.r * kernal[i][j];
-									g += pixel.g * kernal[i][j];
-									b += pixel.b * kernal[i][j];
+									r += pixel.r * kernel[i][j];
+									g += pixel.g * kernel[i][j];
+									b += pixel.b * kernel[i][j];
 								}
 							}
 							res[y * res.width + x].r = chanel_clip(r / coef);
@@ -704,9 +704,9 @@ namespace gui
 									if (core_y >= original.height) core_y = original.height - (core_y - original.height) - 1;
 
 									const Color& pixel = original[core_y * original.width + core_x];
-									r += pixel.r * kernal[i][j];
-									g += pixel.g * kernal[i][j];
-									b += pixel.b * kernal[i][j];
+									r += pixel.r * kernel[i][j];
+									g += pixel.g * kernel[i][j];
+									b += pixel.b * kernel[i][j];
 								}
 							}
 							res[y * res.width + x].r = chanel_clip(r / coef);
@@ -745,7 +745,7 @@ namespace gui
 						int brightnes = 0;
 						for (int i = 0; i < size; i++)
 							for (int j = 0; j < size; j++)
-								brightnes += original[(y - pad + i) * original.width + x - pad + j].Y * kernal[i][j];
+								brightnes += original[(y - pad + i) * original.width + x - pad + j].Y * kernel[i][j];
 
 						res[y * res.width + x].Y = chanel_clip(brightnes / coef);
 						res[y * res.width + x].U = original[y * res.width + x].U;
@@ -773,7 +773,7 @@ namespace gui
 									if (core_x >= original.width) core_x = original.width - (core_x - original.width) - 1;
 									if (core_y >= original.height) core_y = original.height - (core_y - original.height) - 1;
 
-									brightnes += original[core_y * original.width + core_x].Y * kernal[i][j];
+									brightnes += original[core_y * original.width + core_x].Y * kernel[i][j];
 
 								}
 							}
@@ -802,7 +802,7 @@ namespace gui
 									if (core_x >= original.width) core_x = original.width - (core_x - original.width) - 1;
 									if (core_y >= original.height) core_y = original.height - (core_y - original.height) - 1;
 
-									brightnes += original[core_y * original.width + core_x].Y * kernal[i][j];
+									brightnes += original[core_y * original.width + core_x].Y * kernel[i][j];
 								}
 							}
 							res[y * res.width + x].Y = chanel_clip(brightnes / coef);
@@ -816,14 +816,14 @@ namespace gui
 				return res;
 			}
 
-			float* operator [] (int i) { return kernal[i]; }
+			float* operator [] (int i) { return kernel[i]; }
 		};
 
-		// =============== make new kernal ====================
+		// =============== make new Kernel ====================
 		template <typename Image_type, size_t sizeF, size_t sizeS>
-		Kernal<Image_type, sizeF> new_kernal(const Kernal<Image_type, sizeF>& f, const Kernal<Image_type, sizeS>& s)
+		Kernel<Image_type, sizeF> new_kernal(const Kernel<Image_type, sizeF>& f, const Kernel<Image_type, sizeS>& s)
 		{
-			return Kernal<Image_type, sizeF>(f, s);
+			return Kernel<Image_type, sizeF>(f, s);
 		}
 
 
@@ -841,14 +841,14 @@ namespace gui
 		}
 
 		template <typename Image_type, size_t sigma = 1>
-		struct Gaussian_filter : Kernal<Image_type, mat_size(sigma)>
+		struct Gaussian_filter : Kernel<Image_type, mat_size(sigma)>
 		{
-			using Kernal<Image_type, mat_size(sigma)>::Kernal_init;
+			using Kernel<Image_type, mat_size(sigma)>::Kernal_init;
 
 			Gaussian_filter()
 			{
 				size_t size = mat_size(sigma);
-				float kernal[mat_size(sigma)][mat_size(sigma)];
+				float Kernel[mat_size(sigma)][mat_size(sigma)];
 
 				float A, a, c;
 				float sigma_quad = sigma * sigma;
@@ -863,7 +863,7 @@ namespace gui
 					for (int x = -pad; x <= pad; x++)
 					{
 						float temp = A * expf(-(a * (x * x) + 2 * (abs(x) * abs(y)) + c * (y * y)));
-						kernal[y + pad][x + pad] = temp;
+						Kernel[y + pad][x + pad] = temp;
 						total += temp;
 					}
 				}
@@ -874,12 +874,12 @@ namespace gui
 				{
 					for (int j = 0; j < size; j++)
 					{
-						kernal[i][j] *= total;
+						Kernel[i][j] *= total;
 					}
 				}
 
 
-				Kernal_init(kernal);
+				Kernal_init(Kernel);
 			}
 		};
 
@@ -897,13 +897,13 @@ namespace gui
 		// =================== Sharp filter ====================
 
 		template <typename Image_type, size_t size = 3, size_t sharp = 2>
-		struct Sharp_filter_s : Kernal<Image_type, size>
+		struct Sharp_filter_s : Kernel<Image_type, size>
 		{
-			using Kernal<Image_type, size>::Kernal_init;
+			using Kernel<Image_type, size>::Kernal_init;
 
 			Sharp_filter_s()
 			{
-				float kernal[size][size];
+				float Kernel[size][size];
 				int center = size / 2;
 				float total = 0.0f;
 				float sharp_norm = float(sharp) / 100.0f;
@@ -913,12 +913,12 @@ namespace gui
 					for (int j = 0; j < size; j++)
 					{
 						if (i == center && j == center) continue;
-						total += kernal[i][j] = -sharp_norm / pow(abs(i - center) + abs(j - center), size / 2);
+						total += Kernel[i][j] = -sharp_norm / pow(abs(i - center) + abs(j - center), size / 2);
 					}
 				}
 
-				kernal[center][center] = -total + 1;
-				Kernal_init(kernal);
+				Kernel[center][center] = -total + 1;
+				Kernal_init(Kernel);
 			}
 
 		};
@@ -934,13 +934,13 @@ namespace gui
 
 		// run time coefs determination
 		template <typename Image_type, size_t size = 3>
-		struct Sharp_filter : Kernal<Image_type, size>
+		struct Sharp_filter : Kernel<Image_type, size>
 		{
-			using Kernal<Image_type, size>::Kernal_init;
+			using Kernel<Image_type, size>::Kernal_init;
 
 			Sharp_filter(int sharp = 2)
 			{
-				float kernal[size][size];
+				float Kernel[size][size];
 				int center = size / 2;
 				float total = 0.0f;
 				float sharp_norm = float(sharp) / 100.0f;
@@ -950,12 +950,12 @@ namespace gui
 					for (int j = 0; j < size; j++)
 					{
 						if (i == center && j == center) continue;
-						total += kernal[i][j] = -sharp_norm / pow(abs(i - center) + abs(j - center), size / 2);
+						total += Kernel[i][j] = -sharp_norm / pow(abs(i - center) + abs(j - center), size / 2);
 					}
 				}
 
-				kernal[center][center] = -total + 1;
-				Kernal_init(kernal);
+				Kernel[center][center] = -total + 1;
+				Kernal_init(Kernel);
 			}
 
 		};
@@ -973,35 +973,35 @@ namespace gui
 		struct Sharp_filter3x3;
 
 		template <typename Image_type>
-		struct Sharp_filter3x3<Image_type, 1> : public Kernal<Image_type, 3>
+		struct Sharp_filter3x3<Image_type, 1> : public Kernel<Image_type, 3>
 		{
-			Sharp_filter3x3() : Kernal<Image_type, 3>({ -0.1f, -0.2f, -0.1f ,-0.2f, 2.2f, -0.2f ,-0.1f, -0.2f, -0.1f }) {}
+			Sharp_filter3x3() : Kernel<Image_type, 3>({ -0.1f, -0.2f, -0.1f ,-0.2f, 2.2f, -0.2f ,-0.1f, -0.2f, -0.1f }) {}
 		};
 
 		template <typename Image_type>
-		struct Sharp_filter3x3<Image_type, 2> : public Kernal<Image_type, 3>
+		struct Sharp_filter3x3<Image_type, 2> : public Kernel<Image_type, 3>
 		{
-			Sharp_filter3x3() : Kernal<Image_type, 3>({ -0.25f, -0.25f, -0.25f ,-0.25f, 3.0f, -0.25f ,-0.25f, -0.25f, -0.25f }) {}
+			Sharp_filter3x3() : Kernel<Image_type, 3>({ -0.25f, -0.25f, -0.25f ,-0.25f, 3.0f, -0.25f ,-0.25f, -0.25f, -0.25f }) {}
 		};
 
 		template <typename Image_type>
-		struct Sharp_filter3x3<Image_type, 3> : public Kernal<Image_type, 3>
+		struct Sharp_filter3x3<Image_type, 3> : public Kernel<Image_type, 3>
 		{
-			Sharp_filter3x3() : Kernal<Image_type, 3>({ -0.25f, -0.5f, -0.25f ,-0.5f, 4.0f, -0.5f ,-0.25f, -0.5f, -0.25f }) {}
-		};
-
-
-		template <typename Image_type>
-		struct Sharp_filter3x3<Image_type, 4> : public Kernal<Image_type, 3>
-		{
-			Sharp_filter3x3() : Kernal<Image_type, 3>({ -0.3f, -0.5f, -0.3f ,-0.5f, 4.2f, -0.5f ,-0.3f, -0.5f, -0.3f }) {}
+			Sharp_filter3x3() : Kernel<Image_type, 3>({ -0.25f, -0.5f, -0.25f ,-0.5f, 4.0f, -0.5f ,-0.25f, -0.5f, -0.25f }) {}
 		};
 
 
 		template <typename Image_type>
-		struct Sharp_filter3x3<Image_type, 5> : public Kernal<Image_type, 3>
+		struct Sharp_filter3x3<Image_type, 4> : public Kernel<Image_type, 3>
 		{
-			Sharp_filter3x3() : Kernal<Image_type, 3>({ -1.0f, -1.0f, -1.0f ,-1.0f, 9.0f, -1.0f ,-1.0f, -1.0f, -1.0f }) {}
+			Sharp_filter3x3() : Kernel<Image_type, 3>({ -0.3f, -0.5f, -0.3f ,-0.5f, 4.2f, -0.5f ,-0.3f, -0.5f, -0.3f }) {}
+		};
+
+
+		template <typename Image_type>
+		struct Sharp_filter3x3<Image_type, 5> : public Kernel<Image_type, 3>
+		{
+			Sharp_filter3x3() : Kernel<Image_type, 3>({ -1.0f, -1.0f, -1.0f ,-1.0f, 9.0f, -1.0f ,-1.0f, -1.0f, -1.0f }) {}
 		};
 
 
@@ -1017,16 +1017,16 @@ namespace gui
 
 		// ================ Sobel operator ====================
 		template <typename Image_type>
-		struct Sobel_y : public Kernal<Image_type, 3>
+		struct Sobel_y : public Kernel<Image_type, 3>
 		{
-			Sobel_y() : Kernal<Image_type, 3>({ 1, 0 , -1, 2, 0, -2, 1, 0 , -1 }) {}
+			Sobel_y() : Kernel<Image_type, 3>({ 1, 0 , -1, 2, 0, -2, 1, 0 , -1 }) {}
 		};
 
 
 		template <typename Image_type>
-		struct Sobel_x : public Kernal<Image_type, 3>
+		struct Sobel_x : public Kernel<Image_type, 3>
 		{
-			Sobel_x() : Kernal<Image_type, 3>({ 1, 2 , 1, 0, 0, 0, -1, -2 , -1 }) {}
+			Sobel_x() : Kernel<Image_type, 3>({ 1, 2 , 1, 0, 0, 0, -1, -2 , -1 }) {}
 		};
 
 		template <typename Image_type>
@@ -1064,20 +1064,20 @@ namespace gui
 
 		// =============== Box filter =======================
 		template <typename Image_type, size_t size = 3>
-		struct Box_filter : public Kernal<Image_type, size>
+		struct Box_filter : public Kernel<Image_type, size>
 		{
-			using Kernal<Image_type, size>::Kernal_init;
+			using Kernel<Image_type, size>::Kernal_init;
 
 			Box_filter()
 			{
-				float kernal[size][size];
+				float Kernel[size][size];
 				float coef = 1.0f / (size * size);
 
 				for (int i = 0; i < size; i++)
 					for (int j = 0; j < size; j++)
-						kernal[i][j] = coef;
+						Kernel[i][j] = coef;
 
-				Kernal_init(kernal);
+				Kernal_init(Kernel);
 			}
 		};
 
