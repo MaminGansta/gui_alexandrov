@@ -244,9 +244,9 @@ namespace gui
 		HWND parent
 	)
 	{
-		class_id = name_id++;
+		id = name_id++;
 		wchar_t class_name[16];
-		swprintf_s(class_name, L"class_%d", class_id);
+		swprintf_s(class_name, L"class_%d", id);
 	
 		WNDCLASSEX wc;
 		ZeroMemory(&wc, sizeof(wc));
@@ -396,7 +396,7 @@ namespace gui
 		set_min_max_size(width, height, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
 	
 		// add window to the widnow holder
-		windows.push_back(std::make_pair(class_id, this));
+		windows.push_back(std::make_pair(id, this));
 	
 		// put window ptr to global holder
 		arguments.add(hwnd, this, NULL, callback);
@@ -410,8 +410,8 @@ namespace gui
 	
 	Window::~Window()
 	{
-		int id = class_id;
-		auto pointer = std::find_if(windows.begin(), windows.end(), [id](const std::pair<int, Window*>& a) {return id == a.first; });
+		auto pointer = std::find_if(windows.begin(), windows.end(),
+					[=](const std::pair<int, Window*>& a) {return id == a.first; });
 		windows.erase(pointer);
 	
 		ReleaseDC(hwnd, hdc);
@@ -430,8 +430,6 @@ namespace gui
 	
 	void Window::render_canvas(const PAINTSTRUCT& ps)
 	{
-	
-	
 		HDC hdc = GetDC(NULL);
 		HDC memDC = CreateCompatibleDC(hdc);
 		HBITMAP hBmp = CreateHBITMAPfromByteArray(hdc, canvas.width, canvas.height, canvas.data);
@@ -470,7 +468,7 @@ namespace gui
 		return canvas.width;
 	}
 	
-	bool Window::active()
+	bool Window::valid()
 	{
 		return hwnd;
 	}
@@ -495,17 +493,36 @@ namespace gui
 	
 	HWND Window::getHWND() { return hwnd; }
 	
-	// static elements
-	Window* Window::get_window(int id)
+
+	//  ------------- static elements ---------------
+	Window* Window::get_window(WindowId id)
 	{
 		auto pointer = std::find_if(windows.begin(), windows.end(), [id](const std::pair<int, Window*>& a) {return id == a.first; });
 		return pointer != windows.end() ? pointer->second : NULL;
 	}
 	
-	void Window::close(int id)
+	void Window::close(WindowId id)
 	{
 		Window* window = Window::get_window(id);
 		if (window) SendMessage(window->hwnd, WM_CLOSE, 0, 0);
+	}
+
+
+	bool Window::is_running(WindowId id)
+	{
+		auto ptr = std::find_if(Window::windows.begin(), Window::windows.end(), 
+										[id](const std::pair<WindowId, Window*>& pair) { return pair.first == id; });
+
+		return ptr != Window::windows.end();
+	}
+
+	HWND getHWND(WindowId id)
+	{
+		auto ptr = std::find_if(Window::windows.begin(), Window::windows.end(),
+										[id](const std::pair<WindowId, Window*>& pair) { return pair.first == id; });
+
+		HWND hwnd = ptr == Window::windows.end() ? 0 : ptr->second->hwnd;
+		return hwnd;
 	}
 	
 	
@@ -526,11 +543,24 @@ namespace gui
 			DispatchMessage(&msg);
 		}
 	}
-	
+	// ---------------------------------------------------
 
 	// set window static elems
 	int Window::name_id = 0;
 	std::vector<std::pair<int, Window*>> Window::windows = std::vector<std::pair<int, Window*>>();
+
+
+	// create window
+	WindowId create_window(const std::wstring& window_name,
+		int width,
+		int height,
+		std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback,
+		UINT style,
+		HWND parent)
+	{
+		return (new Window(window_name, width, height, callback, style, parent))->id;
+	}
+
 
 
 	

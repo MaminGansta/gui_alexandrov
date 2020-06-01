@@ -5,6 +5,35 @@
 namespace gui
 {
 
+	void output(const char* format, ...)
+	{
+		va_list args;
+		va_start(args, format);
+
+		int buffer_size = _vscprintf(format, args) + 1;
+		char* log = (char*)_malloca(buffer_size);
+
+		vsprintf_s(log, buffer_size, format, args);
+		OutputDebugStringA(log);
+		va_end(args);
+	}
+
+	void output(const wchar_t* format, ...)
+	{
+		va_list args;
+		va_start(args, format);
+
+		int buffer_size = _vscwprintf(format, args) + 1;
+		wchar_t* log = (wchar_t*)_malloca(buffer_size * sizeof(wchar_t));
+
+		vswprintf_s(log, buffer_size, format, args);
+		OutputDebugStringW(log);
+		va_end(args);
+	}
+
+
+
+
 	void str_output(const wchar_t* str)
 	{
 		OutputDebugStringW(str);
@@ -110,6 +139,75 @@ namespace gui
 			return written;
 		}
 
-	}
 
+
+		int printf(const char* format, ...)
+		{
+			if (!console)
+			{
+				if (!create_console())
+					return 0;
+			}
+
+			va_list args;
+			va_start(args, format);
+
+			// allocate buffer
+			int buffer_size = _vscprintf(format, args) + 1;
+			char* log = (char*)_malloca(buffer_size);
+
+			// write to the buffer
+			int length = vsprintf_s(log, buffer_size, format, args);
+
+			// print buffer to the console
+			DWORD written = 0;
+			BOOL res = WriteConsoleW(console, log, length, &written, NULL);
+
+			va_end(args);
+
+			if (!res)
+			{
+				error_list.push_back(5);
+				return 0;
+			}
+
+			return written;
+		}
+
+
+		int printf(const wchar_t* format, ...)
+		{
+			if (!console)
+			{
+				if (!create_console())
+					return 0;
+			}
+
+			va_list args;
+			va_start(args, format);
+
+			// allocate buffer
+			int buffer_size = _vscwprintf(format, args) + 1;
+			wchar_t* log = (wchar_t*)_malloca(buffer_size * sizeof(wchar_t));
+
+			// write to the buffer
+			int length = vswprintf_s(log, buffer_size, format, args);
+
+			// print buffer to the console
+			DWORD written = 0;
+			BOOL res = WriteConsoleW(console, log, length, &written, NULL);
+
+			va_end(args);
+
+			if (!res)
+			{
+				error_list.push_back(5);
+				return 0;
+			}
+
+			return written;
+		}
+
+
+	}
 }

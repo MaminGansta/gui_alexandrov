@@ -132,13 +132,14 @@ namespace gui
 	// ========================================= WINDOW ========================================================
 
 #define DEF_WINDOW	WS_OVERLAPPEDWINDOW | WS_VISIBLE
+	typedef int WindowId;
 
 	struct Window
 	{
 		static int name_id;
-		static std::vector<std::pair<int, Window*>> windows;
+		static std::vector<std::pair<WindowId, Window*>> windows;
 
-		int class_id = 0;
+		WindowId id = 0;
 		HWND hwnd = 0;
 		HDC hdc;
 		Canvas canvas;
@@ -150,7 +151,8 @@ namespace gui
 			const std::wstring& window_name,
 			int width,
 			int height,
-			std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback,
+			std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback =
+				[](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args) { return DefWindowProc(hwnd, msg, wParam, lParam); },
 			UINT style = DEF_WINDOW,
 			HWND parent = NULL
 		);
@@ -159,7 +161,8 @@ namespace gui
 			const std::wstring& window_name,
 			int width,
 			int height,
-			std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback,
+			std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback = 
+				[](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args) { return DefWindowProc(hwnd, msg, wParam, lParam); },
 			UINT style = DEF_WINDOW,
 			HWND parent = NULL
 		);
@@ -177,7 +180,7 @@ namespace gui
 		int height();
 		int widht();
 		
-		bool active();
+		bool valid();
 		
 #define MAX_WIN_SIZE -1
 #define OLD_WIN_SIZE -2
@@ -188,13 +191,24 @@ namespace gui
 
 		// static elements
 		static Window* get_window(int id);
-		static void close(int id);
+
+		static bool is_running(WindowId id);
+		static HWND getHWND(WindowId id);
+		static void close(WindowId id);
+		
 		static void default_msg_proc();
 		static void wait_msg_proc();
 	};
 
 
-
+	// Window layout
+	WindowId create_window(const std::wstring& window_name,
+		int width,
+		int height,
+		std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback = 
+			[](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args) { return DefWindowProc(hwnd, msg, wParam, lParam); },
+		UINT style = DEF_WINDOW,
+		HWND parent = NULL);
 
 
 	// ==============================  Window Components =================================================

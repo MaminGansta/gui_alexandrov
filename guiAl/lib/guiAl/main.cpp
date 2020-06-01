@@ -1,32 +1,6 @@
 
-
-#include "guiAlexandrov/win_api/window.h"
-
-
-#include "guiAlexandrov/image/image.h"
-#include "guiAlexandrov/image/draw.h"
-#include "guiAlexandrov/image/text.h"
-
-
-#include "guiAlexandrov/libs/thread_pool.h"
-#include "guiAlexandrov/libs/time.h"
-
-
-#include "guiAlexandrov/io/file_io.h"
-#include "guiAlexandrov/io/input.h"
-#include "guiAlexandrov/io/log.h"
-
-
-#include "guiAlexandrov/image_processing/gray_world.h"
-#include "guiAlexandrov/image_processing/histogram.h"
-#include "guiAlexandrov/image_processing/convolution.h"
-#include "guiAlexandrov/image_processing/median_filter.h"
-#include "guiAlexandrov/image_processing/histogram_alignment.h"
-#include "guiAlexandrov/image_processing/image_conversion.h"
-
-
-#include "guiAlexandrov/high_lavel_gui/file_explorer_window.h"
-#include "guiAlexandrov/high_lavel_gui/image_window.h"
+#include "guiAlexandrov.h"
+//#pragma comment (lib, "guiAl.lib")
 
 
 template <typename Image_type>
@@ -53,14 +27,14 @@ struct My_window : gui::Window
 		init(L"window", 800, 600, [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)->LRESULT
 			{
 				My_window* window = (My_window*)args[0];
-
+			
 				switch (msg)
 				{
 				case WM_COMMAND:
 				{
 					if (LOWORD(wParam) == window->btn.id)
 						window->windows.push_back(gui::image_window(window->bg));
-
+			
 					if (LOWORD(wParam) == window->bClear.id)
 					{
 						for (int id : window->windows)
@@ -69,19 +43,19 @@ struct My_window : gui::Window
 						window->windows.clear();
 					}
 				}break;
-
+			
 				case WM_SIZE:
 				{
 					gui::cpu::draw_image(window->canvas, window->bg, 0, 0, 1.0f, 1.0f);
 				}break;
-
+			
 				case WM_PAINT:
 				{
 					PAINTSTRUCT ps;
 					BeginPaint(hwnd, &ps);
-
+			
 					window->render_canvas(ps);
-
+			
 					EndPaint(hwnd, &ps);
 				}break;
 				}
@@ -96,7 +70,7 @@ struct My_window : gui::Window
 			set_font_size(btn.hwnd, 20);
 			
 			
-			text.init(getHWND(), 0.1f, 0.6f, 0.2f, 0.2f, RESIZABLE, DEF_TEXT | WS_VSCROLL | WS_HSCROLL);
+			text.init(getHWND(), 0.1f, 0.5f, 0.2f, 0.2f, RESIZABLE, DEF_TEXT | WS_VSCROLL | WS_HSCROLL);
 			
 			b.init(getHWND(), 0.4f, 0.2f);
 			std::vector<std::wstring> combo_elements{ L"Mercury", L"Venus", L"Earth", L"Mars", L"Jupiter", L"Saturn", L"Uranus", L"NOT_Neptune" };
@@ -122,13 +96,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	bg = gui::cpu::gray_world<gui::Image>(bg);
+	bg = gui::cpu::box_filter(bg);
 
 
 	My_window<gui::Image>* window = new My_window<gui::Image>(bg);
 
 	
+	gui::doutput("sone int %d\n", 1);
+	gui::output("sone int %d\n", 5);
 	gui::console::printf(L"hello world  %f\n", get_time());
 
+	
 	gui::Window::wait_msg_proc();
 	return 0;
 }

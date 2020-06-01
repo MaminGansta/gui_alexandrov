@@ -21,7 +21,7 @@ namespace gui
 	template <typename Image_type>
 	int image_window(const Image_type& image, int flags = DEF_WINDOW)
 	{
-		return (new Image_window<Image_type>(image, flags))->class_id;
+		return (new Image_window<Image_type>(image, flags))->id;
 	}
 
 	

@@ -38,7 +38,7 @@ namespace gui
 
 	int image_window(const wchar_t* name, int flags)
 	{
-		return (new Image_window<Image>(name, flags))->class_id;
+		return (new Image_window<Image>(name, flags))->id;
 	}
 
 }

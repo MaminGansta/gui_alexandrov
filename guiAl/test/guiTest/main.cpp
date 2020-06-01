@@ -70,7 +70,7 @@ struct My_window : gui::Window
 			set_font_size(btn.hwnd, 20);
 			
 			
-			text.init(getHWND(), 0.1f, 0.6f, 0.2f, 0.2f, RESIZABLE, DEF_TEXT | WS_VSCROLL | WS_HSCROLL);
+			text.init(getHWND(), 0.1f, 0.5f, 0.2f, 0.2f, RESIZABLE, DEF_TEXT | WS_VSCROLL | WS_HSCROLL);
 			
 			b.init(getHWND(), 0.4f, 0.2f);
 			std::vector<std::wstring> combo_elements{ L"Mercury", L"Venus", L"Earth", L"Mars", L"Jupiter", L"Saturn", L"Uranus", L"NOT_Neptune" };
@@ -94,14 +94,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	gui::Image bg(L"bg.jpg");
 	if (!bg.valid()) return -1;
 
+	bg = gui::cpu::sharp_filter(bg);
 
-	bg = gui::cpu::gray_world<gui::Image>(bg);
-	bg = gui::cpu::box_filter(bg);
 
 
 	My_window<gui::Image>* window = new My_window<gui::Image>(bg);
-
-	
 	gui::console::printf(L"hello world  %f\n", get_time());
 
 	gui::Window::wait_msg_proc();
