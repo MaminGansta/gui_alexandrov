@@ -5,39 +5,32 @@
 using namespace std::chrono;
 
 // global
-high_resolution_clock::time_point init_time;
+high_resolution_clock::time_point __init_time;
 
 
 float get_time()
 {
 	high_resolution_clock::time_point now = high_resolution_clock::now();
-	duration<float>	dur = duration_cast<duration<float>>(now - init_time);
+	duration<float>	dur = duration_cast<duration<float>>(now - __init_time);
 	return dur.count();
 }
 
 
-float Speed_test(std::function<void()> target)
-{
-	float total_time = 0;
-	for (int i = 0; i < 10; i++)
-	{
-		float start = get_time();
-		target();
-		total_time += get_time() - start;
-	}
-
-	return total_time * 0.1f;
-}
-
-
-
 // Timer
 
-Timer::Timer(float frame_time_lock) : m_frameLock(frame_time_lock > 0.0f),
-											 m_frameLock_time(frame_time_lock)
+Timer::Timer(int frames) : m_frameLock(frames > 0),
+						   m_frameLock_time(1.0f / frames)
 {
 	privius = high_resolution_clock::now();
 }
+
+
+void Timer::set_frame_lock(int frames)
+{
+	m_frameLock = frames > 0;
+	m_frameLock_time = 1.0f / frames;
+}
+
 
 
 void Timer::update()

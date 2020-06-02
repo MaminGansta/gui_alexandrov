@@ -46,7 +46,7 @@ struct Arguments
 
 	void remove(HWND hwnd);
 };
-extern Arguments arguments;
+extern Arguments _arguments;
 
 
 
@@ -104,11 +104,11 @@ namespace gui
 		
 
 	};
-	extern Component_crt components;
+	extern Component_crt _components;
 
 
 	// Compoent_id
-	extern int global_id;
+	extern int _global_id;
 	struct Component_id
 	{
 		int id;
@@ -136,7 +136,7 @@ namespace gui
 
 	struct Window
 	{
-		static int name_id;
+		static int _name_id;
 		static std::vector<std::pair<WindowId, Window*>> windows;
 
 		WindowId id = 0;

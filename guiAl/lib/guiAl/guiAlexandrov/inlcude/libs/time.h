@@ -2,17 +2,13 @@
 
 #include <chrono>
 #include <thread>
-#include <functional>
+
 
 using namespace std::chrono;
 
-extern high_resolution_clock::time_point init_time;
+extern high_resolution_clock::time_point __init_time;
 
 float get_time();
-
-
-float Speed_test(std::function<void()> target);
-
 
 
 struct Timer
@@ -25,13 +21,17 @@ struct Timer
 	float m_timeSum = 0.0f;
 	int m_Frames = 0;
 
-	bool m_frameLock;
-	float m_frameLock_time = 0.016777f;
+	bool m_frameLock = false;
+	float m_frameLock_time = 0.0f;
 
 	float elapsed = 0.0f;
 
 
-	Timer(float frame_time_lock = 0.0f);
+	// Set max frames per second
+	Timer(int frames = 0);
+
+	// put zero for unlock
+	void set_frame_lock(int frames);
 
 	void update();
 };

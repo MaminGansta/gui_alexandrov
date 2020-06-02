@@ -102,8 +102,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	My_window<gui::Image>* window = new My_window<gui::Image>(bg);
 
 	
-	gui::doutput("sone int %d\n", 1);
-	gui::output("sone int %d\n", 5);
+	gui::doutput("some int %d\n", 1);
+	gui::output("some int %d\n", 5);
 	gui::console::printf(L"hello world  %f\n", get_time());
 
 	

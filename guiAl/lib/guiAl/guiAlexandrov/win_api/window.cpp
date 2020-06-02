@@ -28,13 +28,13 @@ void Arguments::remove(HWND hwnd)
 }
 
 // global
-Arguments arguments;
+Arguments _arguments;
 
 
 
 namespace gui
 {
-	// =========================================== WINDOW COMPONENTS LAYOUT ====================================================
+	// =========================================== WINDOW _components LAYOUT ====================================================
 	
 	// Component
 
@@ -165,21 +165,21 @@ namespace gui
 	}
 	
 	// global
-	Component_crt components;
+	Component_crt _components;
 	
 
 	// Component_id
 
 	// global
-	int global_id = 0;
+	int _global_id = 0;
 	
-	Component_id::Component_id() : id(global_id++) {}
+	Component_id::Component_id() : id(_global_id++) {}
 	
 	Component* Component_id::get() const
 	{
 		// this is how c++ work
 		int comp_id = id;
-		auto& comps = components[parent];
+		auto& comps = _components[parent];
 		auto iterator = find_if(comps.begin(), comps.end(), [comp_id](const Component& comp) { return comp.id == comp_id; });
 		return &(*iterator);
 	}
@@ -244,7 +244,7 @@ namespace gui
 		HWND parent
 	)
 	{
-		id = name_id++;
+		id = _name_id++;
 		wchar_t class_name[16];
 		swprintf_s(class_name, L"class_%d", id);
 	
@@ -267,7 +267,7 @@ namespace gui
 		// global callback function
 		wc.lpfnWndProc = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT 
 		{
-			Args args = arguments.get(hwnd);
+			Args args = _arguments.get(hwnd);
 			Window* window = (Window*)args[0];
 			if (window == NULL)	return DefWindowProc(hwnd, msg, wParam, lParam);
 	
@@ -354,7 +354,7 @@ namespace gui
 	
 				case WM_SIZE:
 					window->canvas.resize(hwnd);
-					components.resize(hwnd);
+					_components.resize(hwnd);
 					break;
 			}
 			
@@ -395,7 +395,7 @@ namespace gui
 		windows.push_back(std::make_pair(id, this));
 	
 		// put window ptr to global holder
-		arguments.add(hwnd, this, NULL, callback);
+		_arguments.add(hwnd, this, NULL, callback);
 	
 		// repeat messages
 		SendMessage(hwnd, WM_CREATE, 0, 0);
@@ -411,8 +411,8 @@ namespace gui
 		windows.erase(pointer);
 	
 		ReleaseDC(hwnd, hdc);
-		arguments.remove(hwnd);
-		components.remove(hwnd);
+		_arguments.remove(hwnd);
+		_components.remove(hwnd);
 		
 		if (windows.size() == 0)
 			PostQuitMessage(0);
@@ -552,7 +552,7 @@ namespace gui
 	// ---------------------------------------------------
 
 	// set window static elems
-	int Window::name_id = 0;
+	int Window::_name_id = 0;
 	std::vector<std::pair<int, Window*>> Window::windows = std::vector<std::pair<int, Window*>>();
 
 
@@ -570,7 +570,7 @@ namespace gui
 
 
 	
-	// ===================================  Window Components =================================================
+	// ===================================  Window _components =================================================
 	
 	// ================== Button =====================
 	
@@ -640,7 +640,7 @@ namespace gui
 		}
 	
 		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
-		components.add(parent, comp);
+		_components.add(parent, comp);
 		return true;
 	}
 
@@ -686,7 +686,7 @@ namespace gui
 		}
 	
 		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
-		components.add(parent, comp);
+		_components.add(parent, comp);
 		return true;
 	}
 	
@@ -738,7 +738,7 @@ namespace gui
 		}
 	
 		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
-		components.add(parent, comp);
+		_components.add(parent, comp);
 		return true;
 	}
 	
@@ -788,7 +788,7 @@ namespace gui
 		}
 	
 		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
-		components.add(parent, comp);
+		_components.add(parent, comp);
 		return true;
 	}
 	
@@ -892,7 +892,7 @@ namespace gui
 		}
 	
 		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
-		components.add(parent, comp);
+		_components.add(parent, comp);
 		SetWindowText(hwnd, text.c_str());
 		return true;
 	}
@@ -944,7 +944,7 @@ namespace gui
 		}
 	
 		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
-		components.add(parent, comp);
+		_components.add(parent, comp);
 		return true;
 	}
 	
@@ -1020,7 +1020,7 @@ namespace gui
 		}
 	
 		Component comp(id, x, y, width, height, type, STATIC, hwnd, parent);
-		components.add(parent, comp);
+		_components.add(parent, comp);
 		return true;
 	}
 	
@@ -1151,7 +1151,7 @@ namespace gui
 		this->parent = parent;
 	
 		Component comp(id, x, (1.0f - y - height), width, height, type, style, hwnd, parent);
-		components.add(parent, comp);
+		_components.add(parent, comp);
 		return true;
 	}
 	

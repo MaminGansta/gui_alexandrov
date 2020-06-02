@@ -11,7 +11,7 @@ namespace gui
 	void init(HINSTANCE hInstance)
 	{
 		_hInst = hInstance;
-		init_time = high_resolution_clock::now();
+		__init_time = high_resolution_clock::now();
 	}
 
 }
