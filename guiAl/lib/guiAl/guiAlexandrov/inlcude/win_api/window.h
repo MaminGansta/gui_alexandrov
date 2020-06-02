@@ -193,6 +193,8 @@ namespace gui
 		static Window* get_window(int id);
 
 		static bool is_running(WindowId id);
+		static bool is_running(Window* window);
+
 		static HWND getHWND(WindowId id);
 		static void close(WindowId id);
 		

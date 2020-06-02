@@ -3,66 +3,62 @@
 #include <string.h>
 
 
-// ======================= Mouse ============================
-
-struct Mouse
+namespace gui
 {
-	static int buttons[16];
-	static bool key_was_pressed[16];
-	static float pos_x, pos_y;
 
-	static bool pressed(int code);
+	// ======================= Mouse ============================
 
-	static bool clicked(int code);
+	struct Mouse
+	{
+		static int __pressed[16];
+		static bool __was_pressed[16];
+		static float pos_x, pos_y;
 
-	static int was_pressed(int code);
-};
+		static bool pressed(int code);
 
-
-
-
-
-
-// ========================= keyboard ==============================
-
-struct Input
-{
-	static bool pressed_any;
-
-	// ============== key input =================
-	static int keys[256];
-	// if key was pressed from last call
-	static bool key_was_pressed[256];
-
-	// from last call
-	static bool any_key_pressed();
-
-	static bool pressed(int key_code);
-
-	static bool clicked(int key_code);
-
-	// was pressed from last call
-	static bool was_pressed(int key_code);
-
-	static void keys_buffer_clear();
+		static int was_pressed(int code);
+	};
 
 
-	// =========== char input ==============
-	static bool char_buffer[512];
 
-	// was pressed from last call
-	static bool char_pressed(wchar_t char_code);
 
-	static void char_buffer_clear();
 
-	// =========== system input =============
+
+	// ========================= keyboard ==============================
+
+	struct Input
+	{
+		static bool __pressed_any;
+
+		// ============== key input =================
+		static int __pressed[256];
+
+		// if key was pressed from last call
+		static bool __was_pressed[256];
+
+		
+		// from last call
+		static bool any_key_pressed();
+
+
+		static bool pressed(int key_code);
+
+		static bool clicked(int key_code);
+
+		// was pressed from last call
+		static bool was_pressed(int key_code);
+
+		// set all values false
+		static void keys_buffer_clear();
+
+
+		// =========== system input =============
 #define VK_ALT 0
-	static bool vk_alt;
-	static bool vk_f10;
 
-	static bool syskey_pressed(int code);
-};
+		static bool vk_alt;
+		static bool vk_f10;
 
+		static bool syskey_pressed(int code);
+	};
 
-
-
+}

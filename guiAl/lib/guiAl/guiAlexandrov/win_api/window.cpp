@@ -292,17 +292,13 @@ namespace gui
 					break;
 	
 				case WM_KEYDOWN:
-					Input::pressed_any = true;
-					Input::keys[wParam] += 1;
-					Input::key_was_pressed[wParam] = true;
+					Input::__pressed_any = true;
+					Input::__pressed[wParam] += 1;
+					Input::__was_pressed[wParam] = true;
 					break;
 	
 				case WM_KEYUP:
-					Input::keys[wParam] = 0;
-					break;
-	
-				case WM_CHAR:
-					Input::char_buffer[(wchar_t)wParam] = true;
+					Input::__pressed[wParam] = 0;
 					break;
 	
 	
@@ -318,41 +314,41 @@ namespace gui
 	
 				// Mouse buttons down
 				case WM_RBUTTONDOWN:
-					Mouse::buttons[WM_RBUTTONDOWN - 512] += 1;
-					Mouse::key_was_pressed[WM_RBUTTONDOWN - 512] = true;
+					Mouse::__pressed[WM_RBUTTONDOWN - 512] += 1;
+					Mouse::__was_pressed[WM_RBUTTONDOWN - 512] = true;
 					break;
 	
 				case WM_MBUTTONDOWN:
-					Mouse::buttons[WM_MBUTTONDOWN - 512] += 1;
-					Mouse::key_was_pressed[WM_MBUTTONDOWN - 512] = true;
+					Mouse::__pressed[WM_MBUTTONDOWN - 512] += 1;
+					Mouse::__was_pressed[WM_MBUTTONDOWN - 512] = true;
 					break;
 	
 				case WM_LBUTTONDOWN:
-					Mouse::buttons[WM_LBUTTONDOWN - 512] += 1;
-					Mouse::key_was_pressed[WM_LBUTTONDOWN - 512] = true;
+					Mouse::__pressed[WM_LBUTTONDOWN - 512] += 1;
+					Mouse::__was_pressed[WM_LBUTTONDOWN - 512] = true;
 					break;
 	
 				case WM_XBUTTONDOWN:
-					Mouse::buttons[WM_XBUTTONDOWN - 512] += 1;
-					Mouse::key_was_pressed[WM_XBUTTONDOWN - 512] = true;
+					Mouse::__pressed[WM_XBUTTONDOWN - 512] += 1;
+					Mouse::__was_pressed[WM_XBUTTONDOWN - 512] = true;
 					break;
 	
 	
 				// Mouse buttons up
 				case WM_MBUTTONUP:
-					Mouse::buttons[WM_MBUTTONDOWN - 512] = 0;
+					Mouse::__pressed[WM_MBUTTONDOWN - 512] = 0;
 					break;
 	
 				case WM_RBUTTONUP:
-					Mouse::buttons[WM_RBUTTONDOWN - 512] = 0;
+					Mouse::__pressed[WM_RBUTTONDOWN - 512] = 0;
 					break;
 	
 				case WM_XBUTTONUP:
-					Mouse::buttons[WM_XBUTTONDOWN - 512] = 0;
+					Mouse::__pressed[WM_XBUTTONDOWN - 512] = 0;
 					break;
 	
 				case WM_LBUTTONUP:
-					Mouse::buttons[WM_LBUTTONDOWN - 512] = 0;
+					Mouse::__pressed[WM_LBUTTONDOWN - 512] = 0;
 					break;
 	
 	
@@ -516,7 +512,17 @@ namespace gui
 		return ptr != Window::windows.end();
 	}
 
-	HWND getHWND(WindowId id)
+
+	bool Window::is_running(Window* window)
+	{
+		auto ptr = std::find_if(Window::windows.begin(), Window::windows.end(),
+			[window](const std::pair<WindowId, Window*>& pair) { return pair.second == window; });
+
+		return ptr != Window::windows.end();
+	}
+
+
+	HWND Window::getHWND(WindowId id)
 	{
 		auto ptr = std::find_if(Window::windows.begin(), Window::windows.end(),
 										[id](const std::pair<WindowId, Window*>& pair) { return pair.first == id; });
