@@ -6,25 +6,16 @@
 namespace gui
 {
 
-	Canvas::Canvas()
-	{
-#ifdef FULL_SCREAN_CANVAS
-		capacity = GetSystemMetrics(SM_CXSCREEN) * GetSystemMetrics(SM_CYSCREEN);
-		data = new Color[capacity];
-#endif
-	}
+	Canvas::Canvas() = default;
 
 	Canvas::~Canvas() {
 		delete[] data;
 	}
 
-	void Canvas::resize(HWND hwnd)
+	void Canvas::resize(int width, int height)
 	{
-		RECT rect;
-		GetClientRect(hwnd, &rect);
-
-		width = rect.right - rect.left;
-		height = rect.bottom - rect.top;
+		this->width = width;
+		this->height = height;
 		whole_size = width * height;
 
 		bitmap_info.bmiHeader.biSize = sizeof(bitmap_info.bmiHeader);
@@ -35,10 +26,18 @@ namespace gui
 		bitmap_info.bmiHeader.biCompression = BI_RGB;
 
 
-		if (whole_size < capacity) return;
+		if (whole_size > capacity)
+		{
+			capacity = width * height;
+			delete[] data;
+			data = new Color[capacity];
+		}
+	}
 
-		capacity = width * height;
+	void Canvas::set_max_buffer_size()
+	{
 		delete[] data;
+		capacity = GetSystemMetrics(SM_CXSCREEN) * GetSystemMetrics(SM_CYSCREEN);
 		data = new Color[capacity];
 	}
 

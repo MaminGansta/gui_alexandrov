@@ -2,9 +2,9 @@
 
 #include <cassert>
 #include <memory.h>
-#include "color.h"
 
 #include "../error_handler/errors.h"
+#include "Image_base.h"
 
 
 namespace gui
@@ -12,10 +12,8 @@ namespace gui
 
 	// ============= standart image ==================
 
-	struct Image
+	struct Image : Image_base<uint8_t>
 	{
-		int height = 0, width = 0;
-		Color* data = NULL;
 
 		Image();
 		Image(const wchar_t* filename_utf8);
@@ -32,34 +30,14 @@ namespace gui
 
 		Image& operator = (Image&& other);
 
-
 		bool open(const wchar_t* filename_utf8);
-
-		bool valid() const;
-
-		void resize(int width, int height);
-
-
-		Color& operator [] (int idx);
-
-		const Color& operator [] (int idx) const;
-
-
-		Color& get_pixel(int x, int y);
-
-		Color& get_pixel_scaled(int x, int y, int screen_w, int screen_h);
-
-		const Color& get_pixel_scaled(int x, int y, int screen_w, int screen_h) const;
-
 	};
 
 
 	// =============== float Image  ==================
 
-	struct fImage
+	struct fImage : Image_base<float>
 	{
-		int height = 0, width = 0;
-		fColor* data = NULL;
 
 		fImage();
 		fImage(const wchar_t* filename_utf8);
@@ -78,25 +56,8 @@ namespace gui
 
 		fImage& operator = (fImage&& other);
 
-
 		bool open(const wchar_t* filename_utf8);
-
-		bool valid();
-
-		void resize(int width, int height);
-
-
-		fColor& operator [] (int idx);
-
-		const fColor& operator [] (int idx) const;
-
-
-		fColor& get_pixel(int x, int y);
-
-		fColor& get_pixel_scaled(int x, int y, int screen_w, int screen_h);
-
-		const fColor& get_pixel_scaled(int x, int y, int screen_w, int screen_h) const;
-
+		
 		operator Image();
 	};
 

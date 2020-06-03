@@ -13,15 +13,15 @@ namespace gui
 	namespace cpu
 	{
 
-		template <typename Image_type, typename Color_type>
-		void drawPixel(Image_type& surface, int x, int y, const Color_type& color)
+		template <typename T>
+		void drawPixel(Image_base<T>& surface, int x, int y, const Color_base<T>& color)
 		{
 			if ((uint32_t)y >= surface.height || (uint32_t)x >= surface.width) return;
 			surface[y * surface.width + x] = color;
 		}
 
-		template <typename Image_type, typename Color_type>
-		void drawPixel(Image_type& surface, int x, int y, const Color_type& color, int width)
+		template <typename T>
+		void drawPixel(Image_base<T>& surface, int x, int y, const Color_base<T>& color, int width)
 		{
 			int left_width = width / 2;
 			int half_width = (width + 1) / 2;
@@ -32,8 +32,8 @@ namespace gui
 		}
 
 
-		template <typename Image_type, typename Color_type>
-		void draw_filled_circle(Image_type& surface, int x, int y, const Color_type& color, int radius)
+		template <typename T>
+		void draw_filled_circle(Image_base<T>& surface, int x, int y, const Color_base<T>& color, int radius)
 		{
 			for (int i = -radius; i < radius; i++)
 			{
@@ -47,8 +47,8 @@ namespace gui
 
 
 
-		template <typename Image_type, typename Color_type>
-		void drawLine(Image_type& surface, int x, int y, int x2, int y2, const Color_type& color, int width = 1)
+		template <typename T>
+		void drawLine(Image_base<T>& surface, int x, int y, int x2, int y2, const Color_base<T>& color, int width = 1)
 		{
 			bool yLonger = false;
 			int shortLen = y2 - y;
@@ -96,8 +96,8 @@ namespace gui
 		}
 
 
-		template <typename Image_type, typename Color_type>
-		void draw_line(Image_type& surface, float fx0, float fy0, float fx1, float fy1, const Color_type& color, int width = 1)
+		template <typename T>
+		void draw_line(Image_base<T>& surface, float fx0, float fy0, float fx1, float fy1, const Color_base<T>& color, int width = 1)
 		{
 			int x0 = fx0 * surface.width;
 			int y0 = fy0 * surface.height;
@@ -107,8 +107,8 @@ namespace gui
 		}
 
 
-		template <typename Image_type, typename Color_type>
-		void draw_filled_circle(Image_type& surface, float fx, float fy, const Color_type& color, float fradius)
+		template <typename T>
+		void draw_filled_circle(Image_base<T>& surface, float fx, float fy, const Color_base<T>& color, float fradius)
 		{
 			int x = fx * surface.width;
 			int y = fy * surface.height;
@@ -122,8 +122,8 @@ namespace gui
 		}
 
 
-		template <typename Image_type, typename Color_type>
-		void draw_rect(Image_type& surface, float fx, float fy, float fwidth, float fheight, const Color_type& color, int pixel_width = 1)
+		template <typename T>
+		void draw_rect(Image_base<T>& surface, float fx, float fy, float fwidth, float fheight, const Color_base<T>& color, int pixel_width = 1)
 		{
 			int x0 = surface.width * fx;
 			int y0 = surface.height * fy;
@@ -137,8 +137,8 @@ namespace gui
 			drawLine(surface, x0, y0 + height, x0 + width, y0 + height, color, pixel_width);
 		}
 
-		template <typename Image_type, typename Color_type>
-		void draw_filled_rect(Image_type& surface, float fx, float fy, float fwidth, float fheight, const Color_type& color)
+		template <typename T>
+		void draw_filled_rect(Image_base<T>& surface, float fx, float fy, float fwidth, float fheight, const Color_base<T>& color)
 		{
 			int x0 = surface.width * fx;
 			int y0 = surface.height * fy;
@@ -151,8 +151,8 @@ namespace gui
 					drawPixel(surface, x, y, color);
 		}
 
-		template <typename Image_type, typename Color_type>
-		void draw_filled_rect_async(Image_type& surface, float fx, float fy, float fwidth, float fheight, const Color_type& color)
+		template <typename T>
+		void draw_filled_rect_async(Image_base<T>& surface, float fx, float fy, float fwidth, float fheight, const Color_base<T>& color)
 		{
 			if (fx > 1.1f || fy > 1.1f || fx + fwidth < 0.0f || fy + fheight < 0.0f) return;
 
@@ -185,8 +185,8 @@ namespace gui
 
 		// ============= Draw Image to the surface ===================
 
-		template <typename Surface_type, typename Image_type>
-		void draw_image(Surface_type& surface, const Image_type& image,
+		template <typename T, typename S>
+		void draw_image(Image_base<T>& surface, const Image_base<S>& image,
 			float fpos_x, float fpos_y, float fwidth, float fheight)
 		{
 			if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || !image.valid()) return;
@@ -201,15 +201,15 @@ namespace gui
 			{
 				for (int x = 0; x < width; x++)
 				{
-					Color color = image.get_pixel_scaled(x, y, width, height);
+					const Color_base<T>& color = image.get_pixel_scaled(x, y, width, height);
 					drawPixel(surface, x + pos_x, y + pos_y, color);
 				}
 			}
 		}
 
 
-		template <typename Surface_type, typename Image_type>
-		void draw_image_async(Surface_type& surface, const Image_type& image,
+		template <typename T, typename S>
+		void draw_image_async(Image_base<T>& surface, const Image_base<S>& image,
 			float fpos_x, float fpos_y, float fwidth, float fheight)
 		{
 			if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || !image.valid()) return;
@@ -232,7 +232,7 @@ namespace gui
 						for (int y = from_y; y < to_y; y++)
 							for (int x = 0; x < width; x++)
 							{
-								Color color = image.get_pixel_scaled(x, y, width, height);
+								const Color_base<T>& color = image.get_pixel_scaled(x, y, width, height);
 								drawPixel(surface, x + pos_x, y + pos_y, color);
 							}
 					});
@@ -243,8 +243,8 @@ namespace gui
 		}
 
 		// no bound cheking here, if image outside the canvas it wouldn'd 
-		template <typename Surface_type, typename Image_type>
-		void draw_image_async_direct(Surface_type& surface, const Image_type& image,
+		template <typename T, typename S>
+		void draw_image_async_direct(Image_base<T>& surface, const Image_base<S>& image,
 			float fpos_x, float fpos_y, float fwidth, float fheight)
 		{
 			if (fpos_x > 1.0f || fpos_y > 1.0f || fpos_x < 0.0f || fpos_y < 0.0f || image.invalid) return;
@@ -268,7 +268,7 @@ namespace gui
 							for (int x = 0; x < width; x++)
 							{
 								assert(x < surface.width);
-								Color color = image.get_pixel_scaled(x, y, width, height);
+								const Color_base<T>& color = image.get_pixel_scaled(x, y, width, height);
 								surface[(y + pos_y) * surface.width + (x + pos_x)] = color;
 							}
 					});
@@ -283,8 +283,8 @@ namespace gui
 
 		// ======================= alpha blending ==============================
 
-		template <typename Image_type>
-		void drawPixel_a(Image_type& surface, int x, int y, const fColor& color)
+		template <typename T>
+		void drawPixel_a(Image_base<T>& surface, int x, int y, const fColor& color)
 		{
 			if ((uint32_t)y >= surface.height || (uint32_t)x >= surface.width) return;
 			fColor dest = surface[y * surface.width + x];
@@ -292,8 +292,8 @@ namespace gui
 			surface[y * surface.width + x] = dest;
 		}
 
-		template <typename Image_type>
-		void drawPixel_a(Image_type& surface, int x, int y, const fColor& color, int width)
+		template <typename T>
+		void drawPixel_a(Image_base<T>& surface, int x, int y, const fColor& color, int width)
 		{
 			int half_width = (width + 1) / 2;
 
@@ -303,8 +303,8 @@ namespace gui
 		}
 
 
-		template <typename Image_type>
-		void draw_filled_circle_a(Image_type& surface, float fx, float fy, const fColor& color, float fradius)
+		template <typename T>
+		void draw_filled_circle_a(Image_base<T>& surface, float fx, float fy, const fColor& color, float fradius)
 		{
 			int x = fx * surface.width;
 			int y = fy * surface.height;
@@ -319,8 +319,8 @@ namespace gui
 			}
 		}
 
-		template <typename Image_type>
-		void draw_filled_circle_a(Image_type& surface, int x, int y, const fColor& color, int radius)
+		template <typename T>
+		void draw_filled_circle_a(Image_base<T>& surface, int x, int y, const fColor& color, int radius)
 		{
 			for (int i = -radius; i < radius; i++)
 			{
@@ -333,8 +333,8 @@ namespace gui
 		}
 
 
-		template <typename Image_type>
-		void drawLine_a(Image_type& surface, int x, int y, int x2, int y2, fColor color, int width = 1)
+		template <typename T>
+		void drawLine_a(Image_base<T>& surface, int x, int y, int x2, int y2, fColor color, int width = 1)
 		{
 			color.a /= (width / 3 + 1);
 			bool yLonger = false;
@@ -382,8 +382,8 @@ namespace gui
 			}
 		}
 
-		template <typename Image_type>
-		void draw_line_a(Image_type& surface, float fx0, float fy0, float fx1, float fy1, fColor color, int width = 1)
+		template <typename T>
+		void draw_line_a(Image_base<T>& surface, float fx0, float fy0, float fx1, float fy1, fColor color, int width = 1)
 		{
 			int x0 = fx0 * surface.width;
 			int y0 = fy0 * surface.height;
@@ -395,8 +395,8 @@ namespace gui
 
 
 
-		template <typename Image_type>
-		void draw_rect_a(Image_type& surface, float fx, float fy, float fwidth, float fheight, fColor color, int pixel_width = 1)
+		template <typename T>
+		void draw_rect_a(Image_base<T>& surface, float fx, float fy, float fwidth, float fheight, fColor color, int pixel_width = 1)
 		{
 			if (fx > 1.1f || fy > 1.1f || fx + fwidth < 0.0f || fy + fheight < 0.0f) return;
 
@@ -412,8 +412,8 @@ namespace gui
 			drawLine_a(surface, x0, y0 + height, x0 + width, y0 + height, color, pixel_width);
 		}
 
-		template <typename Image_type>
-		void draw_filled_rect_a(Image_type& surface, float fx, float fy, float fwidth, float fheight, fColor color)
+		template <typename T>
+		void draw_filled_rect_a(Image_base<T>& surface, float fx, float fy, float fwidth, float fheight, fColor color)
 		{
 			if (fx > 1.1f || fy > 1.1f || fx + fwidth < 0.0f || fy + fheight < 0.0f) return;
 
@@ -428,8 +428,8 @@ namespace gui
 					drawPixel_a(surface, x, y, color);
 		}
 
-		template <typename Image_type>
-		void draw_filled_rect_async_a(Image_type& surface, float fx, float fy, float fwidth, float fheight, fColor color)
+		template <typename T>
+		void draw_filled_rect_async_a(Image_base<T>& surface, float fx, float fy, float fwidth, float fheight, fColor color)
 		{
 			if (fx > 1.1f || fy > 1.1f || fx + fwidth < 0.0f || fy + fheight < 0.0f) return;
 
@@ -462,8 +462,8 @@ namespace gui
 		// =============== image alpha blending ====================
 
 
-		template <typename Surface_type, typename Image_type>
-		void draw_image_a(Surface_type& surface, const Image_type& image,
+		template <typename T, typename S>
+		void draw_image_a(Image_base<T>& surface, const Image_base<S>& image,
 			float fpos_x, float fpos_y, float fwidth, float fheight)
 		{
 			if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || image.invalid()) return;
@@ -478,15 +478,15 @@ namespace gui
 			{
 				for (int x = 0; x < width; x++)
 				{
-					fColor color = image.get_pixel_scaled(x, y, width, height);
+					const fColor& color = image.get_pixel_scaled(x, y, width, height);
 					drawPixel_a(surface, x + pos_x, y + pos_y, color);
 				}
 			}
 		}
 
 
-		template <typename Surface_type, typename Image_type>
-		void draw_image_async_a(Surface_type& surface, const Image_type& image,
+		template <typename T, typename S>
+		void draw_image_async_a(Image_base<T>& surface, const Image_base<S>& image,
 			float fpos_x, float fpos_y, float fwidth, float fheight)
 		{
 			if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || !image.valid()) return;
@@ -510,7 +510,7 @@ namespace gui
 						{
 							for (int x = 0; x < width; x++)
 							{
-								fColor color = image.get_pixel_scaled(x, y, width, height);
+								const fColor& color = image.get_pixel_scaled(x, y, width, height);
 								drawPixel_a(surface, x + pos_x, y + pos_y, color);
 							}
 						}
@@ -522,8 +522,8 @@ namespace gui
 		}
 
 
-		template <typename Surface_type, typename Image_type>
-		void draw_image_a(Surface_type& surface, const Image_type& image,
+		template <typename T, typename S>
+		void draw_image_a(Image_base<T>& surface, const Image_base<S>& image,
 			float fpos_x, float fpos_y, float fwidth, float fheight, float alpha)
 		{
 			if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || image.invalid) return;
@@ -538,7 +538,7 @@ namespace gui
 			{
 				for (int x = 0; x < width; x++)
 				{
-					fColor color = image.get_pixel_scaled(x, y, width, height);
+					const fColor& color = image.get_pixel_scaled(x, y, width, height);
 					color.a = alpha;
 					drawPixel_a(surface, x + pos_x, y + pos_y, color);
 				}
@@ -546,8 +546,8 @@ namespace gui
 		}
 
 
-		template <typename Surface_type, typename Image_type>
-		void draw_image_async_a(Surface_type& surface, const Image_type& image,
+		template <typename T, typename S>
+		void draw_image_async_a(Image_base<T>& surface, const Image_base<S>& image,
 			float fpos_x, float fpos_y, float fwidth, float fheight, float alpha)
 		{
 			if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || !image.valid()) return;
@@ -566,7 +566,7 @@ namespace gui
 				for (int y = from; y < to; y++)
 					for (int x = 0; x < width; x++)
 					{
-						fColor color = image.get_pixel_scaled(x, y, width, height);
+						const fColor& color = image.get_pixel_scaled(x, y, width, height);
 						color.a = alpha;
 						drawPixel_a(surface, x + pos_x, y + pos_y, color);
 					}
@@ -578,8 +578,8 @@ namespace gui
 
 		// ============================= rotate ========================================
 
-		template <typename Surface_type, typename Image_type>
-		void draw_image_a_rotate(Surface_type& surface, const Image_type& image,
+		template <typename T, typename S>
+		void draw_image_a_rotate(Image_base<T>& surface, const Image_base<S>& image,
 			float fpos_x, float fpos_y, float fwidth, float fheight, float angle)
 		{
 			if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || image.invalid) return;
@@ -600,14 +600,14 @@ namespace gui
 					int rotate_x = cosf(angle) * (x - center_x) + sinf(angle) * (y - center_y);
 					int rotate_y = -sinf(angle) * (x - center_x) + cosf(angle) * (y - center_y);
 
-					fColor color = image.get_pixel_scaled(x, y, width, height);
+					const fColor& color = image.get_pixel_scaled(x, y, width, height);
 					drawPixel_a(surface, rotate_x + pos_x, rotate_y + pos_y, color);
 				}
 			}
 		}
 
-		template <typename Surface_type, typename Image_type>
-		void draw_image_async_a_rotate(Surface_type& surface, const Image_type& image,
+		template <typename T, typename S>
+		void draw_image_async_a_rotate(Image_base<T>& surface, const Image_base<S>& image,
 			float fpos_x, float fpos_y, float fwidth, float fheight, float angle)
 		{
 			if (fpos_x > 1.1f || fpos_y > 1.1f || fpos_x + fwidth < 0.0f || fpos_y + fheight < 0.0f || image.invalid) return;
@@ -631,7 +631,7 @@ namespace gui
 						int rotate_x = cosf(angle) * (x - center_x) + sinf(angle) * (y - center_y);
 						int rotate_y = -sinf(angle) * (x - center_x) + cosf(angle) * (y - center_y);
 
-						fColor color = image.get_pixel_scaled(x, y, width, height);
+						const fColor& color = image.get_pixel_scaled(x, y, width, height);
 						drawPixel_a(surface, rotate_x + pos_x, rotate_y + pos_y, color);
 					}
 			}

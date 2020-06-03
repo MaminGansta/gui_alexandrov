@@ -134,5 +134,8 @@
     <ClInclude Include="guiAlexandrov\inlcude\guiAlexandrov.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="guiAlexandrov\inlcude\image\Image_base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

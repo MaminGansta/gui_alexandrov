@@ -1,19 +1,18 @@
 #pragma once
 
+
 #include <Windows.h>
 #include <cassert>
-#include "color.h"
+
+#include "Image_base.h"
 
 
 namespace gui
 {
 
-	struct Canvas
+	struct Canvas : Image_base<uint8_t>
 	{
-		int height = 0, width = 0;
-		int whole_size = 0;
 		int capacity = 0;
-		Color* data = nullptr;
 
 		BITMAPINFO bitmap_info;
 
@@ -21,7 +20,9 @@ namespace gui
 
 		~Canvas();
 
-		void resize(HWND hwnd);
+		void resize(int width, int height);
+
+		void set_max_buffer_size();
 
 		Color& operator [] (int inx);
 

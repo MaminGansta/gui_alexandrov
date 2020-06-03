@@ -99,60 +99,10 @@ namespace gui
 		return true;
 	}
 
-	bool Image::valid() const
-	{
-		return width != 0 && height != 0 && data != NULL;
-	}
 
-	void Image::resize(int width, int height)
-	{
-		this->width = width;
-		this->height = height;
-		delete[] data;
-		data = new Color[width * height];
-	}
+	Image::Image(int width, int height) : 
+		Image_base<uint8_t>(width, height) {}
 
-	Image::Image(int width, int height) : width(width), height(height)
-	{
-		data = new Color[width * height];
-	}
-
-	Color& Image::get_pixel(int x, int y)
-	{
-		assert(((uint32_t)y < height) | ((uint32_t)x < width));
-		return data[y * width + x];
-	}
-
-	Color& Image::operator [] (int idx)
-	{
-		assert((uint32_t)idx < width* height);
-		return data[idx];
-	}
-
-	const Color& Image::operator [] (int idx) const
-	{
-		assert((uint32_t)idx < width* height);
-		return data[idx];
-	}
-
-	Color& Image::get_pixel_scaled(int x, int y, int screen_w, int screen_h)
-	{
-		y = y * height / screen_h;
-		x = x * width / screen_w;
-
-		assert(((uint32_t)y < height) | ((uint32_t)x < width));
-		return data[y * width + x];
-	}
-
-
-	const Color& Image::get_pixel_scaled(int x, int y, int screen_w, int screen_h) const
-	{
-		y = y * height / screen_h;
-		x = x * width / screen_w;
-
-		assert(((uint32_t)y < height) | ((uint32_t)x < width));
-		return data[y * width + x];
-	}
 
 	Image::~Image() { delete[] data; }
 
@@ -211,16 +161,9 @@ namespace gui
 		return true;
 	}
 
-	bool fImage::valid()
-	{
-		return width != 0 && height != 0 && data != NULL;
-	}
 
-
-	fImage::fImage(int width, int height) : width(width), height(height)
-	{
-		data = new fColor[width * height];
-	}
+	fImage::fImage(int width, int height) :
+		Image_base<float>(width, height) {}
 
 	fImage::fImage(const fImage& copy)
 	{
@@ -269,58 +212,5 @@ namespace gui
 	fImage::~fImage() { delete[] data; }
 
 
-	void fImage::resize(int width, int height)
-	{
-		this->width = width;
-		this->height = height;
-		delete[] data;
-		data = new fColor[width * height];
-	}
-
-	fColor& fImage::get_pixel(int x, int y)
-	{
-		assert(((uint32_t)y < height) | ((uint32_t)x < width));
-		return data[y * width + x];
-	}
-
-	fColor& fImage::operator[] (int idx)
-	{
-		assert((uint32_t)idx < width* height);
-		return data[idx];
-	}
-
-	const fColor& fImage::operator[] (int idx) const
-	{
-		assert((uint32_t)idx < width* height);
-		return data[idx];
-	}
-
-
-	fColor& fImage::get_pixel_scaled(int x, int y, int screen_w, int screen_h)
-	{
-		y = y * height / screen_h;
-		x = x * width / screen_w;
-
-		assert(((uint32_t)y < height) | ((uint32_t)x < width));
-		return data[y * width + x];
-	}
-
-	const fColor& fImage::get_pixel_scaled(int x, int y, int screen_w, int screen_h) const
-	{
-		y = y * height / screen_h;
-		x = x * width / screen_w;
-
-		assert(((uint32_t)y < height) | ((uint32_t)x < width));
-		return data[y * width + x];
-	}
-
-	fImage::operator Image()
-	{
-		Image res(width, height);
-		for (int i = 0; i < height; i++)
-			for (int j = 0; j < width; j++)
-				res[i * width + j] = data[i * width + j];
-		return res;
-	}
 
 }

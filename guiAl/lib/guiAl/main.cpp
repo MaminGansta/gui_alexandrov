@@ -1,6 +1,6 @@
 
+#define FULL_SCREAN_CANVAS
 #include "guiAlexandrov.h"
-//#pragma comment (lib, "guiAl.lib")
 
 
 template <typename Image_type>
@@ -94,9 +94,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	gui::Image bg(L"bg.jpg");
 	if (!bg.valid()) return -1;
 
+	gui::Image(499, 333);
 
-	bg = gui::cpu::gray_world<gui::Image>(bg);
-	bg = gui::cpu::box_filter(bg);
+
+	//bg = gui::cpu::gray_world<gui::Image>(bg);
+	//bg = gui::cpu::box_filter(bg);
 
 
 	My_window<gui::Image>* window = new My_window<gui::Image>(bg);

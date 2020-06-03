@@ -198,6 +198,7 @@
     <ClInclude Include="guiAlexandrov\inlcude\image\color.h" />
     <ClInclude Include="guiAlexandrov\inlcude\image\draw.h" />
     <ClInclude Include="guiAlexandrov\inlcude\image\image.h" />
+    <ClInclude Include="guiAlexandrov\inlcude\image\Image_base.h" />
     <ClInclude Include="guiAlexandrov\inlcude\image\text.h" />
     <ClInclude Include="guiAlexandrov\inlcude\image_processing\auto_contrast.h" />
     <ClInclude Include="guiAlexandrov\inlcude\image_processing\convolution.h" />

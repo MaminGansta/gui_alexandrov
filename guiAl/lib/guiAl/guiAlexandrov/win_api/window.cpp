@@ -353,7 +353,7 @@ namespace gui
 	
 	
 				case WM_SIZE:
-					window->canvas.resize(hwnd);
+					window->canvas.resize(LOWORD(lParam), HIWORD(lParam));
 					_components.resize(hwnd);
 					break;
 			}
@@ -399,7 +399,7 @@ namespace gui
 	
 		// repeat messages
 		SendMessage(hwnd, WM_CREATE, 0, 0);
-		SendMessage(hwnd, WM_SIZE, 0, 0);
+		SendMessage(hwnd, WM_SIZE, 0, MAKEWPARAM(width, height));
 		SendMessage(hwnd, WM_PAINT, 0, 0);
 		return true;
 	}
