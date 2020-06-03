@@ -67,7 +67,7 @@ struct My_window : gui::Window
 			bClear.init(hwnd, L"Clear", 0.01f, 0.8f, 0.1f, 0.1f);
 			
 			label.init(getHWND(), L"some text dsaf\nadsfadsfdasfdasf", 0.2f, 0.2f, 0.1f, 0.1f, RESIZABLE, DEF_LABEL);
-			set_font_size(btn.hwnd, 20);
+			gui::set_font_size(btn.hwnd, 20);
 			
 			
 			text.init(getHWND(), 0.1f, 0.5f, 0.2f, 0.2f, RESIZABLE, DEF_TEXT | WS_VSCROLL | WS_HSCROLL);

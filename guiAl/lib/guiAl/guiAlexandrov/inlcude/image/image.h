@@ -9,6 +9,7 @@
 
 namespace gui
 {
+
 	// ============= standart image ==================
 
 	struct Image

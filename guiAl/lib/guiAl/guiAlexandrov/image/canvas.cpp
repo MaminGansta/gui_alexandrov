@@ -3,6 +3,9 @@
 #include "image/canvas.h"
 
 
+namespace gui
+{
+
 	Canvas::Canvas()
 	{
 #ifdef FULL_SCREAN_CANVAS
@@ -31,7 +34,7 @@
 		bitmap_info.bmiHeader.biBitCount = 32;
 		bitmap_info.bmiHeader.biCompression = BI_RGB;
 
-		
+
 		if (whole_size < capacity) return;
 
 		capacity = width * height;
@@ -51,3 +54,5 @@
 		delete[] data;
 		data = new Color[capacity];
 	}
+
+}

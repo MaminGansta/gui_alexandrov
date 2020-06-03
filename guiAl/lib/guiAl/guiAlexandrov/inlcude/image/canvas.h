@@ -5,22 +5,27 @@
 #include "color.h"
 
 
-struct Canvas
+namespace gui
 {
-	int height = 0, width = 0;
-	int whole_size = 0;
-	int capacity = 0;
-	Color* data = nullptr;
 
-	BITMAPINFO bitmap_info;
+	struct Canvas
+	{
+		int height = 0, width = 0;
+		int whole_size = 0;
+		int capacity = 0;
+		Color* data = nullptr;
 
-	Canvas();
+		BITMAPINFO bitmap_info;
 
-	~Canvas();
+		Canvas();
 
-	void resize(HWND hwnd);
+		~Canvas();
 
-	Color& operator [] (int inx);
+		void resize(HWND hwnd);
 
-	void reserve(int capacity);
-};
+		Color& operator [] (int inx);
+
+		void reserve(int capacity);
+	};
+
+}
