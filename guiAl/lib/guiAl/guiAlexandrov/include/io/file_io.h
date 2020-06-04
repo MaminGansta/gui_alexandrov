@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Windows.h>
-#include "../error_handler/errors.h"
+#include "error_handler/errors.h"
 
 
 namespace gui

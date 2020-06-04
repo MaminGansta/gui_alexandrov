@@ -1,7 +1,7 @@
 #pragma once
 
 // window
-#include "win_api/window.h"
+#include "window/window.h"
 
 // image
 #include "image/image.h"

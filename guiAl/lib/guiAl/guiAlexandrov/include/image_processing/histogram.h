@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include <cstring>
-#include "../image/Color.h"
+#include "image/Color.h"
 
 namespace gui
 {

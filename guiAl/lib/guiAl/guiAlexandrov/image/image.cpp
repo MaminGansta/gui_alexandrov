@@ -47,23 +47,26 @@ namespace gui
 
 	
 	
-	int write_image(char* filename, const Image_base<uint8_t>& image, int type, int flip, int png_qulity)
+	int write_image(const char* filename, const Image_base<uint8_t>& image, int type, int flip, int png_qulity)
 	{
 		stbi_flip_vertically_on_write(flip);
+
+		char extention[255] = {'\0'};
+		strcat_s(extention, 255, filename);
 
 		switch (type)
 		{
 			case PNG:
-				strcat_s(filename, 255, ".png");
+				strcat_s(extention, 255, ".png");
 				return stbi_write_png(filename, image.width, image.height, 4, image.data, image.width * sizeof(int));
 			case BMP:
-				strcat_s(filename, 255, ".bmp");
+				strcat_s(extention, 255, ".bmp");
 				return stbi_write_bmp(filename, image.width, image.height, 4, image.data);
 			case TGA:
-				strcat_s(filename, 255, ".tga");
+				strcat_s(extention, 255, ".tga");
 				return stbi_write_tga(filename, image.width, image.height, 4, image.data);
 			case JPG:
-				strcat_s(filename, 255, ".jpg");
+				strcat_s(extention, 255, ".jpg");
 				return stbi_write_jpg(filename, image.width, image.height, 4, image.data, png_qulity);
 			//case HDR:
 			//	return stbi_write_hdr(filename, image.width, image.height, 4, const float* data);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../libs/time.h"
+#include "libs/time.h"
 #include <Windows.h>
 
 namespace gui

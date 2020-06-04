@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../win_api/window.h"
-#include "../image/image.h"
-#include "../image/draw.h"
+#include "window/window.h"
+#include "image/image.h"
+#include "image/draw.h"
 
 
 namespace gui

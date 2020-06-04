@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../image/image.h"
+#include "image/image.h"
 #include <algorithm>
 #include <array>
 
@@ -8,9 +8,6 @@ namespace gui
 {
 	namespace cpu
 	{
-		//template <typename T, size_t size>
-		//struct Median_filter;
-
 
 		template <typename T, size_t size>
 		struct Median_filter

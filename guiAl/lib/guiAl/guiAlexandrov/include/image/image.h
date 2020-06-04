@@ -18,7 +18,7 @@ namespace gui
 
 	int convert_wchar_to_utf8(char* buffer, size_t buffer_len, const wchar_t* output);
 	uint8_t* load_image(const char* filename, int* x, int* y, int* comp, int req_comp);
-	int write_image(char* filename, const Image_base<uint8_t>& image, int type = JPG, int flip = 1, int png_qulity = 50);
+	int write_image(const char* filename, const Image_base<uint8_t>& image, int type = JPG, int flip = 1, int png_qulity = 50);
 	void image_free(void* ptr);
 
 	Image_base<uint8_t> BGRA_2_RBGA(const Image_base<uint8_t>& image);
@@ -31,8 +31,17 @@ namespace gui
 		Image_type() = default;
 		Image_type(const wchar_t* filename_utf8)
 		{
-			open(filename_utf8);
+			char filename[256];
+			convert_wchar_to_utf8(filename, sizeof(filename), filename_utf8);
+
+			open(filename);
 		}
+
+		Image_type(const char* filename)
+		{
+			open(filename);
+		}
+
 
 		Image_type(const Image_base<T>& other)
 		:
@@ -69,14 +78,12 @@ namespace gui
 			return *this;
 		}
 
-		bool open(const wchar_t* filename_utf8)
+		bool open(const char* filename)
 		{
 			delete[] this->data;
-
-			int chanels;
-			char filename[256];
-			convert_wchar_to_utf8(filename, sizeof(filename), filename_utf8);
-
+			
+			// open image
+			int chanels = 0;
 			uint8_t* raw = load_image(filename, &this->width, &this->height, &chanels, 0);
 
 			if (raw == NULL)
@@ -116,8 +123,25 @@ namespace gui
 		}
 
 
+		bool open(const wchar_t* filename_utf8)
+		{
+			int chanels;
+			char filename[256];
+			convert_wchar_to_utf8(filename, sizeof(filename), filename_utf8);
+
+			return open(filename);
+		}
+
+
 		// TYPES: PNG, PNG, BMP, TGA, JPG.  
 		// JPG quality can be from 1 to 100
+		bool save(const char* filename, int type = JPG, int flip = 1, int jpg_quality = 50)
+		{
+			Image_base<uint8_t> rgba_image = BGRA_2_RBGA(*this);
+			return write_image(filename, rgba_image, type, flip, jpg_quality);
+		}
+
+		// wchar_t
 		bool save(const wchar_t* filename_utf8, int type = JPG, int flip = 1, int jpg_quality = 50)
 		{
 			char filename[256];

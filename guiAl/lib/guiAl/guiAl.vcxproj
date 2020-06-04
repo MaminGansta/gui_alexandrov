@@ -182,8 +182,6 @@
     <ClCompile Include="guiAlexandrov\libs\time.cpp" />
     <ClCompile Include="guiAlexandrov\window\gui_init.cpp" />
     <ClCompile Include="guiAlexandrov\window\window.cpp" />
-    <ClCompile Include="guiAlexandrov\win_api\gui_init.cpp" />
-    <ClCompile Include="guiAlexandrov\win_api\window.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -216,8 +214,8 @@
     <ClInclude Include="guiAlexandrov\include\io\log.h" />
     <ClInclude Include="guiAlexandrov\include\libs\thread_pool.h" />
     <ClInclude Include="guiAlexandrov\include\libs\time.h" />
-    <ClInclude Include="guiAlexandrov\include\win_api\gui_init.h" />
-    <ClInclude Include="guiAlexandrov\include\win_api\window.h" />
+    <ClInclude Include="guiAlexandrov\include\window\gui_init.h" />
+    <ClInclude Include="guiAlexandrov\include\window\window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

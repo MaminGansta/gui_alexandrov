@@ -7,11 +7,11 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 
 #include "gui_init.h"
-#include "../io/input.h"
-#include "../image/color.h"
-#include "../image/text.h"
-#include "../image/canvas.h"
-#include "../error_handler/errors.h"
+#include "io/input.h"
+#include "image/color.h"
+#include "image/text.h"
+#include "image/canvas.h"
+#include "error_handler/errors.h"
 
 #pragma comment( lib, "comctl32.lib" )
 #include <CommCtrl.h>
