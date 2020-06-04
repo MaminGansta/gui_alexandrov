@@ -191,6 +191,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="guiAlexandrov\image\stb_image.h" />
+    <ClInclude Include="guiAlexandrov\image\stb_image_write.h" />
     <ClInclude Include="guiAlexandrov\inlcude\error_handler\errors.h" />
     <ClInclude Include="guiAlexandrov\inlcude\guiAlexandrov.h" />
     <ClInclude Include="guiAlexandrov\inlcude\high_lavel_gui\file_explorer_window.h" />

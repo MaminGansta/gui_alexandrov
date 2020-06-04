@@ -30,6 +30,7 @@ namespace gui
 		{
 			height = copy.height;
 			width = copy.width;
+			whole_size = copy.whole_size;
 			data = new Color_base<T>[height * width];
 			memmove(data, copy.data, sizeof(Color_base<T>) * height * width);
 		}
@@ -39,6 +40,7 @@ namespace gui
 			data = other.data;
 			width = other.width;
 			height = other.height;
+			whole_size = other.whole_size;
 			other.data = NULL;
 		}
 
@@ -47,6 +49,7 @@ namespace gui
 			delete[] data;
 			height = copy.height;
 			width = copy.width;
+			whole_size = copy.whole_size;
 			data = new Color_base<T>[height * width];
 			memmove(data, copy.data, sizeof(Color_base<T>) * height * width);
 			return *this;
@@ -58,6 +61,7 @@ namespace gui
 			data = other.data;
 			width = other.width;
 			height = other.height;
+			whole_size = other.whole_size;
 			other.data = NULL;
 			return *this;
 		}

@@ -7,12 +7,21 @@
 #include "Image_base.h"
 
 
+#define PNG 1
+#define BMP 2
+#define TGA 3
+#define JPG 4
+
+
 namespace gui
 {
 
 	int convert_wchar_to_utf8(char* buffer, size_t buffer_len, const wchar_t* output);
 	uint8_t* load_image(const char* filename, int* x, int* y, int* comp, int req_comp);
+	int write_image(char* filename, const Image_base<uint8_t>& image, int type = JPG, int flip = 1, int png_qulity = 50);
 	void image_free(void* ptr);
+
+	Image_base<uint8_t> BGRA_2_RBGA(const Image_base<uint8_t>& image);
 
 	
 	template <typename T>
@@ -104,6 +113,17 @@ namespace gui
 
 			image_free(raw);
 			return true;
+		}
+
+
+		// TYPES: PNG, PNG, BMP, TGA, JPG.  
+		// JPG quality can be from 1 to 100
+		bool save(const wchar_t* filename_utf8, int type = JPG, int flip = 1, int jpg_quality = 50)
+		{
+			char filename[256];
+			convert_wchar_to_utf8(filename, sizeof(filename), filename_utf8);
+			Image_base<uint8_t> rgba_image = BGRA_2_RBGA(*this);
+			return write_image(filename, rgba_image, type, flip, jpg_quality);
 		}
 
 

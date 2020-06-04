@@ -107,6 +107,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	gui::fImage a = bg;
 	gui::Image b = a;
 
+	a.save(L"save_image");
 
 	My_window<gui::Image>* window = new My_window<gui::Image>(bg);
 
