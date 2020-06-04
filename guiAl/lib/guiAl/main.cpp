@@ -46,7 +46,7 @@ struct My_window : gui::Window
 			
 				case WM_SIZE:
 				{
-					gui::cpu::draw_image(window->canvas, window->bg, 0, 0, 1.0f, 1.0f);
+					gui::cpu::draw_image_async(window->canvas, window->bg, 0, 0, 1.0f, 1.0f);
 				}break;
 			
 				case WM_PAINT:

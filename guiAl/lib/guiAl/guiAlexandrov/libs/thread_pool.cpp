@@ -14,19 +14,7 @@ namespace gui
 
 	thread_pool::~thread_pool() { stop(); }
 
-	template <typename T>
-	auto thread_pool::add_task(T task)->std::future<decltype(task())>
-	{
-		auto wrapper = std::make_shared<std::packaged_task<decltype(task()) ()>>(std::move(task));
-		{
-			std::unique_lock<std::mutex> lock(event_mutex);
-			tasks.push([=]() { (*wrapper)(); });
-		}
-		event.notify_one();
-		return wrapper->get_future();
-	}
-
-
+	
 	//private
 
 	void thread_pool::start()
