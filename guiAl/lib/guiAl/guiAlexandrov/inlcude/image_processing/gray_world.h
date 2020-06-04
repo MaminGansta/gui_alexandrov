@@ -11,10 +11,10 @@ namespace gui
 	namespace cpu
 	{
 
-		template <typename Image_type>
-		Image_type gray_world(Image_type& image, const Histogram<Image_type>& hist)
+		template <typename T>
+		Image_base<T> gray_world(const Image_base<T>& image, const Histogram<T>& hist)
 		{
-			Image_type res;
+			Image_base<T> res;
 			res.resize(image.width, image.height);
 
 			uint32_t R = 0;
@@ -39,21 +39,21 @@ namespace gui
 
 			for (int i = 0; i < image.height * image.width; i++)
 			{
-				res[i].r = chanel_clip(image[i].r * rw);
-				res[i].g = chanel_clip(image[i].g * gw);
-				res[i].b = chanel_clip(image[i].b * bw);
+				res[i].r = clip(image[i].r * rw);
+				res[i].g = clip(image[i].g * gw);
+				res[i].b = clip(image[i].b * bw);
 			}
 
 			return res;
 		}
 
 
-		template <typename Image_type>
-		Image_type gray_world(Image_type& image)
+		template <typename T>
+		Image_base<T> gray_world(const Image_base<T>& image)
 		{
-			Histogram<Image_type> hist(image);
+			Histogram<T> hist(image);
 
-			Image_type res;
+			Image_base<T> res;
 			res.resize(image.width, image.height);
 
 			uint32_t R = 0;
@@ -78,9 +78,9 @@ namespace gui
 
 			for (int i = 0; i < image.height * image.width; i++)
 			{
-				res[i].r = chanel_clip(int(image[i].r * rw));
-				res[i].g = chanel_clip(int(image[i].g * gw));
-				res[i].b = chanel_clip(int(image[i].b * bw));
+				res[i].r = clip(image[i].r * rw);
+				res[i].g = clip(image[i].g * gw);
+				res[i].b = clip(image[i].b * bw);
 			}
 
 			return res;

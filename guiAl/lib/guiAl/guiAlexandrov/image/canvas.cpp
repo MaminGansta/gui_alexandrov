@@ -8,10 +8,6 @@ namespace gui
 
 	Canvas::Canvas() = default;
 
-	Canvas::~Canvas() {
-		delete[] data;
-	}
-
 	void Canvas::resize(int width, int height)
 	{
 		this->width = width;

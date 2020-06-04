@@ -10,10 +10,10 @@ namespace gui
 	namespace cpu
 	{
 		
-		template <typename Image_type>
-		Image_type auto_contrast(const Image_type& image, const Histogram<Image_type>& hist)
+		template <typename T>
+		Image_base<T> auto_contrast(const Image_base<T>& image, const Histogram<Image_base<T>>& hist)
 		{
-			Image_type res;
+			Image_base<T> res;
 			res.resize(image.width, image.height);
 
 			// cut 1% from bounds
@@ -67,12 +67,12 @@ namespace gui
 
 
 
-		template <typename Image_type>
-		Image_type auto_contrast(const Image_type& image, float skip_persent)
+		template <typename T>
+		Image_base<T> auto_contrast(const Image_base<T>& image, float skip_persent)
 		{
-			Histogram<Image_type> hist(image);
+			Histogram<Image_base<T>> hist(image);
 
-			Image_type res;
+			Image_base<T> res;
 			res.resize(image.width, image.height);
 
 			// skip 5% from bounds
@@ -122,7 +122,7 @@ namespace gui
 			}
 
 			return res;
-
 		}
+
 	}
 }

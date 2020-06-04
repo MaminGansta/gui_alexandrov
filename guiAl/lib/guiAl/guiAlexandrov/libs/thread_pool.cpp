@@ -14,6 +14,17 @@ namespace gui
 
 	thread_pool::~thread_pool() { stop(); }
 
+	std::future<void> thread_pool::add_task_void(std::function<void()> task)
+	{
+		auto wrapper = std::make_shared<std::packaged_task<void()>>(std::move(task));
+		{
+			std::unique_lock<std::mutex> lock(event_mutex);
+			tasks.push([=]() { (*wrapper)(); });
+		}
+		event.notify_one();
+		return wrapper->get_future();
+	}
+
 	
 	//private
 
@@ -39,6 +50,8 @@ namespace gui
 				}));
 		}
 	}
+
+
 
 	void thread_pool::stop() noexcept
 	{

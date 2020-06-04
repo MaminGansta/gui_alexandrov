@@ -18,8 +18,6 @@ namespace gui
 
 		Canvas();
 
-		~Canvas();
-
 		void resize(int width, int height);
 
 		void set_max_buffer_size();

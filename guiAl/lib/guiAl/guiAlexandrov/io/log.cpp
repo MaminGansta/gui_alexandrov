@@ -161,7 +161,7 @@ namespace gui
 
 			// print buffer to the console
 			DWORD written = 0;
-			BOOL res = WriteConsoleW(console, log, length, &written, NULL);
+			BOOL res = WriteConsoleA(console, log, length, &written, NULL);
 
 			va_end(args);
 

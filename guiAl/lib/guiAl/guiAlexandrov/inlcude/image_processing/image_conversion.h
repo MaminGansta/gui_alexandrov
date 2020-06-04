@@ -6,10 +6,10 @@
 namespace gui
 {
 
-	template <typename Image_type>
-	Image_type  RGB2YCbCr(const Image_type& origin)
+	template <typename T>
+	Image_base<T>  RGB2YCbCr(const Image_base<T>& origin)
 	{
-		Image_type res(origin.width, origin.height);
+		Image_base<T> res(origin.width, origin.height);
 
 		for (int i = 0; i < origin.width * origin.height; i++)
 		{
@@ -27,10 +27,10 @@ namespace gui
 	}
 
 
-	template <typename Image_type>
-	Image_type YCbCr2RGB(const Image_type& origin)
+	template <typename T>
+	Image_base<T> YCbCr2RGB(const Image_base<T>& origin)
 	{
-		Image_type res(origin.width, origin.height);
+		Image_base<T> res(origin.width, origin.height);
 
 		for (int i = 0; i < origin.width * origin.height; i++)
 		{
@@ -47,10 +47,10 @@ namespace gui
 	}
 
 
-	template <typename Image_type>
-	Image_type RGB2BW(const Image_type& origin)
+	template <typename T>
+	Image_base<T> RGB2BW(const Image_base<T>& origin)
 	{
-		Image_type res(origin.width, origin.height);
+		Image_base<T> res(origin.width, origin.height);
 
 		for (int i = 0; i < origin.width * origin.height; i++)
 		{

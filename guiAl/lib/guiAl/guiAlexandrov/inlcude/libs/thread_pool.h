@@ -34,6 +34,9 @@ namespace gui
 
 		~thread_pool();
 
+		// ad
+
+		// task have return value
 		template <typename T>
 		auto add_task(T task)->std::future<decltype(task())>
 		{
@@ -45,6 +48,9 @@ namespace gui
 			event.notify_one();
 			return wrapper->get_future();
 		}
+
+		// task return void
+		std::future<void> add_task_void(std::function<void()> task);
 
 
 	private:
@@ -69,7 +75,7 @@ namespace gui
 				{																\
 					int from = i * af_width / workers.size + from_param;		\
 					int to = (i + 1) * af_width / workers.size + from_param;	\
-					res[i] = workers.add_task(
+					res[i] = workers.add_task_void(
 
 
 

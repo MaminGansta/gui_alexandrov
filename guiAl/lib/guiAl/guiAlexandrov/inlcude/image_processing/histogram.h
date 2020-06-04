@@ -9,10 +9,10 @@ namespace gui
 	namespace cpu
 	{
 
-		template <typename Image_type>
+		template <typename T>
 		struct Histogram
 		{
-			const Image_type* image = NULL;
+			const Image_base<T>* image = NULL;
 			float brightness[256];
 			float red[256];
 			float green[256];
@@ -26,13 +26,13 @@ namespace gui
 
 			Histogram() = default;
 
-			Histogram(const Image_type& image)
+			Histogram(const Image_base<T>& image)
 			{
 				set_img(image);
 				update_info();
 			}
 
-			void set_img(const Image_type& img)
+			void set_img(const Image_base<T>& img)
 			{
 				image = &img;
 			}

@@ -1,8 +1,8 @@
 #pragma once
 
-
+#include <cassert>
+#include <memory.h>
 #include "image/color.h"
-
 
 namespace gui
 {
@@ -21,8 +21,54 @@ namespace gui
 			width(width),
 			height(height),
 			whole_size(height* width)
-		{}
-		
+		{
+			data = new Color_base<T>[whole_size];
+		}
+
+
+		Image_base(const Image_base<T>& copy)
+		{
+			height = copy.height;
+			width = copy.width;
+			data = new Color_base<T>[height * width];
+			memmove(data, copy.data, sizeof(Color_base<T>) * height * width);
+		}
+
+		Image_base(Image_base<T>&& other)
+		{
+			data = other.data;
+			width = other.width;
+			height = other.height;
+			other.data = NULL;
+		}
+
+		Image_base<T>& operator= (const Image_base<T>& copy)
+		{
+			delete[] data;
+			height = copy.height;
+			width = copy.width;
+			data = new Color_base<T>[height * width];
+			memmove(data, copy.data, sizeof(Color_base<T>) * height * width);
+			return *this;
+		}
+
+		Image_base<T>& operator = (Image_base<T>&& other)
+		{
+			delete[] data;
+			data = other.data;
+			width = other.width;
+			height = other.height;
+			other.data = NULL;
+			return *this;
+		}
+
+		~Image_base()
+		{
+			delete[] data;
+		}
+
+
+
 		bool valid() const
 		{
 			return width != 0 && height != 0 && data != NULL;
@@ -32,8 +78,9 @@ namespace gui
 		{
 			this->width = width;
 			this->height = height;
+			whole_size = width * height;
 			delete[] data;
-			data = new Color_base<T>[width * height];
+			data = new Color_base<T>[whole_size];
 		}
 
 		Color_base<T>& get_pixel(int x, int y)
@@ -72,6 +119,11 @@ namespace gui
 			assert(((uint32_t)y < height) | ((uint32_t)x < width));
 			return data[y * width + x];
 		}
+
 	};
+
+
+	extern template struct Image_base<uint8_t>;
+	extern template struct Image_base<float>;
 
 }

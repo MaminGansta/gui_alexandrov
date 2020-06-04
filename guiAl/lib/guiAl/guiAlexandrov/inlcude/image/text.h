@@ -3,8 +3,7 @@
 #include <Windows.h>
 #include <string>
 
-#include "color.h"
-
+#include "Image_base.h"
 
 namespace gui
 {
@@ -36,11 +35,38 @@ namespace gui
 
 
 
-	template <typename Surface_type>
-	void render_text(Surface_type& surface, float fx, float fy, const std::wstring& text, const Color& color = Color(), HFONT hFont = DEF_FONT);
+	template <typename T>
+	void render_text(Image_base<T>& surface, float fx, float fy, const std::wstring& text, const Color& color, HFONT hFont)
+	{
+		int x = surface.width * fx;
+		int y = surface.height * (1.0f - fy);
+		WriteTextOnByteArray(surface.width, surface.height, x, y, surface.data, hFont, text.c_str(), RGB(color.r, color.g, color.b));
+	}
 
 
-	template <typename Surface_type, size_t buffer_size>
-	void render_text_ml(Surface_type& surface, float fx, float fy, const std::wstring& text, const Color& color = Color(), HFONT hFont = DEF_FONT);
+	template <typename T>
+	void render_text_ml(Image_base<T>& surface, float fx, float fy, const std::wstring& text, const Color& color, HFONT hFont)
+	{
+		int x = surface.width * fx;
+		int y = surface.height * (1.0f - fy);
+
+		int priv_pos = 0, pos = 0, size = 0;
+		int temp = 0, offset = 0;
+		wchar_t* line = _malloca(sizeof(wchar_t) * text.size());
+
+
+		while (pos < text.size())
+		{
+			temp = text.find(L'\n', pos);
+			pos = temp == -1 ? text.size() : temp;
+			size = pos - priv_pos;
+
+			memmove(line, text.c_str() + priv_pos, size * sizeof(wchar_t));
+			line[size] = L'\0';
+
+			offset += WriteTextOnByteArray(surface.width, surface.height, x, y + offset, surface.data, hFont, line, RGB(color.r, color.g, color.b));
+			priv_pos = ++pos;
+		}
+	}
 
 }

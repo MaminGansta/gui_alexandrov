@@ -1,5 +1,4 @@
 
-#define FULL_SCREAN_CANVAS
 #include "guiAlexandrov.h"
 
 
@@ -46,7 +45,9 @@ struct My_window : gui::Window
 			
 				case WM_SIZE:
 				{
+					float start = gui::get_time();
 					gui::cpu::draw_image_async(window->canvas, window->bg, 0, 0, 1.0f, 1.0f);
+					gui::console::printf("%f \n", gui::get_time() - start);
 				}break;
 			
 				case WM_PAINT:
@@ -90,15 +91,21 @@ struct My_window : gui::Window
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	gui::init(hInstance);
+	gui::console::create_console();
 
-	gui::Image bg(L"bg.jpg");
+	gui::Image bg;
+	bg.open(L"bg.jpg");
 	if (!bg.valid()) return -1;
 
-	gui::Image(499, 333);
 
+	bg = gui::cpu::gray_world(bg);
+	bg = gui::cpu::box_filter(bg);
+	bg = gui::cpu::sharp_filter(bg, 16);
+	bg = gui::cpu::median_filter(bg);
+	
 
-	//bg = gui::cpu::gray_world<gui::Image>(bg);
-	//bg = gui::cpu::box_filter(bg);
+	gui::fImage a = bg;
+	gui::Image b = a;
 
 
 	My_window<gui::Image>* window = new My_window<gui::Image>(bg);
@@ -106,9 +113,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	
 	gui::doutput("some int %d\n", 1);
 	gui::output("some int %d\n", 5);
-	gui::console::printf(L"hello world  %f\n", get_time());
+	gui::console::printf(L"hello world  %f\n", gui::get_time());
 
 	
 	gui::Window::wait_msg_proc();
+
 	return 0;
 }

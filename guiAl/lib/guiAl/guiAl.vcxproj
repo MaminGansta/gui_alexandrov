@@ -173,6 +173,7 @@
     <ClCompile Include="guiAlexandrov\image\canvas.cpp" />
     <ClCompile Include="guiAlexandrov\image\color.cpp" />
     <ClCompile Include="guiAlexandrov\image\image.cpp" />
+    <ClCompile Include="guiAlexandrov\image\Image_base.cpp" />
     <ClCompile Include="guiAlexandrov\image\text.cpp" />
     <ClCompile Include="guiAlexandrov\io\input.cpp" />
     <ClCompile Include="guiAlexandrov\io\log.cpp" />

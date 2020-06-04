@@ -10,10 +10,10 @@ namespace gui
 	namespace cpu
 	{
 		
-		template <typename Image_type>
-		Image_type hist_alignment(const Image_type& image, const Histogram<Image_type>& hist)
+		template <typename T>
+		Image_base<T> hist_alignment(const Image_base<T>& image, const Histogram<Image_base<T>>& hist)
 		{
-			Image_type res;
+			Image_base<T> res;
 			res.resize(image.width, image.height);
 
 			uint32_t cdf[256];
@@ -59,12 +59,12 @@ namespace gui
 
 
 
-		template <typename Image_type>
-		Image_type hist_alignment(const Image_type& image)
+		template <typename T>
+		Image_base<T> hist_alignment(const Image_base<T>& image)
 		{
-			Histogram<Image_type> hist(image);
+			Histogram<Image_base<T>> hist(image);
 
-			Image_type res;
+			Image_base<T> res;
 			res.resize(image.width, image.height);
 
 			uint32_t cdf[256];

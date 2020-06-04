@@ -169,7 +169,7 @@ namespace gui
 				int from_y = i * height / workers.size;
 				int to_y = (i + 1) * height / workers.size;
 
-				res[i] = workers.add_task([from_y, to_y, height, width, &surface, &color]()
+				res[i] = workers.add_task_void([from_y, to_y, height, width, &surface, &color]()
 					{
 						for (int y = from_y; y < to_y; y++)
 							for (int x = 0; x < width; x++)
@@ -227,7 +227,7 @@ namespace gui
 				int from_y = i * height / workers.size;
 				int to_y = (i + 1) * height / workers.size;
 
-				res[i] = workers.add_task([from_y, to_y, pos_y, pos_x, height, width, &surface, &image]()
+				res[i] = workers.add_task_void([from_y, to_y, pos_y, pos_x, height, width, &surface, &image]()
 					{
 						for (int y = from_y; y < to_y; y++)
 							for (int x = 0; x < width; x++)
@@ -262,7 +262,7 @@ namespace gui
 				int from_y = i * height / workers.size;
 				int to_y = (i + 1) * height / workers.size;
 
-				res[i] = workers.add_task([from_y, to_y, pos_y, pos_x, height, width, &surface, &image]()
+				res[i] = workers.add_task_void([from_y, to_y, pos_y, pos_x, height, width, &surface, &image]()
 					{
 						for (int y = from_y; y < to_y; y++)
 							for (int x = 0; x < width; x++)
@@ -446,7 +446,7 @@ namespace gui
 				int from_y = y0 + (i)*height / workers.size;
 				int to_y = y0 + (i + 1) * height / workers.size;
 
-				res[i] = workers.add_task([x0, height, width, from_y, to_y, &surface, &color]() {
+				res[i] = workers.add_task_void([x0, height, width, from_y, to_y, &surface, &color]() {
 					for (int y = from_y; y < to_y; y++)
 						for (int x = x0; x < width + x0; x++)
 							drawPixel_a(surface, x, y, color);
@@ -504,7 +504,7 @@ namespace gui
 				int from_y = i * height / workers.size;
 				int to_y = (i + 1) * height / workers.size;
 
-				res[i] = workers.add_task([from_y, to_y, pos_y, pos_x, height, width, &surface, &image]()
+				res[i] = workers.add_task_void([from_y, to_y, pos_y, pos_x, height, width, &surface, &image]()
 					{
 						for (int y = from_y; y < to_y; y++)
 						{
