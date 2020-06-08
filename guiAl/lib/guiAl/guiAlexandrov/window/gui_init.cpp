@@ -8,10 +8,11 @@ namespace gui
 	HINSTANCE _hInst;
 
 
-	void init(HINSTANCE hInstance)
+	void init(HINSTANCE hInstance, int max_threads)
 	{
 		_hInst = hInstance;
 		__init_time = high_resolution_clock::now();
+		workers.resize(max_threads);
 	}
 
 }

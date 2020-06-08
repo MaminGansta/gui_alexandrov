@@ -215,10 +215,10 @@ namespace gui
 				std::future<void> threads[MAX_THREADS];
 
 				int from, to;
-				for (int i = 0; i < workers.size; i++)
+				for (int i = 0; i < workers.size(); i++)
 				{
-					from = height * i / workers.size;
-					to = height * (i + 1) / workers.size;
+					from = height * i / workers.size();
+					to = height * (i + 1) / workers.size();
 
 					if (i == 0)
 					{
@@ -314,7 +314,7 @@ namespace gui
 					}
 				}
 
-				for (int i = 0; i < workers.size; i++)
+				for (int i = 0; i < workers.size(); i++)
 					threads[i].get();
 
 				return res;
@@ -616,10 +616,10 @@ namespace gui
 				std::future<void> threads[MAX_THREADS];
 
 				int from, to;
-				for (int i = 0; i < workers.size; i++)
+				for (int i = 0; i < workers.size(); i++)
 				{
-					from = height * i / workers.size;
-					to = height * (i + 1) / workers.size;
+					from = height * i / workers.size();
+					to = height * (i + 1) / workers.size();
 
 					if (i == 0)
 					{
@@ -717,7 +717,7 @@ namespace gui
 					}
 				}
 
-				for (int i = 0; i < workers.size; i++)
+				for (int i = 0; i < workers.size(); i++)
 					threads[i].get();
 
 				return res;

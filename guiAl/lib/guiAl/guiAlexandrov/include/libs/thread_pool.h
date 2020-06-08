@@ -16,13 +16,9 @@ namespace gui
 #define MAX_THREADS 8
 #endif
 
-#ifndef MIN
-#define MIN(a, b) (a < b ? a : b)
-#endif
 
 	struct thread_pool
 	{
-		size_t size;
 		std::vector<std::thread> pool;
 		std::queue<std::function<void()>> tasks;
 		std::condition_variable event;
@@ -54,9 +50,11 @@ namespace gui
 
 		void resize(int size);
 
+		int size();
+
 	private:
 
-		void start();
+		void start(int size);
 
 		void stop() noexcept;
 	};
@@ -71,10 +69,10 @@ namespace gui
 			{																	 \
 				std::future<void> res[MAX_THREADS];								 \
 				int af_width = to_param - from_param;							 \
-				for (int i = 0; i < gui::workers.size; i++)						 \
+				for (int i = 0; i < gui::workers.size(); i++)						 \
 				{																 \
-					int from = i * af_width / gui::workers.size + from_param;	 \
-					int to = (i + 1) * af_width / gui::workers.size + from_param;\
+					int from = i * af_width / gui::workers.size() + from_param;	 \
+					int to = (i + 1) * af_width / gui::workers.size() + from_param;\
 					res[i] = gui::workers.add_task_void(
 
 
@@ -83,7 +81,7 @@ namespace gui
 					);															\
 				}																\
 																				\
-				for (int i = 0; i < gui::workers.size; i++)						\
+				for (int i = 0; i < gui::workers.size(); i++)						\
 					res[i].get();												\
 			}
 
