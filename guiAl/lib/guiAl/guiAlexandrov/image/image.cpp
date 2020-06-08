@@ -58,16 +58,16 @@ namespace gui
 		{
 			case PNG:
 				strcat_s(extention, 255, ".png");
-				return stbi_write_png(filename, image.width, image.height, 4, image.data, image.width * sizeof(int));
+				return stbi_write_png(extention, image.width, image.height, 4, image.data, image.width * sizeof(int));
 			case BMP:
 				strcat_s(extention, 255, ".bmp");
-				return stbi_write_bmp(filename, image.width, image.height, 4, image.data);
+				return stbi_write_bmp(extention, image.width, image.height, 4, image.data);
 			case TGA:
 				strcat_s(extention, 255, ".tga");
-				return stbi_write_tga(filename, image.width, image.height, 4, image.data);
+				return stbi_write_tga(extention, image.width, image.height, 4, image.data);
 			case JPG:
 				strcat_s(extention, 255, ".jpg");
-				return stbi_write_jpg(filename, image.width, image.height, 4, image.data, png_qulity);
+				return stbi_write_jpg(extention, image.width, image.height, 4, image.data, png_qulity);
 			//case HDR:
 			//	return stbi_write_hdr(filename, image.width, image.height, 4, const float* data);
 		}

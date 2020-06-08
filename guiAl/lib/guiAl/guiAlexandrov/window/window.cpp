@@ -459,7 +459,7 @@ namespace gui
 		return canvas.height;
 	}
 	
-	int Window::widht()
+	int Window::width()
 	{
 		return canvas.width;
 	}

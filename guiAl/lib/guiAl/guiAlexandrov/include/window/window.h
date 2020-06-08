@@ -178,7 +178,7 @@ namespace gui
 		void redraw();
 
 		int height();
-		int widht();
+		int width();
 		
 		bool valid();
 		

@@ -52,7 +52,52 @@ namespace gui
 	}
 
 
+	void thread_pool::resize(int new_size)
+	{
+		if (size == new_size)
+			return;
 
+
+		// free all if down size
+		if (size < new_size)
+		{
+			{
+				std::unique_lock<std::mutex> lock(event_mutex);
+				stopping = true;
+			}
+
+			size = 0;
+			event.notify_all();
+
+			for (std::thread& thread : pool)
+				thread.join();
+		}
+
+		// create new threads
+		for (int i = 0; i < new_size - size; i++)
+		{
+			pool.push_back(std::thread([&]() {
+				while (true)
+				{
+					std::function<void()> task;
+					{
+						std::unique_lock<std::mutex> lock(event_mutex);
+
+						event.wait(lock, [&]() { return stopping || !tasks.empty(); });
+						if (stopping && tasks.empty()) break;
+
+						task = std::move(tasks.front());
+						tasks.pop();
+					}
+					task();
+				}
+				}));
+		}
+
+	}
+
+
+	
 	void thread_pool::stop() noexcept
 	{
 		{
@@ -66,7 +111,8 @@ namespace gui
 			thread.join();
 	}
 
+
 	// global
-	thread_pool workers(MAX_THREADS);
+	thread_pool workers;
 
 }
