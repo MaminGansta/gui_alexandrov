@@ -9,6 +9,6 @@ namespace gui
 	// global instange
 	extern HINSTANCE _hInst;
 
-	void init(HINSTANCE hInst, int max_threads = MAX_THREADS);
+	void init(HINSTANCE hInst, int max_threads = std::thread::hardware_concurrency());
 
 }

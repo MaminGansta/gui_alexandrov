@@ -13,7 +13,7 @@ namespace gui
 {
 
 #ifndef MAX_THREADS
-#define MAX_THREADS 8
+#define MAX_THREADS 16
 #endif
 
 
@@ -68,21 +68,22 @@ namespace gui
 #define ASYNC_FOR(from_param, to_param)											 \
 			{																	 \
 				std::future<void> res[MAX_THREADS];								 \
-				int af_width = to_param - from_param;							 \
-				for (int i = 0; i < gui::workers.size(); i++)						 \
+				int width = to_param - from_param;							     \
+				int threads = __min(width, workers.sizse())                      \
+				for (int i = 0; i < gui::workers.size(); i++)					 \
 				{																 \
-					int from = i * af_width / gui::workers.size() + from_param;	 \
-					int to = (i + 1) * af_width / gui::workers.size() + from_param;\
+					int from = i * width / gui::workers.size() + from_param;	 \
+					int to = (i + 1) * width / gui::workers.size() + from_param; \
 					res[i] = gui::workers.add_task_void(
 
 
 
-#define END_FOR																	\
-					);															\
-				}																\
-																				\
-				for (int i = 0; i < gui::workers.size(); i++)						\
-					res[i].get();												\
+#define END_FOR																	 \
+					);															 \
+				}																 \
+																				 \
+				for (int i = 0; i < threads; i++)						         \
+					res[i].get();												 \
 			}
 
 }

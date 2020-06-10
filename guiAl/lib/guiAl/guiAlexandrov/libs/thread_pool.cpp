@@ -57,7 +57,7 @@ namespace gui
 
 	void thread_pool::resize(int new_size)
 	{
-		new_size = __min(new_size, std::thread::hardware_concurrency());
+		new_size = __min(new_size, MAX_THREADS);
 
 		
 		if (size() == new_size)
