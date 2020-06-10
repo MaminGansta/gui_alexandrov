@@ -164,12 +164,12 @@ namespace gui
 
 			std::future<void> res[MAX_THREADS];
 
-			for (int i = 0; i < workers.size(); i++)
+			for (int i = 0; i < thread_pool.size(); i++)
 			{
-				int from_y = i * height / workers.size();
-				int to_y = (i + 1) * height / workers.size();
+				int from_y = i * height / thread_pool.size();
+				int to_y = (i + 1) * height / thread_pool.size();
 
-				res[i] = workers.add_task_void([from_y, to_y, height, width, &surface, &color]()
+				res[i] = thread_pool.add_task_void([from_y, to_y, height, width, &surface, &color]()
 					{
 						for (int y = from_y; y < to_y; y++)
 							for (int x = 0; x < width; x++)
@@ -177,7 +177,7 @@ namespace gui
 					});
 			}
 
-			for (int i = 0; i < workers.size(); i++)
+			for (int i = 0; i < thread_pool.size(); i++)
 				res[i].get();
 		}
 
@@ -222,12 +222,12 @@ namespace gui
 
 			std::future<void> res[MAX_THREADS];
 
-			for (int i = 0; i < workers.size(); i++)
+			for (int i = 0; i < thread_pool.size(); i++)
 			{
-				int from_y = i * height / workers.size();
-				int to_y = (i + 1) * height / workers.size();
+				int from_y = i * height / thread_pool.size();
+				int to_y = (i + 1) * height / thread_pool.size();
 
-				res[i] = workers.add_task_void([from_y, to_y, pos_y, pos_x, height, width, &surface, &image]()
+				res[i] = thread_pool.add_task_void([from_y, to_y, pos_y, pos_x, height, width, &surface, &image]()
 					{
 						for (int y = from_y; y < to_y; y++)
 							for (int x = 0; x < width; x++)
@@ -238,7 +238,7 @@ namespace gui
 					});
 			}
 
-			for (int i = 0; i < workers.size(); i++)
+			for (int i = 0; i < thread_pool.size(); i++)
 				res[i].get();
 		}
 
@@ -257,12 +257,12 @@ namespace gui
 
 			std::future<void> res[MAX_THREADS];
 
-			for (int i = 0; i < workers.size(); i++)
+			for (int i = 0; i < thread_pool.size(); i++)
 			{
-				int from_y = i * height / workers.size();
-				int to_y = (i + 1) * height / workers.size();
+				int from_y = i * height / thread_pool.size();
+				int to_y = (i + 1) * height / thread_pool.size();
 
-				res[i] = workers.add_task_void([from_y, to_y, pos_y, pos_x, height, width, &surface, &image]()
+				res[i] = thread_pool.add_task_void([from_y, to_y, pos_y, pos_x, height, width, &surface, &image]()
 					{
 						for (int y = from_y; y < to_y; y++)
 							for (int x = 0; x < width; x++)
@@ -274,7 +274,7 @@ namespace gui
 					});
 			}
 
-			for (int i = 0; i < workers.size(); i++)
+			for (int i = 0; i < thread_pool.size(); i++)
 				res[i].get();
 		}
 
@@ -441,19 +441,19 @@ namespace gui
 
 			std::future<void> res[MAX_THREADS];
 
-			for (int i = 0; i < workers.size(); i++)
+			for (int i = 0; i < thread_pool.size(); i++)
 			{
-				int from_y = y0 + (i)*height / workers.size();
-				int to_y = y0 + (i + 1) * height / workers.size();
+				int from_y = y0 + (i)*height / thread_pool.size();
+				int to_y = y0 + (i + 1) * height / thread_pool.size();
 
-				res[i] = workers.add_task_void([x0, height, width, from_y, to_y, &surface, &color]() {
+				res[i] = thread_pool.add_task_void([x0, height, width, from_y, to_y, &surface, &color]() {
 					for (int y = from_y; y < to_y; y++)
 						for (int x = x0; x < width + x0; x++)
 							drawPixel_a(surface, x, y, color);
 					});
 			}
 
-			for (int i = 0; i < workers.size(); i++)
+			for (int i = 0; i < thread_pool.size(); i++)
 				res[i].get();
 		}
 
@@ -499,12 +499,12 @@ namespace gui
 
 			std::future<void> res[MAX_THREADS];
 
-			for (int i = 0; i < workers.size(); i++)
+			for (int i = 0; i < thread_pool.size(); i++)
 			{
-				int from_y = i * height / workers.size();
-				int to_y = (i + 1) * height / workers.size();
+				int from_y = i * height / thread_pool.size();
+				int to_y = (i + 1) * height / thread_pool.size();
 
-				res[i] = workers.add_task_void([from_y, to_y, pos_y, pos_x, height, width, &surface, &image]()
+				res[i] = thread_pool.add_task_void([from_y, to_y, pos_y, pos_x, height, width, &surface, &image]()
 					{
 						for (int y = from_y; y < to_y; y++)
 						{
@@ -517,7 +517,7 @@ namespace gui
 					});
 			}
 
-			for (int i = 0; i < workers.size(); i++)
+			for (int i = 0; i < thread_pool.size(); i++)
 				res[i].get();
 		}
 

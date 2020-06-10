@@ -215,10 +215,10 @@ namespace gui
 				std::future<void> threads[MAX_THREADS];
 
 				int from, to;
-				for (int i = 0; i < workers.size(); i++)
+				for (int i = 0; i < thread_pool.size(); i++)
 				{
-					from = height * i / workers.size();
-					to = height * (i + 1) / workers.size();
+					from = height * i / thread_pool.size();
+					to = height * (i + 1) / thread_pool.size();
 
 					if (i == 0)
 					{
@@ -226,7 +226,7 @@ namespace gui
 						to += pad;
 					}
 
-					threads[i] = workers.add_task([=, &original, &res]()
+					threads[i] = thread_pool.add_task([=, &original, &res]()
 						{
 							for (int y = from; y < to; y++)
 							{
@@ -314,7 +314,7 @@ namespace gui
 					}
 				}
 
-				for (int i = 0; i < workers.size(); i++)
+				for (int i = 0; i < thread_pool.size(); i++)
 					threads[i].get();
 
 				return res;
@@ -616,10 +616,10 @@ namespace gui
 				std::future<void> threads[MAX_THREADS];
 
 				int from, to;
-				for (int i = 0; i < workers.size(); i++)
+				for (int i = 0; i < thread_pool.size(); i++)
 				{
-					from = height * i / workers.size();
-					to = height * (i + 1) / workers.size();
+					from = height * i / thread_pool.size();
+					to = height * (i + 1) / thread_pool.size();
 
 					if (i == 0)
 					{
@@ -627,7 +627,7 @@ namespace gui
 						to += pad;
 					}
 
-					threads[i] = workers.add_task([=, &original, &res]()
+					threads[i] = thread_pool.add_task([=, &original, &res]()
 						{
 							for (int y = from; y < to; y++)
 							{
@@ -717,7 +717,7 @@ namespace gui
 					}
 				}
 
-				for (int i = 0; i < workers.size(); i++)
+				for (int i = 0; i < thread_pool.size(); i++)
 					threads[i].get();
 
 				return res;

@@ -5,7 +5,7 @@
 namespace gui
 {
 
-	thread_pool::thread_pool(size_t threads)
+	ThreadPool::ThreadPool(size_t threads)
 	{
 		int size = __min(std::thread::hardware_concurrency(), threads);
 		stopping = false;
@@ -13,13 +13,13 @@ namespace gui
 	}
 
 
-	thread_pool::~thread_pool()
+	ThreadPool::~ThreadPool()
 	{
 		stop();
 	}
 
 
-	std::future<void> thread_pool::add_task_void(std::function<void()> task)
+	std::future<void> ThreadPool::add_task_void(std::function<void()> task)
 	{
 		auto wrapper = std::make_shared<std::packaged_task<void()>>(std::move(task));
 		{
@@ -31,7 +31,7 @@ namespace gui
 	}
 
 
-	void thread_pool::start(int size)
+	void ThreadPool::start(int size)
 	{
 		for (int i = 0; i < size; i++)
 		{
@@ -55,7 +55,7 @@ namespace gui
 	}
 
 
-	void thread_pool::resize(int new_size)
+	void ThreadPool::resize(int new_size)
 	{
 		new_size = __min(new_size, MAX_THREADS);
 
@@ -105,13 +105,13 @@ namespace gui
 	}
 
 
-	int thread_pool::size()
+	int ThreadPool::size()
 	{
 		return pool.size();
 	}
 
 	
-	void thread_pool::stop() noexcept
+	void ThreadPool::stop() noexcept
 	{
 		{
 			std::unique_lock<std::mutex> lock(event_mutex);
@@ -126,6 +126,6 @@ namespace gui
 
 
 	// global
-	thread_pool workers;
+	ThreadPool thread_pool;
 
 }

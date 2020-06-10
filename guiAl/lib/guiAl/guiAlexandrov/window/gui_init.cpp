@@ -12,7 +12,7 @@ namespace gui
 	{
 		_hInst = hInstance;
 		__init_time = high_resolution_clock::now();
-		workers.resize(max_threads);
+		thread_pool.resize(max_threads);
 	}
 
 }
