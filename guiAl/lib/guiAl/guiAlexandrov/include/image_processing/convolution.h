@@ -226,7 +226,7 @@ namespace gui
 						to += pad;
 					}
 
-					threads[i] = thread_pool.add_task([=, &original, &res]()
+					threads[i] = thread_pool.add_task_void([=, &original, &res]()
 						{
 							for (int y = from; y < to; y++)
 							{
@@ -627,7 +627,7 @@ namespace gui
 						to += pad;
 					}
 
-					threads[i] = thread_pool.add_task([=, &original, &res]()
+					threads[i] = thread_pool.add_task_void([=, &original, &res]()
 						{
 							for (int y = from; y < to; y++)
 							{

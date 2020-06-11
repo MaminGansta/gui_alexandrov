@@ -4,6 +4,10 @@
 
 namespace gui
 {
+	// Thead pool initialization
+	ThreadPool thread_pool;
+
+
 
 	ThreadPool::ThreadPool(size_t threads)
 	{
@@ -59,7 +63,6 @@ namespace gui
 	{
 		new_size = __min(new_size, MAX_THREADS);
 
-		
 		if (size() == new_size)
 			return;
 
@@ -79,13 +82,15 @@ namespace gui
 			pool.clear();
 		}
 
+
 		new_size = new_size - size();
 		stopping = false;
 
 		// create new threads
 		for (int i = 0; i < new_size; i++)
 		{
-			pool.push_back(std::thread([&]() {
+			pool.push_back(std::thread([&]()
+			{
 				while (true)
 				{
 					std::function<void()> task;
@@ -100,7 +105,7 @@ namespace gui
 					}
 					task();
 				}
-				}));
+			}));
 		}
 	}
 
@@ -124,8 +129,5 @@ namespace gui
 			thread.join();
 	}
 
-
-	// global
-	ThreadPool thread_pool;
-
+	
 }
