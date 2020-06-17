@@ -1,142 +1,106 @@
 #pragma once
 
-#include <cmath>
 #include <thread>
 #include <vector>
 #include <condition_variable>
 #include <functional>
 #include <queue>
 #include <future>
+#include <atomic>
+#include <cassert>
 
 
-namespace gui
+struct ThreadPool
 {
+	std::vector<std::thread> pool;
+	std::queue<std::function<void()>> tasks;
 
-#ifndef MAX_THREADS
-#define MAX_THREADS 16
-#endif
+	std::condition_variable event;
+	std::mutex event_mutex;
+	std::atomic<bool> stopping;
+
+	// task counter
+	std::atomic<int> active_tasks = 0;
+
+	std::mutex mutex_wait;
+	std::condition_variable cv_wait;
 
 
-	struct ThreadPool
+	ThreadPool();
+	ThreadPool(size_t threads);
+	
+	~ThreadPool();
+
+	// add task
+	template <typename F, typename ...Args>
+	auto add_task(F&& task, Args&& ...args) ->std::future<decltype(task(args...))>
 	{
-		std::vector<std::thread> pool;
-		std::queue<std::function<void()>> tasks;
-		std::condition_variable event;
-		std::mutex event_mutex;
-		bool stopping;
+		// increment active tasts
+		active_tasks++;
 
-
-		ThreadPool(size_t threads = MAX_THREADS);
-
-		~ThreadPool();
-
+		auto wrapper = std::make_shared<std::packaged_task<decltype(task(args...))()>>(
+			std::bind(std::forward<F>(task), std::forward<Args>(args)...));
 		
-		// add task
-
-		template <typename F, typename ...Args>
-		auto add_task(F&& task, Args&& ...args) ->std::future<decltype(task(args...))>
 		{
-		
-			auto wrapper = std::make_shared<std::packaged_task<decltype(task(args...))()>>(
-				std::bind(std::forward<F>(task), std::forward<Args>(args)...)
-			);
-
-			{
-				std::unique_lock<std::mutex> lock(event_mutex);
-				tasks.push([wrapper]() { (*wrapper)(); });
-			}
-		
-			event.notify_one();
-			return wrapper->get_future();
+			std::unique_lock<std::mutex> lock(event_mutex);
+			tasks.push([wrapper]() { (*wrapper)(); });
 		}
-
-
-		// task return void (common use case)
-		std::future<void> add_task_void(std::function<void()> task);
-
-
-		void resize(int size);
-
-		int size();
-
-	private:
-
-		void start(int size);
-
-		void stop() noexcept;
-	};
-
-
-	// declaration global thread pool
-	extern ThreadPool thread_pool;
-
-
-
-
-
-
-	// =========== Async for function ===========
-
-
-	/*
-		Split range from small pices
 		
-		Prototype: F(int from, int to)
-	*/
-	template <typename F>
-	void parallel_for(int from_param, int to_param, bool wait, F func)
-	{
-		// split whole task on pisces
-		std::future<void> res[MAX_THREADS];
-		int width = to_param - from_param;
-		int threads = __min(width, thread_pool.size());
-
-		// put pisces on thread pool
-		for (int i = 0; i < gui::thread_pool.size(); i++)
-		{
-			int from = i * width / gui::thread_pool.size() + from_param;
-			int to = (i + 1) * width / gui::thread_pool.size() + from_param;
-
-			res[i] = gui::thread_pool.add_task(func, from, to);
-		}
-
-		// wait for result if neccessery
-		if (wait)
-		{
-			for (int i = 0; i < threads; i++)
-				res[i].get();
-		}
+		event.notify_one();
+		return wrapper->get_future();
 	}
 
 
+	/*
+		Split range to small pieces
+		Prototype: type F(int from, int to)
+	*/
+	template <typename F>
+	auto parallel_for(int from_param, int to_param, F func) -> std::vector<std::future<decltype(func(1, 1))>>
+	{
+		std::vector<std::future<decltype(func(1, 1))>> res;
+		res.reserve(pool.size());
+
+		// split whole task to pieces
+		int width = to_param - from_param;
+		int threads = __min(width, size());
+
+		// put pisces on thread pool
+		for (int i = 0; i < threads; i++)
+		{
+			int from = i * width / threads + from_param;
+			int to = (i + 1) * width / threads + from_param;
+			res.push_back(add_task(func, from, to));
+		}
+
+		return res;
+	}
 
 
-	//  ============ Async macro =============
-
-		/* 
-			lamda with necessary params [from, to]
-
-			[from, to](){ for (int i = from; i < to; i++}
-		*/
-#define ASYNC_FOR(from_param, to_param)											     \
-			{																	     \
-				std::future<void> res[MAX_THREADS];								     \
-				int width = to_param - from_param;							         \
-				int threads = __min(width, gui::thread_pool.size());                 \
-				for (int i = 0; i < threads; i++)								     \
-				{																     \
-					int from = i * width / gui::thread_pool.size() + from_param;	 \
-					int to = (i + 1) * width / gui::thread_pool.size() + from_param; \
-					res[i] = gui::thread_pool.add_task_void(
+	/* 
+		task return void (common use case)
+		no code generation
+	*/
+	std::future<void> add_task_void(std::function<void()> task);
 
 
+	/*
+		No dynamic allocation, in this version
+		no code generation
+	*/
+	void parallel_for_void(int from_param, int to_param, std::function<void(int, int)> func);
 
-#define END_FOR																	     \
-					);															     \
-				}																     \
-																				     \
-				for (int i = 0; i < threads; i++)						             \
-					res[i].get();												     \
-			}
 
-}
+	// wait until all tasks will be finished
+	void wait();
+
+
+	void resize(int size);
+
+	int size();
+
+	
+	void start(int size);
+
+	void stop() noexcept;
+};

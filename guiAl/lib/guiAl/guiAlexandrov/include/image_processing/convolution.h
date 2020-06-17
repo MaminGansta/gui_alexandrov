@@ -4,7 +4,8 @@
 
 #include <stdint.h>
 #include "image/image.h"
-#include "libs/thread_pool.h"
+//#include "libs/thread_pool.h"
+#include "window/gui_init.h"
 #include "cstdlib"
 
 #ifndef PI
@@ -212,46 +213,32 @@ namespace gui
 				int width = original.width - pad;
 				int height = original.height - pad;
 
-				std::future<void> threads[MAX_THREADS];
-
-				int from, to;
-				for (int i = 0; i < thread_pool.size(); i++)
-				{
-					from = height * i / thread_pool.size();
-					to = height * (i + 1) / thread_pool.size();
-
-					if (i == 0)
+				thread_pool.parallel_for_void(y0, height, [=, &original, &res](int from, int to)
 					{
-						from += pad;
-						to += pad;
-					}
-
-					threads[i] = thread_pool.add_task_void([=, &original, &res]()
+						for (int y = from; y < to; y++)
 						{
-							for (int y = from; y < to; y++)
+							for (int x = x0; x < width; x++)
 							{
-								for (int x = x0; x < width; x++)
+								// rgb(rgba) is bgr(bgra) in windows (i dnk why)
+								__m128 bgr = { 0.0f, 0.0f, 0.0f, 0.0f };
+								for (int i = 0; i < size; i++)
 								{
-									// rgb(rgba) is bgr(bgra) in windows (i dnk why)
-									__m128 bgr = { 0.0f, 0.0f, 0.0f, 0.0f };
-									for (int i = 0; i < size; i++)
+									for (int j = 0; j < size; j++)
 									{
-										for (int j = 0; j < size; j++)
-										{
-											__m128 pixel = _mm_load_ps(&original[(y - pad + i) * original.width + x - pad + j].b);
-											__m128 coef = _mm_set_ps1(kernel[i][j]);
-											bgr = _mm_add_ps(bgr, _mm_mul_ps(pixel, coef));
-										}
+										__m128 pixel = _mm_load_ps(&original[(y - pad + i) * original.width + x - pad + j].b);
+										__m128 coef = _mm_set_ps1(kernel[i][j]);
+										bgr = _mm_add_ps(bgr, _mm_mul_ps(pixel, coef));
 									}
-									res[y * res.width + x].b = max(min(bgr.m128_f32[0], 1.0f), 0.0f);
-									res[y * res.width + x].g = max(min(bgr.m128_f32[1], 1.0f), 0.0f);
-									res[y * res.width + x].r = max(min(bgr.m128_f32[2], 1.0f), 0.0f);
-									res[y * res.width + x].a = original[y * res.width + x].a;
 								}
+								res[y * res.width + x].b = max(min(bgr.m128_f32[0], 1.0f), 0.0f);
+								res[y * res.width + x].g = max(min(bgr.m128_f32[1], 1.0f), 0.0f);
+								res[y * res.width + x].r = max(min(bgr.m128_f32[2], 1.0f), 0.0f);
+								res[y * res.width + x].a = original[y * res.width + x].a;
 							}
-						});
-				}
-
+						}
+					}
+				);
+				thread_pool.wait();
 
 				// edges
 				for (int i = 0; i < 2; i++)
@@ -313,9 +300,6 @@ namespace gui
 						}
 					}
 				}
-
-				for (int i = 0; i < thread_pool.size(); i++)
-					threads[i].get();
 
 				return res;
 			}
@@ -613,45 +597,32 @@ namespace gui
 				int width = original.width - pad;
 				int height = original.height - pad;
 
-				std::future<void> threads[MAX_THREADS];
-
-				int from, to;
-				for (int i = 0; i < thread_pool.size(); i++)
-				{
-					from = height * i / thread_pool.size();
-					to = height * (i + 1) / thread_pool.size();
-
-					if (i == 0)
+				thread_pool.parallel_for_void(y0, height, [=, &original, &res](int from, int to)
 					{
-						from += pad;
-						to += pad;
-					}
-
-					threads[i] = thread_pool.add_task_void([=, &original, &res]()
+						for (int y = from; y < to; y++)
 						{
-							for (int y = from; y < to; y++)
+							for (int x = x0; x < width; x++)
 							{
-								for (int x = x0; x < width; x++)
+								int r = 0, g = 0, b = 0;
+								for (int i = 0; i < size; i++)
 								{
-									int r = 0, g = 0, b = 0;
-									for (int i = 0; i < size; i++)
+									for (int j = 0; j < size; j++)
 									{
-										for (int j = 0; j < size; j++)
-										{
-											const Color& pixel = original[(y - pad + i) * original.width + x - pad + j];
-											r += pixel.r * kernel[i][j];
-											g += pixel.g * kernel[i][j];
-											b += pixel.b * kernel[i][j];
-										}
+										const Color& pixel = original[(y - pad + i) * original.width + x - pad + j];
+										r += pixel.r * kernel[i][j];
+										g += pixel.g * kernel[i][j];
+										b += pixel.b * kernel[i][j];
 									}
-									res[y * res.width + x].r = chanel_clip(r / coef);
-									res[y * res.width + x].g = chanel_clip(g / coef);
-									res[y * res.width + x].b = chanel_clip(b / coef);
-									res[y * res.width + x].a = original[y * res.width + x].a;
 								}
+								res[y * res.width + x].r = chanel_clip(r / coef);
+								res[y * res.width + x].g = chanel_clip(g / coef);
+								res[y * res.width + x].b = chanel_clip(b / coef);
+								res[y * res.width + x].a = original[y * res.width + x].a;
 							}
-						});
-				}
+						}
+					}
+				);
+				thread_pool.wait();
 
 				// edges
 				for (int i = 0; i < 2; i++)
@@ -716,9 +687,6 @@ namespace gui
 						}
 					}
 				}
-
-				for (int i = 0; i < thread_pool.size(); i++)
-					threads[i].get();
 
 				return res;
 			}

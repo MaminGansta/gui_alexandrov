@@ -4,15 +4,14 @@
 
 namespace gui
 {
-	// global
+	// globals
 	HINSTANCE _hInst;
+	ThreadPool thread_pool;
 
-
-	void init(HINSTANCE hInstance, int max_threads)
+	void init(HINSTANCE hInstance)
 	{
 		_hInst = hInstance;
 		__init_time = high_resolution_clock::now();
-		thread_pool.resize(max_threads);
 	}
 
 }

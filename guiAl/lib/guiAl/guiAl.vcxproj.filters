@@ -14,9 +14,9 @@
     <ClCompile Include="guiAlexandrov\io\file_io.cpp" />
     <ClCompile Include="guiAlexandrov\libs\thread_pool.cpp" />
     <ClCompile Include="guiAlexandrov\libs\time.cpp" />
-    <ClCompile Include="guiAlexandrov\window\gui_init.cpp" />
     <ClCompile Include="guiAlexandrov\window\window.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="guiAlexandrov\window\gui_init.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="guiAlexandrov\image\stb_image.h" />

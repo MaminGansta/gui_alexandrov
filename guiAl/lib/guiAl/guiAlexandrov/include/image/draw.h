@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../libs/thread_pool.h"
+//#include "../libs/thread_pool.h"
+#include "window/gui_init.h"
 #include "color.h"
 
 #ifndef MAX
@@ -163,7 +164,7 @@ namespace gui
 			int height = surface.height * fheight;
 
 			
-			parallel_for(0, height, true,
+			thread_pool.parallel_for_void(0, height,
 				[height, width, &surface, &color](int from_y, int to_y)
 				{
 						for (int y = from_y; y < to_y; y++)
@@ -171,7 +172,7 @@ namespace gui
 								drawPixel(surface, x, y, color);
 				}
 			);
-
+			thread_pool.wait();
 		}
 
 
@@ -212,9 +213,8 @@ namespace gui
 
 			int width = surface.width * fwidth;
 			int height = surface.height * fheight;
-
 			
-			parallel_for(0, height, true, 
+			thread_pool.parallel_for_void(0, height,
 				[pos_y, pos_x, height, width, &surface, &image](int from_y, int to_y)
 				{
 					for (int y = from_y; y < to_y; y++)
@@ -227,7 +227,7 @@ namespace gui
 					}
 				}
 			);
-
+			thread_pool.wait();
 		}
 
 		// no bound cheking here, if image outside the canvas it wouldn'd 
@@ -243,7 +243,7 @@ namespace gui
 			int width = surface.width * fwidth;
 			int height = surface.height * fheight;
 
-			parallel_for(0, height, true,
+			thread_pool.parallel_for_void(0, height,
 				[pos_y, pos_x, height, width, &surface, &image](int from_y, int to_y)
 				{
 					for (int y = from_y; y < to_y; y++)
@@ -257,7 +257,7 @@ namespace gui
 					}
 				}
 			);
-
+			thread_pool.wait();
 		}
 
 
@@ -421,7 +421,7 @@ namespace gui
 			int width = surface.width * fwidth;
 			int height = surface.height * fheight;
 
-			parallel_for(0, height, true,
+			thread_pool.parallel_for_void(0, height,
 				[x0, height, width, &surface, &color](int from_y, int to_y)
 				{
 					for (int y = from_y; y < to_y; y++)
@@ -429,7 +429,7 @@ namespace gui
 							drawPixel_a(surface, x, y, color);
 				}
 			);
-
+			thread_pool.wait();
 		}
 
 
@@ -472,8 +472,7 @@ namespace gui
 			int width = surface.width * fwidth;
 			int height = surface.height * fheight;
 
-			
-			parallel_for(0, height, true,
+			thread_pool.parallel_for_void(0, height,
 				[pos_y, pos_x, height, width, &surface, &image](int from_y, int to_y)
 				{
 					for (int y = from_y; y < to_y; y++)
@@ -486,7 +485,7 @@ namespace gui
 					}
 				}
 			);
-
+			thread_pool.wait();
 		}
 
 
@@ -523,12 +522,10 @@ namespace gui
 			int pos_x = surface.width * fpos_x;
 			int pos_y = surface.height * fpos_y;
 
-
 			int width = surface.width * fwidth;
 			int height = surface.height * fheight;
 
-
-				parallel_for(0, height, true,
+			thread_pool.parallel_for_void(0, height,
 					[alpha, pos_y, pos_x, height, width, &surface, &image](int from, int to)
 					{
 						for (int y = from; y < to; y++)
@@ -542,6 +539,7 @@ namespace gui
 						}
 					}
 				);
+				thread_pool.wait();
 
 		}
 
@@ -591,8 +589,7 @@ namespace gui
 			int center_x = width / 2;
 			int center_y = height / 2;
 
-
-			parallel_for(0, height, true,
+			thread_pool.parallel_for_void(0, height,
 				[pos_y, pos_x, height, width, center_x, center_y, angle, &surface, &image](int from, int to)
 				{
 					for (int y = from; y < to; y++)
@@ -608,7 +605,7 @@ namespace gui
 					}
 				}
 			);
-
+			thread_pool.wait();
 		}
 
 	}

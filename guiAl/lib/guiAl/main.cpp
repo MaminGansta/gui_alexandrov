@@ -46,9 +46,14 @@ struct My_window : gui::Window
 			
 				case WM_SIZE:
 				{
-					float start = gui::get_time();
-					gui::cpu::draw_image_async(window->canvas, window->bg, 0, 0, 1.0f, 1.0f);
-					gui::console::printf("%f \n", gui::get_time() - start);
+					float start = get_time();
+
+					gui::cpu::Box_filter<gui::Image> bf;
+					gui::Image image = bf.apply_async(window->bg);
+
+					gui::cpu::draw_image_async(window->canvas, image, 0, 0, 1.0f, 1.0f);
+
+					gui::console::printf("%f \n", get_time() - start);
 				}break;
 			
 				case WM_PAINT:
@@ -115,10 +120,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	gui::doutput("some int %d\n", 1);
 	gui::output("some int %d\n", 5);
-	gui::console::printf(L"hello world  %f\n", gui::get_time());
+	gui::console::printf(L"hello world  %f\n", get_time());
 
-	
 	gui::Window::wait_msg_proc();
-
 	return 0;
 }

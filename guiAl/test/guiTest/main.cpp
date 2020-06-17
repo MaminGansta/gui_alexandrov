@@ -1,6 +1,5 @@
 
 #include "guiAlexandrov.h"
-#pragma comment (lib, "guiAl.lib")
 
 
 template <typename Image_type>
@@ -47,6 +46,7 @@ struct My_window : gui::Window
 				case WM_SIZE:
 				{
 					gui::cpu::draw_image(window->canvas, window->bg, 0, 0, 1.0f, 1.0f);
+					gui::cpu::draw_filled_circle_a(window->canvas, 0.5f, 0.5f, gui::Color(255), 0.1f);
 				}break;
 
 				case WM_PAINT:
@@ -67,7 +67,7 @@ struct My_window : gui::Window
 			bClear.init(hwnd, L"Clear", 0.01f, 0.8f, 0.1f, 0.1f);
 			
 			label.init(getHWND(), L"some text dsaf\nadsfadsfdasfdasf", 0.2f, 0.2f, 0.1f, 0.1f, RESIZABLE, DEF_LABEL);
-			set_font_size(btn.hwnd, 20);
+			gui::set_font_size(btn.hwnd, 20);
 			
 			
 			text.init(getHWND(), 0.1f, 0.5f, 0.2f, 0.2f, RESIZABLE, DEF_TEXT | WS_VSCROLL | WS_HSCROLL);
@@ -96,7 +96,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	My_window<gui::Image>* window = new My_window<gui::Image>(bg);
-	gui::console::printf(L"hello world %f\n", get_time());
+	gui::console::printf(L"hello world %f\n", gui::get_time());
 
 	gui::Window::wait_msg_proc();
 	return 0;

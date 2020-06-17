@@ -6,9 +6,10 @@
 
 namespace gui
 {
-	// global instange
+	// globals
 	extern HINSTANCE _hInst;
+	extern ThreadPool thread_pool;
 
-	void init(HINSTANCE hInst, int max_threads = std::thread::hardware_concurrency());
+	void init(HINSTANCE hInst);
 
 }
