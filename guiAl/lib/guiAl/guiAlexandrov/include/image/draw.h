@@ -1,7 +1,6 @@
 #pragma once
 
-//#include "../libs/thread_pool.h"
-#include "window/gui_init.h"
+#include "../window/gui_init.h"
 #include "color.h"
 
 #ifndef MAX

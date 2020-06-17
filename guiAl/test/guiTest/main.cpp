@@ -94,9 +94,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	gui::Image bg(L"bg.jpg");
 	if (!bg.valid()) return -1;
 
-
 	My_window<gui::Image>* window = new My_window<gui::Image>(bg);
-	gui::console::printf(L"hello world %f\n", gui::get_time());
+	gui::console::printf(L"hello world %f\n", get_time());
 
 	gui::Window::wait_msg_proc();
 	return 0;

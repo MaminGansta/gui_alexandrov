@@ -3,10 +3,10 @@
 #include <emmintrin.h>
 
 #include <stdint.h>
-#include "image/image.h"
-//#include "libs/thread_pool.h"
-#include "window/gui_init.h"
-#include "cstdlib"
+#include <cstdlib>
+
+#include "../image/image.h"
+#include "../window/gui_init.h"
 
 #ifndef PI
 #define PI 3.14159265359f

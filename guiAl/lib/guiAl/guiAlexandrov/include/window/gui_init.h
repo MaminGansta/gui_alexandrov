@@ -11,5 +11,4 @@ namespace gui
 	extern ThreadPool thread_pool;
 
 	void init(HINSTANCE hInst);
-
 }
