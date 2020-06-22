@@ -881,7 +881,7 @@ namespace gui
 					for (int j = 0; j < size; j++)
 					{
 						if (i == center && j == center) continue;
-						total += Kernel[i][j] = -sharp_norm / pow(abs(i - center) + abs(j - center), size / 2);
+						total += Kernel[i][j] = -sharp_norm / powf(abs(i - center) + abs(j - center), size / 2);
 					}
 				}
 
@@ -918,7 +918,7 @@ namespace gui
 					for (int j = 0; j < size; j++)
 					{
 						if (i == center && j == center) continue;
-						total += Kernel[i][j] = -sharp_norm / pow(abs(i - center) + abs(j - center), size / 2);
+						total += Kernel[i][j] = -sharp_norm / powf(abs(i - center) + abs(j - center), size / 2);
 					}
 				}
 
