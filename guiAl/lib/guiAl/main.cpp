@@ -108,6 +108,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	bg = gui::cpu::box_filter(bg);
 	bg = gui::cpu::sharp_filter(bg, 16);
 	bg = gui::cpu::median_filter(bg);
+
+
+	gui::thread_pool.parallel_for_void(0, 20, 10,
+		[](int a, int b)
+		{
+			gui::console::printf("print %d - %d\n", a, b);
+		}
+	);
+	gui::thread_pool.wait();
 	
 
 	gui::fImage a = bg;

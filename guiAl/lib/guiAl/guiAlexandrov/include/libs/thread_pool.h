@@ -115,6 +115,31 @@ struct ThreadPool
 		}
 	}
 
+	/*
+		Overload with ability to set task amount
+	*/
+	template <typename F>
+	void parallel_for_void(int from_param, int to_param, int tasks_param, F&& func)
+	{
+		// split whole task to pieces
+		int width = to_param - from_param;
+		int _tasks = __min(width, tasks_param);
+
+		// put pisces on thread pool
+		for (int i = 0; i < _tasks; i++)
+		{
+			int from = i * width / _tasks + from_param;
+			int to = (i + 1) * width / _tasks + from_param;
+
+			active_tasks++;
+			{
+				std::unique_lock<std::mutex> lock(event_mutex);
+				tasks.push([&func, from, to]() { func(from, to); });
+			}
+			event.notify_one();
+		}
+	}
+
 
 	// wait until all tasks will be finished
 	void wait();
