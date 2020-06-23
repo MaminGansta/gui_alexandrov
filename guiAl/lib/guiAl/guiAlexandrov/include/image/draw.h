@@ -164,7 +164,7 @@ namespace gui
 
 			
 			thread_pool.parallel_for_void(0, height,
-				[height, width, &surface, &color](int from_y, int to_y)
+				[height, width, &surface, &color](int from_y, int to_y, int idx)
 				{
 						for (int y = from_y; y < to_y; y++)
 							for (int x = 0; x < width; x++)
@@ -214,7 +214,7 @@ namespace gui
 			int height = surface.height * fheight;
 			
 			thread_pool.parallel_for_void(0, height,
-				[pos_y, pos_x, height, width, &surface, &image](int from_y, int to_y)
+				[pos_y, pos_x, height, width, &surface, &image](int from_y, int to_y, int idx)
 				{
 					for (int y = from_y; y < to_y; y++)
 					{
@@ -243,7 +243,7 @@ namespace gui
 			int height = surface.height * fheight;
 
 			thread_pool.parallel_for_void(0, height,
-				[pos_y, pos_x, height, width, &surface, &image](int from_y, int to_y)
+				[pos_y, pos_x, height, width, &surface, &image](int from_y, int to_y, int idx)
 				{
 					for (int y = from_y; y < to_y; y++)
 					{
@@ -421,7 +421,7 @@ namespace gui
 			int height = surface.height * fheight;
 
 			thread_pool.parallel_for_void(0, height,
-				[x0, height, width, &surface, &color](int from_y, int to_y)
+				[x0, height, width, &surface, &color](int from_y, int to_y, int idx)
 				{
 					for (int y = from_y; y < to_y; y++)
 						for (int x = x0; x < width + x0; x++)
@@ -472,7 +472,7 @@ namespace gui
 			int height = surface.height * fheight;
 
 			thread_pool.parallel_for_void(0, height,
-				[pos_y, pos_x, height, width, &surface, &image](int from_y, int to_y)
+				[pos_y, pos_x, height, width, &surface, &image](int from_y, int to_y, int idx)
 				{
 					for (int y = from_y; y < to_y; y++)
 					{

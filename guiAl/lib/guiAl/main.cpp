@@ -111,7 +111,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	gui::thread_pool.parallel_for_void(0, 20, 10,
-		[](int a, int b)
+		[](int a, int b, int idx)
 		{
 			gui::console::printf("print %d - %d\n", a, b);
 		}

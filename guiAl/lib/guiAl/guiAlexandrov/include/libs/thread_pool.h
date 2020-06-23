@@ -36,10 +36,10 @@ struct ThreadPool
 	{
 		// increment active tasts
 		active_tasks++;
-
+		
 		auto wrapper = std::make_shared<std::packaged_task<decltype(task(args...))()>>(
 			std::bind(std::forward<F>(task), std::forward<Args>(args)...));
-
+		
 		{
 			std::unique_lock<std::mutex> lock(event_mutex);
 			tasks.push([wrapper]() { (*wrapper)(); });
@@ -109,7 +109,7 @@ struct ThreadPool
 			active_tasks++;
 			{
 				std::unique_lock<std::mutex> lock(event_mutex);
-				tasks.push([&func, from, to]() { func(from, to); });
+				tasks.push([&func, from, to, i]() { func(from, to, i); });
 			}
 			event.notify_one();
 		}
@@ -134,7 +134,7 @@ struct ThreadPool
 			active_tasks++;
 			{
 				std::unique_lock<std::mutex> lock(event_mutex);
-				tasks.push([&func, from, to]() { func(from, to); });
+				tasks.push([&func, from, to, i]() { func(from, to, i); });
 			}
 			event.notify_one();
 		}

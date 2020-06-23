@@ -213,7 +213,7 @@ namespace gui
 				int width = original.width - pad;
 				int height = original.height - pad;
 
-				thread_pool.parallel_for_void(y0, height, [=, &original, &res](int from, int to)
+				thread_pool.parallel_for_void(y0, height, [=, &original, &res](int from, int to, int idx)
 					{
 						for (int y = from; y < to; y++)
 						{
@@ -597,7 +597,7 @@ namespace gui
 				int width = original.width - pad;
 				int height = original.height - pad;
 
-				thread_pool.parallel_for_void(y0, height, [=, &original, &res](int from, int to)
+				thread_pool.parallel_for_void(y0, height, [=, &original, &res](int from, int to, int idx)
 					{
 						for (int y = from; y < to; y++)
 						{
