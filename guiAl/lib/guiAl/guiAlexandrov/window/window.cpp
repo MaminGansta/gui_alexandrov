@@ -7,33 +7,31 @@
 // Args
 void* Args::operator [] (int i) { return vals[i]; }
 
-
-//Arguments
-void Arguments::add(HWND hwnd, void* pwindow, void* parg, std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback)
-{
-	buffer.push_back(std::make_pair(hwnd, Args{ pwindow, parg, callback}));
-}
-
-Args Arguments::get(HWND hwnd)
-{
-	auto it = std::find_if(buffer.begin(), buffer.end(), [hwnd](std::pair<HWND, Args> in) { return hwnd == in.first; });
-	return it == buffer.end() ? Args{NULL,NULL} : it->second;
-}
-
-void Arguments::remove(HWND hwnd)
-{
-	auto it = std::find_if(buffer.begin(), buffer.end(), [hwnd](std::pair<HWND, Args> in) { return hwnd == in.first; });
-	if (it != buffer.end())
-		buffer.erase(it);
-}
-
-// global
-Arguments _arguments;
-
-
-
 namespace gui
 {
+	//Arguments
+	void Arguments::add(HWND hwnd, void* pwindow, void* parg, std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback)
+	{
+		buffer.push_back(std::make_pair(hwnd, Args{ pwindow, parg, callback }));
+	}
+
+	Args Arguments::get(HWND hwnd)
+	{
+		auto it = std::find_if(buffer.begin(), buffer.end(), [hwnd](std::pair<HWND, Args> in) { return hwnd == in.first; });
+		return it == buffer.end() ? Args{ NULL,NULL } : it->second;
+	}
+
+	void Arguments::remove(HWND hwnd)
+	{
+		auto it = std::find_if(buffer.begin(), buffer.end(), [hwnd](std::pair<HWND, Args> in) { return hwnd == in.first; });
+		if (it != buffer.end())
+			buffer.erase(it);
+	}
+
+	// global
+	Arguments _arguments;
+
+
 	// =========================================== WINDOW _components LAYOUT ====================================================
 	
 	// Component

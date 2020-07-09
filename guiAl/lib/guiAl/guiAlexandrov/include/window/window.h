@@ -36,22 +36,20 @@ struct Args
 };
 
 
-struct Arguments
-{
-	std::vector<std::pair<HWND, Args>> buffer;
-
-	void add(HWND hwnd, void* pwindow, void* parg, std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback);
-
-	Args get(HWND hwnd);
-
-	void remove(HWND hwnd);
-};
-extern Arguments _arguments;
-
-
-
 namespace gui
 {
+	struct Arguments
+	{
+		std::vector<std::pair<HWND, Args>> buffer;
+
+		void add(HWND hwnd, void* pwindow, void* parg, std::function<LRESULT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, Args args)> callback);
+
+		Args get(HWND hwnd);
+
+		void remove(HWND hwnd);
+	};
+	extern Arguments _arguments;
+
 
 	// =========================================== WINDOW COMPONENTS ====================================================
 
