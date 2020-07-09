@@ -46,7 +46,19 @@ struct My_window : gui::Window
 				case WM_SIZE:
 				{
 					gui::cpu::draw_image(window->canvas, window->bg, 0, 0, 1.0f, 1.0f);
-					gui::cpu::draw_filled_circle_a(window->canvas, 0.5f, 0.5f, gui::Color(255), 0.1f);
+
+					gui::cpu::draw_filled_circle_a(window->canvas, 0.8f, 0.95f, gui::Color(255), 0.05f);
+					gui::cpu::draw_filled_circle_a(window->canvas, 0.9f, 0.95f, gui::Color(255, 255, 255, 50), 0.05f);
+
+					gui::cpu::draw_filled_rect(window->canvas, 0.775f, 0.85f, 0.05f, 0.05f, gui::Color(255));
+					gui::cpu::draw_filled_rect_a(window->canvas, 0.875f, 0.85f, 0.05f, 0.05f, gui::Color(255, 255, 255, 100));
+
+					gui::cpu::draw_line(window->canvas, 0.75f, 0.8f, 0.95f, 0.81f, gui::Color(255));
+					gui::cpu::draw_line(window->canvas, 0.75f, 0.75f, 0.95f, 0.76f, gui::Color(255), 3);
+					gui::cpu::draw_line_a(window->canvas, 0.75f, 0.7f, 0.95f, 0.71f, gui::Color(255, 255, 255, 100), 5);
+					gui::cpu::draw_line_a(window->canvas, 0.75f, 0.65f, 0.95f, 0.66f, gui::Color(255, 255, 255, 50), 7);
+
+					gui::render_text_ml(window->canvas, 0.75, 0.6f, L"Text rendering \nMulti line");
 				}break;
 
 				case WM_PAINT:

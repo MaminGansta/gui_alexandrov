@@ -44,9 +44,7 @@ namespace gui
 		bmih.biPlanes = 1;
 
 		BITMAPINFO* bmi = (BITMAPINFO*)&bmih;
-
 		return CreateDIBitmap(hdc, &bmih, CBM_INIT, pImageData, bmi, DIB_RGB_COLORS);
-
 	}
 
 	int WriteTextOnByteArray(int nImageWidth, int nImageHeight, int x, int y, void* pImageData, HFONT hFont, const wchar_t* szText, COLORREF textColor)
@@ -76,12 +74,9 @@ namespace gui
 		bmpInfo.bmiHeader.biCompression = BI_RGB;
 		GetDIBits(memDC, hBmp, 0, bmpInfo.bmiHeader.biHeight, pImageData, &bmpInfo, DIB_RGB_COLORS);
 
-
-		DeleteObject(hFont);
 		DeleteObject(hBmp);
 		DeleteDC(memDC);
 		ReleaseDC(NULL, hdc);
-
 		return width;
 	}
 

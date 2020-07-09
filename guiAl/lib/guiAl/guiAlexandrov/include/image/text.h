@@ -20,7 +20,7 @@ namespace gui
 	extern HFONT DEF_FONT;
 
 
-	HFONT get_def_font(int size);
+	HFONT get_def_font(int size = 16);
 
 	void set_font_size(HWND hwnd, int size);
 
@@ -34,26 +34,27 @@ namespace gui
 	int WriteTextOnByteArray(int nImageWidth, int nImageHeight, int x, int y, void* pImageData, HFONT hFont, const wchar_t* szText, COLORREF textColor);
 
 
-
+	// Font will be reliesed
 	template <typename T>
-	void render_text(Image_base<T>& surface, float fx, float fy, const std::wstring& text, const Color& color, HFONT hFont)
+	void render_text(Image_base<T>& surface, float fx, float fy, const std::wstring& text, const Color& color = Color(255), HFONT hFont = gui::get_def_font())
 	{
 		int x = surface.width * fx;
 		int y = surface.height * (1.0f - fy);
 		WriteTextOnByteArray(surface.width, surface.height, x, y, surface.data, hFont, text.c_str(), RGB(color.r, color.g, color.b));
+		DeleteObject(hFont);
 	}
 
 
+	// Font will be reliesed
 	template <typename T>
-	void render_text_ml(Image_base<T>& surface, float fx, float fy, const std::wstring& text, const Color& color, HFONT hFont)
+	void render_text_ml(Image_base<T>& surface, float fx, float fy, const std::wstring& text, const Color& color = Color(255), float y_pad_aspect = 1.2f, HFONT hFont = gui::get_def_font())
 	{
 		int x = surface.width * fx;
 		int y = surface.height * (1.0f - fy);
 
 		int priv_pos = 0, pos = 0, size = 0;
 		int temp = 0, offset = 0;
-		wchar_t* line = _malloca(sizeof(wchar_t) * text.size());
-
+		wchar_t* line = (wchar_t*)_malloca(sizeof(wchar_t) * text.size());
 
 		while (pos < text.size())
 		{
@@ -64,9 +65,10 @@ namespace gui
 			memmove(line, text.c_str() + priv_pos, size * sizeof(wchar_t));
 			line[size] = L'\0';
 
-			offset += WriteTextOnByteArray(surface.width, surface.height, x, y + offset, surface.data, hFont, line, RGB(color.r, color.g, color.b));
+			offset += WriteTextOnByteArray(surface.width, surface.height, x, y + offset, surface.data, hFont, line, RGB(color.r, color.g, color.b)) * y_pad_aspect;
 			priv_pos = ++pos;
 		}
+		DeleteObject(hFont);
 	}
 
 }

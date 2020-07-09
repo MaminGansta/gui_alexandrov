@@ -405,7 +405,7 @@ namespace gui
 			int height = surface.height * fheight;
 
 			for (int y = y0; y < y0 + height; y++)
-				for (int x = x0; x < width; x++)
+				for (int x = x0; x < x0 + width; x++)
 					drawPixel_a(surface, x, y, color);
 		}
 
