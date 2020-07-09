@@ -58,7 +58,7 @@ struct My_window : gui::Window
 					gui::cpu::draw_line_a(window->canvas, 0.75f, 0.7f, 0.95f, 0.71f, gui::Color(255, 255, 255, 100), 5);
 					gui::cpu::draw_line_a(window->canvas, 0.75f, 0.65f, 0.95f, 0.66f, gui::Color(255, 255, 255, 50), 7);
 
-					gui::render_text_ml(window->canvas, 0.75, 0.6f, L"Text rendering \nMulti line");
+					gui::render_text_ml(window->canvas, 0.75, 0.6f, L"Text rendering \nMulti line", gui::Color(255), 1.2f, gui::get_def_font(25));
 				}break;
 
 				case WM_PAINT:
