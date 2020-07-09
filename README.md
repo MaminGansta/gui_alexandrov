@@ -7,7 +7,7 @@ That support:
 + alpha blending draw, ofcourse async.
 + text rendering.
 + unlimited window amount.
-- all work on cpu.
+- all work on cpu. (minus)
 
 Really cool library please don't use it.
 
