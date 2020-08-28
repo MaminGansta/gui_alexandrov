@@ -17,6 +17,7 @@
     <ClCompile Include="guiAlexandrov\window\window.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="guiAlexandrov\window\gui_init.cpp" />
+    <ClCompile Include="guiAlexandrov\window\components.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="guiAlexandrov\image\stb_image.h" />
@@ -45,5 +46,6 @@
     <ClInclude Include="guiAlexandrov\include\libs\time.h" />
     <ClInclude Include="guiAlexandrov\include\window\gui_init.h" />
     <ClInclude Include="guiAlexandrov\include\window\window.h" />
+    <ClInclude Include="guiAlexandrov\include\window\components.h" />
   </ItemGroup>
 </Project>
